@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>To do app</title>
+
+  <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css' integrity='sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh' crossorigin='anonymous'>
+  <link rel='stylesheet' type='text/css' href='client/css/style.css'>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+
+  <script src='https://cdn.jsdelivr.net/npm/vue/dist/vue.js'></script>
+  <script src='client/js/progressbar.js'></script>
+  <script src='client/js/goal.js'></script>
+  <script src='client/js/editgoal.js'></script>
+  <script src='client/js/viewtasks.js'></script>
+</head>
+<body>
+
+  <div id='app'>
+    <div class='container my-5 card card-body shadow w-75'>
+      <h1 class='mb-3 text-center'>{{ title }}</h1>
+      <p class='text-center'>{{ date() }}</p>
+
+      <div id='goalsDiv'>
+        <div v-for='(objective, index) in objectives[timeFrame]' class='goalDiv container card card-body shadow mb-3'>
+          <editgoal v-if='objective.edit' :objective='objective'></editgoal>
+
+          <goal v-else :objective='objective'></goal>
+        </div>
+      </div>
+
+
+      <div class='text-center mt-3'>
+        <button type='button' class='btn btn-primary w-25' @click='addGoal'>Add Goal</button>
+      </div>
+    </div>
+
+    <i class='fa fa-angle-right text-right arrows rightArrow' style='font-size:124px' @click='nextTimeFrame'></i>
+
+    <i class='fa fa-angle-left arrows' style='font-size:124px' @click='previousTimeFrame'></i>
+  </div>
+
+  <script src='client/js/app.js'></script>
+</body>
+</html>
