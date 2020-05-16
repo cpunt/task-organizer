@@ -12,16 +12,6 @@ let app = new Vue({
     }
   },
   methods: {
-    addGoal() {
-      const objective = {
-        goal: null,
-        uncompletedTasks: [null],
-        completedTasks: [],
-        edit: true
-      }
-
-      this.objectives[this.timeFrame].push(objective);
-    },
     date() {
       const date = new Date();
       const day = date.getDate();
@@ -51,6 +41,9 @@ let app = new Vue({
     },
     timeFrame() {
       return this.timeFrames[this.timeFrameSelected];
+    },
+    timeFrameObjectives() {
+      return this.objectives[this.timeFrame];
     }
   }
 });
