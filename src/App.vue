@@ -1,26 +1,34 @@
 <template>
   <div id='app'>
-    <div class='taskBar' v-if='!newtask'>
+    <div class='taskBar mb-0' v-if='!newtask'>
       <label class='d-inline'>From:
         <input v-model='dateSelected'
                class='form-control d-inline w-25'
                type='date'
+               @change='scrollToDate'
         >
       </label>
 
-      <button class='btn btn-primary d-inline mb-1' @click='addNewTask'>Add Task</button>
+      <button class='btn btn-primary d-inline mb-1' @click='addNewTask'>Add Task(s)</button>
+    </div>
+
+    <div v-if='!newtask' class='headerDiv'>
+      <h3 class='header w-25 text-center mb-0 border-left'>Yearly</h3>
+      <h3 class='header w-25 text-center mb-0'>Monthly</h3>
+      <h3 class='header w-25 text-center mb-0'>Weekly</h3>
+      <h3 class='header w-25 text-center mb-0'>Daily</h3>
     </div>
 
     <div v-if='!newtask' id='timeFramesDiv' class='text-center'>
       <!-- Maybe loop over object instead of writing out four times -->
+      <TimeFrameRoots class='border-left' :tasks='timeFrames.yearly' :dateselected='dateSelected' :timeframe="'yearly'"></TimeFrameRoots>
 
-      <TimeFrameRoots class='tasksDiv left-border' :tasks='timeFrames.yearly' :date='dateSelected' :timeframe="'yearly'"></TimeFrameRoots>
+      <TimeFrameRoots :tasks='timeFrames.monthly' :dateselected='dateSelected' :timeframe="'monthly'"></TimeFrameRoots>
 
-      <TimeFrameRoots class='tasksDiv' :tasks='timeFrames.monthly' :date='dateSelected' :timeframe="'monthly'"></TimeFrameRoots>
+      <TimeFrameRoots :tasks='timeFrames.weekly' :dateselected='dateSelected' :timeframe="'weekly'"></TimeFrameRoots>
 
-      <TimeFrameRoots class='tasksDiv' :tasks='timeFrames.weekly' :date='dateSelected' :timeframe="'weekly'"></TimeFrameRoots>
+      <TimeFrameRoots :tasks='timeFrames.daily' :dateselected='dateSelected' :timeframe="'daily'"></TimeFrameRoots>
 
-      <TimeFrameRoots class='tasksDiv' :tasks='timeFrames.daily' :date='dateSelected' :timeframe="'daily'"></TimeFrameRoots>
     </div>
 
     <CreateTasks v-if='newtask' @create-new-task='createNewTask'  @cancel-new-task='cancelNewTask' :tasks='goals'></CreateTasks>
@@ -34,6 +42,8 @@ import TimeFrameRoots from './components/TimeFrameRoots.vue';
 
 import { Node, nodeDFS, addNode } from './js/nodeFunctions.js';
 import { currentDate } from './js/sharedFunctions.js';
+import { scrollToDate } from './js/scroll.js';
+
 
 export default {
   name: 'App',
@@ -51,6 +61,7 @@ export default {
     }
   },
   methods: {
+    scrollToDate,
     addNewTask() {
       this.newtask = true;
     },
@@ -103,24 +114,25 @@ input[type=date]::-webkit-inner-spin-button {
     display: none;
 }
 
-.taskBar {
-  border-bottom: 1px dashed #333;
-}
-
-.tasksDiv {
+.header {
   display: inline-block;
-  vertical-align: top;
-  width: 24%;
-  height: 100%;
-  border-right: 1px dashed #333;
+  border-right: 1px solid #333;
 }
 
-.left-border {
-  border-left: 1px dashed #333;
+.taskBar {
+  border-bottom: 1px solid #333;
+  border-left: 1px solid #333;
+  border-right: 1px solid #333;
+  margin-bottom: 10px;
+}
+
+.border-left {
+  border-left: 1px solid #333;
 }
 
 #timeFramesDiv {
-  height: 90vh;
-  overflow: scroll;
+  /* height: 400px; */
+  width: 100%;
+  height: 93vh;
 }
 </style>
