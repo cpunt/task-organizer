@@ -10,7 +10,7 @@
       </label>
     </div>
 
-    <TaskInputs v-for='task in newTasks' :key='task.value' :task='task' :taskPath='taskPath'></TaskInputs>
+    <TaskInputs v-for='(task, index) in newTasks' :key='index' :task='task' :taskPath='taskPath'></TaskInputs>
 
     <div class='text-center'>
       <button class='btn btn-primary mx-1' @click='cancelTask'>Cancel</button>
@@ -51,7 +51,7 @@ export default {
       const task = {
         task: null,
         time: {
-          timeFrame: null,
+          timeframe: null,
           fromDate: this.currentDate(),
           toDate: this.currentDate()
         }
@@ -108,10 +108,10 @@ export default {
     taskPaths() {
       let pathsList = [],
           path,
-          tree;
+          root;
 
-      for(let i = this.tasks.length - 1; i >= 0; i--) {
-        tree = this.tasks[i];
+      for(let i = 0; i < this.tasks.length; i++) {
+        root = this.tasks[i];
 
         nodeDFS(function(node) {
           path = [];
@@ -123,8 +123,8 @@ export default {
 
           path.unshift(node.task);
 
-          pathsList.unshift(path);
-        }, tree);
+          pathsList.push(path);
+        }, root);
       }
 
       return pathsList;

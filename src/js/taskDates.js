@@ -1,142 +1,160 @@
-import { addZero } from './sharedFunctions.js';
+import { currentDate } from './sharedFunctions.js';
+import { daysDiff, weeksDiff, monthsDiff, yearsDiff } from './dateDiff.js';
 
-function getTasksInDates() {
-  let arr = [],
-      map = {},
-      index,
-      taskDates;
+function addTaskToTimeframe(root) {
+  let timeframe = root.time.timeframe,
+      fromDate = new Date(root.time.fromDate),
+      toDate = new Date(root.time.toDate);
 
-  for(let i = 0; i < this.tasks.length; i++) {
-    taskDates = getTaskDates(this.timeframe, this.tasks[i].time.fromDate, this.tasks[i].time.toDate);
-    for(let j = 0; j < taskDates.length; j++) {
-      index = arr.findIndex( obj => obj['date'] == taskDates[j]);
-      if(index == -1) {
-        map['date'] = taskDates[j];
-        map['tasks'] = [];
-        map['tasks'].push(this.tasks[i]);
-        arr.push(map);
-        map = {};
-      } else {
-        arr[index]['tasks'].push(this.tasks[i]);
-      }
+  let index,
+      datesLen,
+      firstDate,
+      lastDate,
+      fromIndex,
+      toIndex;
+
+
+  for(let i = 0; i < this.timeframes.length; i++) {
+    if(timeframe == this.timeframes[i].timeframe) {
+      index = i;
+      break;
     }
   }
 
-  return arr;
+  datesLen = this.timeframes[index]['dates'].length;
+
+  if(datesLen > 0) {
+    lastDate = new Date(this.timeframes[index]['dates'][datesLen - 1].date);
+  }
+
+  if(datesLen == 0 || lastDate < toDate) {
+    let dateMap = {},
+        startingDateToAdd,
+        taskDates;
+
+    if(datesLen == 0) {
+      startingDateToAdd = new Date(currentDate());
+      fromIndex = getDateIndex(timeframe, startingDateToAdd, fromDate),
+      toIndex = getDateIndex(timeframe, startingDateToAdd, toDate);
+    } else if(lastDate < toDate) {
+
+      if(timeframe == 'weekly') {
+        lastDate = getWeeklyDate(lastDate);
+      }
+
+      startingDateToAdd = getNextDate(timeframe, lastDate);
+      firstDate = new Date(this.timeframes[index]['dates'][0]['date']);
+      fromIndex = getDateIndex(timeframe, firstDate, fromDate),
+      toIndex = getDateIndex(timeframe, firstDate, toDate);
+      //Add tasks to dates which are already set
+      while(fromIndex <= toIndex) {
+        this.timeframes[index]['dates'][fromIndex]['tasks'].push(root);
+        fromIndex++;
+        if(fromIndex == datesLen) {
+          break;
+        }
+      }
+    }
+
+    if(timeframe == 'weekly') {
+      toIndex++;
+    }
+
+    taskDates = getTaskDates(timeframe, startingDateToAdd, toDate);
+    //Create new dates
+    for(let i = 0; i < taskDates.length; i++) {
+      dateMap['date'] = taskDates[i];
+      dateMap['tasks'] = [];
+      //Add root to correct dates
+      if((i + datesLen) >= fromIndex && (i + datesLen) <= toIndex) {
+        dateMap['tasks'].push(root);
+      }
+
+      this.timeframes[index]['dates'].push(dateMap)
+      dateMap = {};
+    }
+  } else {
+    firstDate = new Date(this.timeframes[index]['dates'][0]['date']);
+    fromIndex = getDateIndex(timeframe, firstDate, fromDate),
+    toIndex = getDateIndex(timeframe, firstDate, toDate);
+
+    for(let i = fromIndex; i <= toIndex; i++) {
+      //Add task to each one of these time frames
+      this.timeframes[index]['dates'][i]['tasks'].push(root);
+    }
+  }
 }
 
-function getTaskDates(timeframe, startDate, stopDate) {
-  let taskDates;
-  const fromDate = new Date(startDate);
-  const toDate = new Date(stopDate);
+function getDateIndex(timeframe, startDate, date) {
+  let index;
 
   switch(timeframe) {
     case 'yearly':
-      taskDates = getYearlyTaskDates(fromDate, toDate);
+      index = yearsDiff(startDate, date);
       break;
     case 'monthly':
-      taskDates = getMonthlyTaskDates(fromDate, toDate);
+      index = monthsDiff(startDate, date);
       break;
     case 'weekly':
-      taskDates = getWeeklyTaskDates(fromDate, toDate);
+      index = weeksDiff(startDate, date);
       break;
     case 'daily':
-      taskDates = getDailyTaskDates(fromDate, toDate);
+      index = daysDiff(startDate, date);
       break;
   }
 
-  return taskDates;
+  return index;
 }
 
-function getYearlyTaskDates(fromDate, toDate) {
+function getTaskDates(timeframe, fromDate, toDate) {
   const taskDates = [];
-  let currentDate = fromDate,
-      year;
+  let currentDate = fromDate;
 
-  while(currentDate <= toDate) {
-    year = currentDate.getFullYear();
-
-    taskDates.push(`${year}`);
-
-    currentDate = new Date(year + 1, 0);
-  }
-
-  return taskDates;
-}
-
-function getMonthlyTaskDates(fromDate, toDate) {
-  const taskDates = [];
-  let currentDate = fromDate,
-      year,
-      month;
-
-  while(currentDate <= toDate) {
-    year = currentDate.getFullYear();
-    month = addZero(currentDate.getMonth() + 1);
-
-    taskDates.push(`${month}/${year}`);
-    currentDate = new Date(year, month);
-  }
-
-  return taskDates;
-}
-
-function getWeeklyTaskDates(fromDate, toDate) {
-  const taskDates = [];
-  let currentDate = fromDate,
-      year,
-      month,
-      day;
-
-  let nWDate,
-      nWYear,
-      nWMonth,
-      nWDay;
-
-  if(currentDate.getDay() == 0) {
-    currentDate.setDate(currentDate.getDate() - 6) ;
-  } else if(currentDate.getDay() > 1){
-    currentDate.setDate((currentDate.getDate() - currentDate.getDay()) + 1) ;
+  if(timeframe == 'weekly') {
+    currentDate = getWeeklyDate(currentDate);
   }
 
   while(currentDate <= toDate) {
-    year = currentDate.getFullYear();
-    month = currentDate.getMonth();
-    day = currentDate.getDate();
+    taskDates.push(currentDate);
 
-    nWDate = new Date(year, month, day + 6);
-    nWYear = nWDate.getFullYear();
-    nWMonth = nWDate.getMonth();
-    nWDay = nWDate.getDate();
-
-    taskDates.push(`${addZero(day)}/${addZero(month + 1)}/${year} - ${addZero(nWDay)}/${addZero(nWMonth + 1)}/${nWYear}`);
-
-    currentDate = nWDate;
-    currentDate.setDate(currentDate.getDate() + 1);
+    currentDate = getNextDate(timeframe, currentDate);
   }
 
   return taskDates;
 }
 
-function getDailyTaskDates(fromDate, toDate) {
-  const taskDates = [];
-  let currentDate = fromDate,
-      year,
-      month,
-      day;
+function getNextDate(timeframe, currentDate) {
+  let year = currentDate.getFullYear(),
+      month = currentDate.getMonth(),
+      day = currentDate.getDate(),
+      nextDate;
 
-  while(currentDate <= toDate) {
-    year = currentDate.getFullYear();
-    month = currentDate.getMonth();
-    day = currentDate.getDate();
-
-    taskDates.push(`${addZero(day)}/${addZero(month + 1)}/${year}`);
-
-    currentDate = new Date(year, month, day + 1);
+  switch(timeframe) {
+    case 'yearly':
+      nextDate = new Date(year + 1, 0);
+      break;
+    case 'monthly':
+      nextDate = new Date(year, month + 1);
+      break;
+    case 'weekly':
+      nextDate = new Date(year, month, day + 7);
+      break;
+    case 'daily':
+      nextDate = new Date(year, month, day + 1);
+      break;
   }
 
-  return taskDates;
+  return nextDate;
 }
 
-// export { getYearlyTaskDates, getMonthlyTaskDates, getWeeklyTaskDates, getDailyTaskDates };
-export { getTasksInDates };
+function getWeeklyDate(date) {
+  if(date.getDay() == 0) {
+    date.setDate(currentDate.getDate() - 6) ;
+  } else if(date.getDay() > 1){
+    date.setDate((date.getDate() - date.getDay()) + 1) ;
+  }
+
+  return date;
+}
+
+export { addTaskToTimeframe, getNextDate, getDateIndex };

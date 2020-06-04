@@ -1,16 +1,6 @@
 <template>
   <div id='app'>
-    <div class='taskBar mb-0' v-if='!newtask'>
-      <label class='d-inline'>From:
-        <input v-model='dateSelected'
-               class='form-control d-inline w-25'
-               type='date'
-               @change='scrollToDate'
-        >
-      </label>
-
-      <button class='btn btn-primary d-inline mb-1' @click='addNewTask'>Add Task(s)</button>
-    </div>
+    <TaskBar class='taskBar mb-0' v-if='!newtask' @add-new-task='addNewTask' @update-task-selected='updateTaskSelected' :roots='roots' :timeframes='timeframes' :taskselected='taskselected'></TaskBar>
 
     <div v-if='!newtask' class='headerDiv'>
       <h3 class='header w-25 text-center mb-0 border-left'>Yearly</h3>
@@ -19,66 +9,66 @@
       <h3 class='header w-25 text-center mb-0'>Daily</h3>
     </div>
 
-    <div v-if='!newtask' id='timeFramesDiv' class='text-center'>
-      <!-- Maybe loop over object instead of writing out four times -->
-      <TimeFrameRoots class='border-left' :tasks='timeFrames.yearly' :dateselected='dateSelected' :timeframe="'yearly'"></TimeFrameRoots>
-
-      <TimeFrameRoots :tasks='timeFrames.monthly' :dateselected='dateSelected' :timeframe="'monthly'"></TimeFrameRoots>
-
-      <TimeFrameRoots :tasks='timeFrames.weekly' :dateselected='dateSelected' :timeframe="'weekly'"></TimeFrameRoots>
-
-      <TimeFrameRoots :tasks='timeFrames.daily' :dateselected='dateSelected' :timeframe="'daily'"></TimeFrameRoots>
-
+    <div v-if='!newtask' id='timeframesDiv' class='text-center'>
+      <TimeframeRoots v-for='(timeframeObj, index) in timeframes' :key='index' :class='{ borderLeft: index == 0 }' :dates='timeframeObj.dates'  :timeframe='timeframeObj.timeframe' :taskselected='taskselected'></TimeframeRoots>
     </div>
 
-    <CreateTasks v-if='newtask' @create-new-task='createNewTask'  @cancel-new-task='cancelNewTask' :tasks='goals'></CreateTasks>
+    <CreateTasks v-if='newtask' @create-new-task='createNewTask'  @cancel-new-task='cancelNewTask' :tasks='roots'></CreateTasks>
 
   </div>
 </template>
 
 <script>
 import CreateTasks from './components/CreateTasks.vue';
-import TimeFrameRoots from './components/TimeFrameRoots.vue';
+import TimeframeRoots from './components/TimeframeRoots.vue';
+import TaskBar from './components/TaskBar.vue';
 
 import { Node, nodeDFS, addNode } from './js/nodeFunctions.js';
-import { currentDate } from './js/sharedFunctions.js';
-import { scrollToDate } from './js/scroll.js';
-
+import { addTaskToTimeframe } from './js/taskDates.js';
 
 export default {
   name: 'App',
   data: function() {
     return {
-      dateSelected: '',
+      taskselected: '',
       newtask: false,
-      goals: [],
-      timeFrames: {
-        yearly: [],
-        monthly: [],
-        weekly: [],
-        daily: []
-      }
+      roots: [],
+      timeframes: [
+        {
+          timeframe: 'yearly',
+          dates: []
+        },
+        {
+          timeframe: 'monthly',
+          dates: []
+        },
+        {
+          timeframe: 'weekly',
+          dates: []
+        },
+        {
+          timeframe: 'daily',
+          dates: []
+        }
+      ]
     }
   },
   methods: {
-    scrollToDate,
-    addNewTask() {
-      this.newtask = true;
-    },
-    cancelNewTask() {
-      this.newtask = false;
+    addTaskToTimeframe,
+    updateTaskSelected(task) {
+      this.taskselected = task;
     },
     createNewTask(taskData) {
-      let goal,
+      let root,
           task,
           newNode;
 
       if(!taskData.taskParent) {
 
         for(let i = 0; i < taskData.tasks.length; i++) {
-          goal = new Node(taskData.tasks[i]);
-          this.goals.push(goal);
-          this.timeFrames[goal.time.timeFrame].push(goal);
+          root = new Node(taskData.tasks[i]);
+          this.roots.push(root);
+          this.addTaskToTimeframe(root);
         }
 
       } else {
@@ -88,31 +78,35 @@ export default {
 
           newNode = addNode(taskData.taskRoot, task, taskData.taskParent.task, nodeDFS);
 
-          if(taskData.taskParent.time.timeFrame != task.time.timeFrame) {
-            this.timeFrames[task.time.timeFrame].push(newNode);
+          if(taskData.taskParent.time.timeframe != task.time.timeframe) {
+            this.addTaskToTimeframe(newNode);
           }
         }
 
       }
 
       this.newtask = false;
+    },
+    addNewTask() {
+      this.newtask = true;
+    },
+    cancelNewTask() {
+      this.newtask = false;
     }
-  },
-  mounted: function() {
-    this.dateSelected = currentDate();
   },
   components: {
     CreateTasks,
-    TimeFrameRoots
+    TimeframeRoots,
+    TaskBar
   }
 }
 </script>
 
 <style>
-input[type=date]::-webkit-inner-spin-button {
+/* input[type=date]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     display: none;
-}
+} */
 
 .header {
   display: inline-block;
@@ -126,11 +120,11 @@ input[type=date]::-webkit-inner-spin-button {
   margin-bottom: 10px;
 }
 
-.border-left {
+.borderLeft {
   border-left: 1px solid #333;
 }
 
-#timeFramesDiv {
+#timeframesDiv {
   /* height: 400px; */
   width: 100%;
   height: 93vh;

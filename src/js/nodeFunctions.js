@@ -6,11 +6,11 @@ function Node(taskData) {
 }
 
 function nodeDFS(callback, currentNode) {
+  callback(currentNode);
+
   for(let i = 0; i < currentNode.children.length; i++) {
     nodeDFS(callback, currentNode.children[i]);
   }
-
-  callback(currentNode);
 }
 
 function nodeBFS(callback, node) {

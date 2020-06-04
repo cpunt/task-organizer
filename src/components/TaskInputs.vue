@@ -8,7 +8,7 @@
 
     <div class='taskInput'>
       <label class='w-100'>Time Frame:
-        <select class='form-control mb-3' v-model='task.time.timeFrame' @change='toDateMinDate()'>
+        <select class='form-control mb-3' v-model='task.time.timeframe' @change='toDateMinDate()'>
           <option value='yearly'>Yearly</option>
           <option value='monthly'>Monthly</option>
           <option value='weekly'>Weekly</option>
@@ -71,7 +71,7 @@ export default {
                      fDMonth = fromDate.getMonth(),
                      fDDay = fromDate.getDate();
 
-      switch(this.task.time.timeFrame) {
+      switch(this.task.time.timeframe) {
         case 'yearly':
           fDYear++;
           break;
