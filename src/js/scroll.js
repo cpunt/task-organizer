@@ -1,4 +1,4 @@
-import { getDateIndex } from './taskDates.js';
+import { getDateIndex } from './app/appFunctions';
 
 function scrollToDate() {
   const tasksDiv = document.getElementsByClassName('tasksDiv');
