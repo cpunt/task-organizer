@@ -1,5 +1,5 @@
 <template>
-<div class='viewTaskDiv rounded' :class="{'bg-primary': !task.taskCompleted, 'bg-success': task.taskCompleted}">
+<div class='viewTaskDiv rounded bg-primary'>
   <h2>{{ task.task }}</h2>
 
   <div class='mb-2'>
@@ -27,7 +27,7 @@
   </div>
 
   <div v-else>
-    <button type='button' class='btn btn-info w-50' @click='toggleTaskCompleted'>
+    <button type='button' class='btn btn-success w-50' @click='toggleTaskCompleted'>
       <p class='mb-0' v-if='!task.taskCompleted'>Complete Task</p>
       <p class='mb-0' v-else>Uncomplete Task</p>
     </button>
