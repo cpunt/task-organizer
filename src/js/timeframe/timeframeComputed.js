@@ -1,9 +1,62 @@
-import { getDateIndex } from '../app/appFunctions.js';
+import { getDateIndex, getTaskDates } from '../app/appFunctions.js';
 import { capitalizeFirstLetter, setDateToTimeframe } from '../sharedFunctions.js';
-import { nodeDFS} from '../nodeFunctions.js';
+import { nodeDFS } from '../nodeFunctions.js';
+
+function dates() {
+  let datesArr = [];
+
+  if(this.timeframeobj.tasks.length == 0) {
+    return datesArr;
+  }
+
+  //Add dates
+  let startDate = new Date(this.timeframeobj.tasks[0].time.startDate),
+      endDate = new Date(this.timeframeobj.tasks[0].time.endDate),
+      startDateTemp,
+      endDateTemp;
+
+  for(let i = 1; i < this.timeframeobj.tasks.length; i++) {
+    startDateTemp = new Date(this.timeframeobj.tasks[i].time.startDate);
+    endDateTemp = new Date(this.timeframeobj.tasks[i].time.endDate);
+
+    if(startDateTemp < startDate) {
+      startDate = startDateTemp;
+    }
+
+    if(endDateTemp > endDate) {
+      endDate = endDateTemp;
+    }
+  }
+
+  const taskDates = getTaskDates(this.timeframeobj.timeframe, startDate, endDate);
+  let dateMap = {};
+
+  for(let i = 0; i < taskDates.length; i++) {
+    dateMap['date'] = taskDates[i];
+    dateMap['tasks'] = [];
+    datesArr.push(dateMap);
+    dateMap = {};
+  }
+  //Add tasks
+  let task,
+      startDateIndex,
+      endDateIndex;
+
+  for(let i = 0; i < this.timeframeobj.tasks.length; i++) {
+    task = this.timeframeobj.tasks[i];
+    startDateIndex = getDateIndex(this.timeframeobj.timeframe, datesArr[0].date, new Date(task.time.startDate));
+    endDateIndex = getDateIndex(this.timeframeobj.timeframe, datesArr[0].date, new Date(task.time.endDate));
+
+    for(let j = startDateIndex; j <= endDateIndex; j++) {
+      datesArr[j].tasks.push(task);
+    }
+  }
+
+  return datesArr;
+}
 
 function timeframeHeader() {
-  return capitalizeFirstLetter(this.timeframe);
+  return capitalizeFirstLetter(this.timeframeobj.timeframe);
 }
 
 function validTasks() {
@@ -95,4 +148,4 @@ function expired() {
   return false;
 }
 
-export { timeframeHeader, validTasks, completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired };
+export { dates, timeframeHeader, validTasks, completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired };

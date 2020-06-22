@@ -1,5 +1,6 @@
 function Node(taskData) {
   this.task = taskData.task;
+  this.description = taskData.description;
   this.time = taskData.time;
   this.dateTaskCompleted = taskData.dateTaskCompleted;
   this.taskCompleted = false;

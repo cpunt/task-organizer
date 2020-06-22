@@ -1,29 +1,21 @@
 import { dateOperatorTimeframe, convertDateToInputString, validDate } from './createTaskFunctions.js';
 
 function taskParent(val) {
-  let options = ['yearly', 'monthly', 'weekly', 'daily'];
-  if(val != null) {
-    switch(val.time.timeframe) {
-      case 'monthly':
-        options = options.slice(1);
-        break;
-      case 'weekly':
-        options = options.slice(2);
-        break;
-      case 'daily':
-        options = options.slice(3);
-        break;
-    }
-  }
-
-  this.timeframe = '';
-  this.timeframeOptions = options;
+  this.updateTimeframe(val);
 }
 
 function task() {
   if(this.errors.task) {
     if(this.task.length >= 3 && this.task.length <= 50) {
       this.errors.task = false;
+    }
+  }
+}
+
+function description() {
+  if(this.errors.description) {
+    if(this.description.length <= 500) {
+      this.errors.description = false;
     }
   }
 }
@@ -58,4 +50,4 @@ function endDate() {
   }
 }
 
-export { taskParent, task, timeframe, startDate, endDate };
+export { taskParent, task, description, timeframe, startDate, endDate };

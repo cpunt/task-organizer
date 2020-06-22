@@ -8,10 +8,10 @@
   <div class='tasksDiv'>
 
     <div v-for='(datesObj, objIndex) in dates' :key='objIndex' class='text-left tasksDateDiv' :class='{ bottom: objIndex == (dates.length - 1) }'>
-      <h5 class='text-center dateHeader mb-0' :class='timeframe'>{{ taskDate(datesObj.date) }}</h5>
+      <h5 class='text-center dateHeader mb-0' :class='timeframeobj.timeframe'>{{ taskDate(datesObj.date) }}</h5>
 
       <div class='mt-1 mb-1' v-for='(task, taskIndex) in datesObj.tasks' :key='taskIndex'>
-        <TasksDate v-if='displayTask(task)' class='list-group' :tasks='[task]' :date='datesObj.date' :timeframe='timeframe' v-on='$listeners'></TasksDate>
+        <TasksDate v-if='displayTask(task)' class='list-group' :tasks='[task]' :date='datesObj.date' :timeframe='timeframeobj.timeframe' v-on='$listeners'></TasksDate>
       </div>
 
     </div>
@@ -23,18 +23,15 @@
 
 <script>
 import TasksDate from './TasksDate.vue';
+
 import { taskDate, displayTask } from '../js/timeframe/timeframeMethods.js';
-import { timeframeHeader } from '../js/timeframe/timeframeComputed.js';
+import { dates, timeframeHeader } from '../js/timeframe/timeframeComputed.js';
 
 export default {
   name: 'TimeframeDivs',
   props: {
-    dates: {
-      type: Array,
-      required: true
-    },
-    timeframe: {
-      type: String,
+    timeframeobj: {
+      type: Object,
       required: true
     },
     taskselected: {
@@ -47,7 +44,8 @@ export default {
     displayTask
   },
   computed: {
-    timeframeHeader
+    timeframeHeader,
+    dates
   },
   components: {
     TasksDate

@@ -15,9 +15,9 @@
     <div class='taskOpBar'>
       <img class='opBarIcons' src='../assets/eye-open.svg' alt='View' title='View' @click='viewTask'>
       <img class='opBarIcons' src='../assets/delete.svg' alt='Delete' title='Delete' @click='deleteTask'>
-      <img class='opBarIcons' src='../assets/edit.svg' alt='Edit' title='Edit'>
-      <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add'>
-      <span class='checkBoxDiv rounded' :class="{ 'bg-success': task.dateTaskCompleted[completedIndex], 'bg-warning': !task.dateTaskCompleted[completedIndex], 'bg-danger': expired && !task.dateTaskCompleted[completedIndex] }" v-if='task.children.length == 0' @click='toggleDateTaskCompleted' title='Toggle Check'></span>
+      <!-- <img class='opBarIcons' src='../assets/edit.svg' alt='Edit' title='Edit'> -->
+      <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click='addTask'>
+      <span class='checkBoxDiv rounded' :class="{ 'bg-success': task.dateTaskCompleted[completedIndex], 'bg-danger': !task.dateTaskCompleted[completedIndex] }" v-if='task.children.length == 0' @click='toggleDateTaskCompleted' title='Toggle Check'></span>
       <span class='caret opBarIcons' :class="{ 'caret-down': showChildren }" v-if='taskHasValidChild' @click='toggleShowChildren' title='Toggle Children'></span>
     </div>
   </div>
@@ -65,11 +65,14 @@ export default {
       this.$emit('view-task', this.task);
     },
     deleteTask() {
-      const con = confirm('Deleting a task will delete all subtasks. Click OK to confirm deletion.');
+      const con = confirm('This will delete all task occurences and subtasks. Click OK to confirm deletion.');
 
       if(con) {
         this.$emit('delete-task', this.task);
       }
+    },
+    addTask() {
+      this.$emit('add-task', this.task);
     }
   },
   computed: {
