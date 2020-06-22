@@ -19,15 +19,6 @@ function addZero(num) {
   return num;
 }
 
-function formatDate(dateString) {
-  let date = new Date(dateString),
-      day = addZero(date.getDate()),
-      month = addZero(date.getMonth() + 1),
-      year = date.getFullYear();
-
-  return `${day}/${month}/${year}`;
-}
-
 function setDateToTimeframe(timeframe, date) {
   if(timeframe == 'weekly') {
     if(date.getDay() == 0) {
@@ -57,4 +48,13 @@ function setDateToTimeframe(timeframe, date) {
   return timeframeDate;
 }
 
-export { capitalizeFirstLetter, currentDate, addZero, formatDate, setDateToTimeframe };
+function formatDate(dateString) {
+  let date = new Date(dateString),
+      day = addZero(date.getDate()),
+      month = addZero(date.getMonth() + 1),
+      year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
+export { capitalizeFirstLetter, currentDate, addZero, setDateToTimeframe, formatDate };

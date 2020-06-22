@@ -139,9 +139,22 @@ function percent() {
 }
 
 function expired() {
-  const currentDate = setDateToTimeframe(this.timeframe, new Date());
+  const endDate = setDateToTimeframe(this.timeframe, new Date(this.task.time.endDate));
+  let date,
+      currentDate;
 
-  if(currentDate > this.date && !this.task.dateTaskCompleted[this.completedIndex]) {
+  if(endDate.getTime() == this.date.getTime()) {
+    date = new Date(this.task.time.endDate);
+    currentDate = new Date();
+  } else {
+    currentDate = setDateToTimeframe(this.timeframe, new Date());
+    date = this.date;
+  }
+
+  date.setHours(0,0,0,0);
+  currentDate.setHours(0,0,0,0);
+
+  if(currentDate > date) {
     return true;
   }
 

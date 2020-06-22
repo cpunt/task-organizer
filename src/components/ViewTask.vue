@@ -1,43 +1,45 @@
 <template>
-<div class='viewTaskDiv rounded bg-primary'>
-  <img class='float-left icon ml-1' src='../assets/close-cross.svg' alt='Close' title='Close' @click='closeTask'>
-
-  <div v-if='!edit' class='taskDiv mb-2'>
-    <h2 class='mb-3'>{{ task.task }}</h2>
-
-    <div class='text-center'>
-      <h5 class='mb-2 ml-1'>{{ formatDate(task.time.startDate) }} - {{ formatDate(task.time.endDate) }}</h5>
+<div class='viewTaskDiv card card-body shadow'>
+  <div v-if='!edit'>
+    <div class='taskOpBar'>
+      <img class='opBarIcons mb-4' src='../assets/close-cross-gray.svg' alt='Close' title='Close' @click='cancel'>
+      <img class='opBarIcons mb-4' src='../assets/edit-gray.svg' alt='Edit' title='Edit' @click='toggleEdit'>
+      <img class='opBarIcons mb-4' src='../assets/delete-gray.svg' alt='Delete' title='Delete' @click='deleteTask'>
+      <img class='opBarIcons' src='../assets/add-gray.svg' alt='Add' title='Add' @click='addTask'>
     </div>
 
-    <div v-if='task.description.length > 0' class='text-left mb-3'>
-      <div class='rounded desDiv w-75'>
-        <h5 class='mb-0 text-center sticky-top bg-primary'><u>Description</u></h5>
-        <p class='ml-1 mb-0 d-inline'>{{ task.description }}</p>
+    <div class='taskDiv'>
+      <h2 class='mb-3'>{{ task.task }}</h2>
+
+      <div class='text-center'>
+        <h5 class='mb-2 ml-1'>{{ formatDate(task.time.startDate) }} - {{ formatDate(task.time.endDate) }}</h5>
       </div>
-    </div>
 
-    <div v-if='task.children.length > 0' class='text-left mb-3'>
-      <div class='w-75 rounded subTaskDiv'>
-        <h5 class='mb-0 text-center sticky-top bg-primary'><u>Sub Tasks</u></h5>
-        <p v-for='(subTaskObj, index) in getSubTasks' :key='index' class='ml-1 mb-0'>{{ subTaskObj.task }}</p>
+      <div v-if='task.description.length > 0' class='text-left mb-3'>
+        <div class='rounded desDiv w-75'>
+          <h5 class='mb-0 text-center sticky-top'><u>Description</u></h5>
+          <p class='ml-1 mb-0 d-inline'>{{ task.description }}</p>
+        </div>
       </div>
-    </div>
 
-    <div v-else class='mb-3'>
-      <button type='button' class='btn btn-info w-25 mt-2 btnBorder' @click='toggleTaskCompleted'>
-        <p class='mb-0' v-if='!task.taskCompleted'>Complete Task</p>
-        <p class='mb-0' v-else>Uncomplete Task</p>
-      </button>
+      <div v-if='task.children.length > 0' class='text-left mb-3'>
+        <div class='w-75 rounded subTaskDiv'>
+          <h5 class='mb-0 text-center sticky-top'><u>Sub Tasks</u></h5>
+          <p v-for='(subTaskObj, index) in getSubTasks' :key='index' class='ml-1 mb-0'>{{ subTaskObj.task }}</p>
+        </div>
+      </div>
+
+      <div v-else class='text-center btnDiv'>
+        <button type='button' class='btn btn-primary' @click='toggleTaskCompleted'>
+          <p class='mb-0' v-if='!task.taskCompleted'>Complete Task</p>
+          <p class='mb-0' v-else>Uncomplete Task</p>
+        </button>
+      </div>
     </div>
   </div>
 
-  <EditTask v-else class='taskDiv' :taskobj='task' @cancel-edit='toggleEdit' @close-task='closeTask'></EditTask>
+  <EditTask v-else :taskobj='task'></EditTask>
 
-  <div class='taskOpBar'>
-    <img v-if='!edit' class='opBarIcons mb-4' src='../assets/edit.svg' alt='Edit' title='Edit' @click='toggleEdit'>
-    <img class='opBarIcons mb-4' src='../assets/delete.svg' alt='Delete' title='Delete' @click='deleteTask'>
-    <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add'>
-  </div>
 </div>
 </template>
 
@@ -49,7 +51,7 @@ import { addZero } from '../js/sharedFunctions.js';
 import { nodeDFS } from '../js/nodeFunctions.js';
 
 export default {
-  name: 'Task',
+  name: 'ViewTask',
   props: {
     task: {
       type: Object,
@@ -71,18 +73,23 @@ export default {
 
       return `${day}/${month}/${year}`;
     },
-    closeTask() {
-      this.$emit('close-task', null);
+    cancel() {
+      this.$emit('cancel');
     },
     deleteTask() {
-      const con = confirm('This will delete all task occurences and subtasks. Click OK to confirm deletion.');
-
-      if(con) {
-        this.$emit('delete-task', this.task);
-      }
+      this.$emit('confirm-delete-task', this.task);
+    },
+    addTask() {
+      this.$emit('add-task', this.task);
     },
     toggleEdit() {
       this.edit = !this.edit;
+    },
+    cancelByEsc(e) {
+      if(e.keyCode == '27') {
+        document.removeEventListener('keyup', this.cancelByEsc);
+        this.cancel()
+      }
     }
   },
   computed: {
@@ -101,33 +108,45 @@ export default {
   },
   components: {
     EditTask
+  },
+  mounted() {
+    document.addEventListener('keyup', this.cancelByEsc);
   }
 }
 </script>
 
 <style scoped>
 .viewTaskDiv {
-  position: fixed;
+  position: absolute;
   width: 60%;
   z-index:100;
-  border: 2px solid black;
-  top: 14%;
+  top: 4%;
   left: 20%;
-  color: white;
+  min-height: 210px;
 }
 
 .icon {
   cursor: pointer;
   height: 24px;
+  position: absolute;
 }
 
 .taskDiv {
   width: 92%;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: 168px;
+  position: relative;
 }
 
-.taskDiv, .taskOpBar {
-  display: inline-block;
-  vertical-align: middle;
+.btnDiv {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+.taskOpBar {
+  position: absolute;
 }
 
 .opBarIcons {
@@ -138,7 +157,7 @@ export default {
 
 .desDiv, .subTaskDiv {
   overflow: scroll;
-  border: 2px solid white;
+  border: 2px solid gray;
   margin-left: auto;
   margin-right: auto;
   max-height: 150px;

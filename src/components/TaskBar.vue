@@ -56,7 +56,7 @@ export default {
       this.$emit('update-task-selected', this.taskroot);
     },
     addTask() {
-      this.$emit('add-new-task');
+      this.$emit('add-task', null);
     }
   },
   mounted: function() {

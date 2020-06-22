@@ -4,16 +4,7 @@ function updateTaskSelected(task) {
   this.taskselected = task;
 }
 
-function addNewTask() {
-  this.newtask = true;
-}
-
-function cancelNewTask() {
-  this.newtasknode = null;
-  this.newtask = false;
-}
-
-function createNewTask(taskData) {
+function createTask(taskData) {
   if(!taskData.taskParent) {
     let root = new Node(taskData.taskData);
     this.roots.push(root);
@@ -27,12 +18,12 @@ function createNewTask(taskData) {
     newNode.parent.taskCompleted = false;
   }
 
-  this.newtasknode = null;
-  this.newtask = false;
+  this.closeScreen();
 }
 
 function viewTask(task) {
-  this.task = task;
+  this.bgScreen = true;
+  this.vtask = task;
 }
 
 function deleteTask(task) {
@@ -51,7 +42,7 @@ function deleteTask(task) {
     removeNode(taskRoot, task.task, nodeDFS);
   }
 
-  this.task = null;
+  this.closeScreen();
 }
 
-export { updateTaskSelected, addNewTask, cancelNewTask, createNewTask, viewTask, deleteTask };
+export { updateTaskSelected, createTask, viewTask, deleteTask };

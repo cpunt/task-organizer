@@ -1,11 +1,11 @@
-import { convertDateToInputString, dateOperatorTimeframe } from '../createTask/createTaskFunctions.js';
+import { convertDateToInputString, dateOperatorTimeframe } from './newTaskFunctions.js';
 
 function startDateMin() {
   let startDateMin;
-  if(this.taskobj.parent == null) {
+  if(this.taskParent == null) {
     startDateMin = convertDateToInputString(new Date(2010, 0));
   } else {
-    startDateMin = this.taskobj.parent.time.startDate;
+    startDateMin = this.taskParent.time.startDate;
   }
 
   return startDateMin;
@@ -15,11 +15,11 @@ function startDateMax() {
   let startDateMax,
       date;
 
-  if(this.taskobj.parent == null) {
+  if(this.taskParent == null) {
     const today = new Date();
     date = new Date(today.getFullYear() + 25, today.getMonth(), today.getDate());
   } else {
-    date = new Date(this.taskobj.parent.time.endDate);
+    date = new Date(this.taskParent.time.endDate);
   }
 
   startDateMax = convertDateToInputString(dateOperatorTimeframe(this.timeframe, date, '-'));
@@ -43,11 +43,11 @@ function endDateMin() {
 
 function endDateMax() {
   let endDateMax;
-  if(this.taskobj.parent == null) {
+  if(this.taskParent == null) {
     let today = new Date();
     endDateMax = convertDateToInputString(new Date(today.getFullYear() + 25, today.getMonth(), today.getDate()));
   } else {
-    endDateMax = this.taskobj.parent.time.endDate;
+    endDateMax = this.taskParent.time.endDate;
   }
 
   return endDateMax;

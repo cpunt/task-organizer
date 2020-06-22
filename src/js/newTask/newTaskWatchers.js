@@ -1,4 +1,4 @@
-import { dateOperatorTimeframe, convertDateToInputString, validDate } from './createTaskFunctions.js';
+import { dateOperatorTimeframe, convertDateToInputString, validDate } from './newTaskFunctions.js';
 
 function taskParent(val) {
   this.updateTimeframe(val);

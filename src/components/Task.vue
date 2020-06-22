@@ -1,6 +1,7 @@
 <template>
 <div>
-  <div class='rounded text-light taskDiv text-center bg-primary'>
+  <!-- <div class='rounded text-light taskDiv text-center' :class="{'bg-success': task.dateTaskCompleted[completedIndex] || task.taskCompleted, 'bg-primary': !expired, 'bg-danger': expired && !task.dateTaskCompleted[completedIndex] && !task.taskCompleted, highlightTask: task.highlight }" :hover='highlightTasks'> -->
+  <div class='rounded text-light taskDiv text-center bg-primary' :class="{ highlightTask: task.highlight == true }" @mouseover='highlightTasks' @mouseleave='unhighlightTasks'>
     <p class='font-weight-bold mb-0'>{{ task.task }}</p>
 
     <div v-if='task.children.length > 0' class='progressBarDiv'>
@@ -15,7 +16,6 @@
     <div class='taskOpBar'>
       <img class='opBarIcons' src='../assets/eye-open.svg' alt='View' title='View' @click='viewTask'>
       <img class='opBarIcons' src='../assets/delete.svg' alt='Delete' title='Delete' @click='deleteTask'>
-      <!-- <img class='opBarIcons' src='../assets/edit.svg' alt='Edit' title='Edit'> -->
       <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click='addTask'>
       <span class='checkBoxDiv rounded' :class="{ 'bg-success': task.dateTaskCompleted[completedIndex], 'bg-danger': !task.dateTaskCompleted[completedIndex] }" v-if='task.children.length == 0' @click='toggleDateTaskCompleted' title='Toggle Check'></span>
       <span class='caret opBarIcons' :class="{ 'caret-down': showChildren }" v-if='taskHasValidChild' @click='toggleShowChildren' title='Toggle Children'></span>
@@ -30,6 +30,7 @@
 <script>
 import { toggleDateTaskCompleted, toggleTaskCompleted, toggleShowChildren, } from '../js/timeframe/timeframeMethods.js';
 import { completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired } from '../js/timeframe/timeframeComputed.js';
+import { nodeBFS } from '../js/nodeFunctions.js';
 
 export default {
   name: 'Task',
@@ -62,17 +63,44 @@ export default {
     toggleTaskCompleted,
     toggleShowChildren,
     viewTask() {
+      this.unhighlightTasks();
+
       this.$emit('view-task', this.task);
     },
     deleteTask() {
-      const con = confirm('This will delete all task occurences and subtasks. Click OK to confirm deletion.');
-
-      if(con) {
-        this.$emit('delete-task', this.task);
-      }
+      this.unhighlightTasks();
+      this.$emit('confirm-delete-task', this.task);
     },
     addTask() {
+      this.unhighlightTasks();
+
       this.$emit('add-task', this.task);
+    },
+    highlightTasks() {
+      if(!this.task.highlight) {
+        let parent = this.task.parent;
+        while(parent != null) {
+          parent.highlight = true;
+          parent = parent.parent;
+        }
+
+        nodeBFS(function(node) {
+          node.highlight = true;
+        }, this.task);
+      }
+    },
+    unhighlightTasks() {
+      if(this.task.highlight) {
+        let parent = this.task.parent;
+        while(parent != null) {
+          parent.highlight = false;
+          parent = parent.parent;
+        }
+
+        nodeBFS(function(node) {
+          node.highlight = false;
+        }, this.task);
+      }
     }
   },
   computed: {
@@ -124,6 +152,10 @@ export default {
   border: 2px solid black;
 }
 
+.highlightTask {
+  border: 2px solid red;
+}
+
 .progressBarDiv {
   position: relative;
 }
@@ -142,7 +174,6 @@ export default {
 }
 
 .progressBar {
-  /* background-color: #138496; */
   background-color: #218838;
 }
 

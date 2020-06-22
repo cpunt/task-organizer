@@ -1,5 +1,5 @@
 import { nodeDFS } from '../nodeFunctions.js';
-import { convertDateToInputString, validDate } from './createTaskFunctions.js';
+import { convertDateToInputString, validDate } from './newTaskFunctions.js';
 import { getDateIndex } from '../app/appFunctions.js';
 
 function taskPaths() {
@@ -28,8 +28,8 @@ function taskPaths() {
   return pathsList;
 }
 
-function cancelTask() {
-  this.$emit('cancel-new-task');
+function cancel() {
+  this.$emit('cancel');
 }
 
 function createTask() {
@@ -52,7 +52,7 @@ function createTask() {
       }
     }
 
-      this.$emit('create-new-task', taskData);
+      this.$emit('create-task', taskData);
   }
 }
 
@@ -111,8 +111,11 @@ function updateTimeframe(val) {
     }
   }
 
-  this.timeframe = '';
+  if(options.indexOf(this.timeframe) == -1) {
+    this.timeframe = '';
+  }
+
   this.timeframeOptions = options;
 }
 
-export { taskPaths, cancelTask, createTask, validateTasks, setStartDate, updateTimeframe };
+export { taskPaths, cancel, createTask, validateTasks, setStartDate, updateTimeframe };

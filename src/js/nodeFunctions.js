@@ -4,6 +4,7 @@ function Node(taskData) {
   this.time = taskData.time;
   this.dateTaskCompleted = taskData.dateTaskCompleted;
   this.taskCompleted = false;
+  this.highlight = false;
   this.parent = null;
   this.children = [];
 }
