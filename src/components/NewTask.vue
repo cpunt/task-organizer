@@ -1,6 +1,6 @@
 <template>
 <div class='newTaskDiv card card-body shadow'>
-  <img class='float-left icon' src='../assets/close-cross-gray.svg' alt='Close' title='Close' @click='cancel'>
+  <img class='float-left icon' src='../assets/close-cross.svg' alt='Close' title='Close' @click='cancel'>
   <h3 class='text-center mb-0'>New Task</h3>
 
   <div class='taskDiv'>
@@ -73,10 +73,11 @@
 </template>
 
 <script>
-import { taskPaths, cancel, createTask, validateTasks, setStartDate, updateTimeframe } from '../js/newTask/newTaskMethods.js';
 import { startDateMin, startDateMax, endDateMin, endDateMax } from '../js/newTask/newTaskComputed.js';
 import { taskParent, task, description, timeframe, startDate, endDate } from '../js/newTask/newTaskWatchers.js';
+import { taskPaths, createTask, validateTasks, setStartDate, updateTimeframe } from '../js/newTask/newTaskMethods.js';
 import { capitalizeFirstLetter, formatDate } from '../js/sharedFunctions.js';
+import { cancel, cancelByEsc } from '../js/sharedMethods.js';
 
 export default {
   name: 'NewTask',
@@ -85,7 +86,7 @@ export default {
       type: Array,
       required: true
     },
-    newtasknode: {
+    parent: {
       type: Object,
     }
   },
@@ -96,7 +97,7 @@ export default {
       timeframe: '',
       startDate: '',
       endDate: '',
-      taskParent: this.newtasknode,
+      taskParent: this.parent,
       timeframeOptions: ['yearly', 'monthly', 'weekly', 'daily'],
       errors: {
         task: false,
@@ -120,20 +121,15 @@ export default {
     }
   },
   methods: {
-    capitalizeFirstLetter,
-    formatDate,
     taskPaths,
-    cancel,
     createTask,
     validateTasks,
     setStartDate,
     updateTimeframe,
-    cancelByEsc(e) {
-      if(e.keyCode == '27') {
-        document.removeEventListener('keyup', this.cancelByEsc);
-        this.cancel()
-      }
-    }
+    capitalizeFirstLetter,
+    formatDate,
+    cancel,
+    cancelByEsc
   },
   computed: {
     startDateMin,
@@ -142,9 +138,8 @@ export default {
     endDateMax
   },
   mounted() {
-    window.scrollTo(0,0);
     this.setStartDate();
-    this.updateTimeframe(this.newtasknode);
+    this.updateTimeframe(this.parent);
     document.addEventListener('keyup', this.cancelByEsc);
   }
 }
@@ -152,8 +147,6 @@ export default {
 
 <style scoped>
 .newTaskDiv {
-  /* border: 2px solid black; */
-  /* position: fixed; */
   position: absolute;
   width: 60%;
   z-index:100;

@@ -28,10 +28,6 @@ function taskPaths() {
   return pathsList;
 }
 
-function cancel() {
-  this.$emit('cancel');
-}
-
 function createTask() {
   if(this.validateTasks()) {
     const dateTaskCompletedLen = getDateIndex(this.timeframe, new Date(this.startDate), new Date(this.endDate)) + 1;
@@ -118,4 +114,4 @@ function updateTimeframe(val) {
   this.timeframeOptions = options;
 }
 
-export { taskPaths, cancel, createTask, validateTasks, setStartDate, updateTimeframe };
+export { taskPaths, createTask, validateTasks, setStartDate, updateTimeframe };

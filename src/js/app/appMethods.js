@@ -23,7 +23,8 @@ function createTask(taskData) {
 
 function viewTask(task) {
   this.bgScreen = true;
-  this.vtask = task;
+  this.vtask = true;
+  this.task = task;
 }
 
 function deleteTask(task) {

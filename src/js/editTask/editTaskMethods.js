@@ -32,10 +32,6 @@ function validateChildrenDates() {
   return true;
 }
 
-function cancelEdit() {
-  this.$emit('cancel-edit');
-}
-
 function updateTask() {
   const validTasks = this.validateTasks(),
         validChildrenDates = this.validateChildrenDates();
@@ -65,7 +61,7 @@ function updateTask() {
       this.taskobj.time.endDate = this.endDate;
     }
 
-    this.$emit('close-task');
+    this.cancel();
   }
 }
 
@@ -116,4 +112,8 @@ function updateDateTaskCompleted() {
   this.taskobj.taskCompleted = true;
 }
 
-export { validateChildrenDates, cancelEdit, updateTask, updateDateTaskCompleted };
+function cancelEdit() {
+  this.$parent.toggleEdit();
+}
+
+export { validateChildrenDates, updateTask, updateDateTaskCompleted, cancelEdit };

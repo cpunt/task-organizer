@@ -1,6 +1,6 @@
 <template>
 <div class='text-left'>
-  <img class='float-left icon' src='../assets/close-cross-gray.svg' alt='Close' title='Close' @click='closeTask'>
+  <img class='float-left icon' src='../assets/close-cross.svg' alt='Close' title='Close' @click='cancel'>
   <h3 class='text-center mb-0'>Edit Task</h3>
 
   <div class='taskDiv'>
@@ -67,7 +67,7 @@
 
     <div class='text-center'>
       <button type='button' class='btn btn-primary mx-2' @click='cancelEdit'>Cancel</button>
-      <button type='button' class='btn btn-primary mx-2' @click='deleteTask'>Delete Task</button>
+      <button type='button' class='btn btn-primary mx-2' @click='confirmDeleteTask'>Delete Task</button>
       <button type='button' class='btn btn-primary mx-2' @click='updateTask'>Update Task</button>
     </div>
   </div>
@@ -76,10 +76,12 @@
 
 <script>
 import { startDateMin, startDateMax, endDateMin, endDateMax } from '../js/newTask/newTaskComputed.js';
-import { validateTasks } from '../js/newTask/newTaskMethods.js';
 import { task, description, timeframe, startDate, endDate } from '../js/newTask/newTaskWatchers.js';
-import { validateChildrenDates, cancelEdit, updateTask, updateDateTaskCompleted } from '../js/editTask/editTaskMethods.js';
+import { validateTasks } from '../js/newTask/newTaskMethods.js';
+import { validateChildrenDates, updateTask, updateDateTaskCompleted, cancelEdit } from '../js/editTask/editTaskMethods.js';
+import { cancel, confirmDeleteTask } from '../js/sharedMethods.js';
 import { formatDate } from '../js/sharedFunctions.js';
+
 
 export default {
   name: 'EditTask',
@@ -116,16 +118,12 @@ export default {
   methods: {
     validateTasks,
     validateChildrenDates,
-    cancelEdit,
     updateTask,
     updateDateTaskCompleted,
-    formatDate,
-    closeTask() {
-      this.$parent.closeTask();
-    },
-    deleteTask() {
-      this.$parent.deleteTask();
-    }
+    cancelEdit,
+    cancel,
+    confirmDeleteTask,
+    formatDate
   },
   computed: {
     startDateMin,

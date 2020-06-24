@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import { cancel, cancelByEsc } from '../js/sharedMethods.js';
+
 export default {
   name: 'DeleteTask',
   props: {
@@ -21,17 +23,10 @@ export default {
     }
   },
   methods: {
-    cancel() {
-      this.$emit('cancel');
-    },
+    cancel,
+    cancelByEsc,
     deleteTask() {
       this.$emit('delete-task', this.task);
-    },
-    cancelByEsc(e) {
-      if(e.keyCode == '27') {
-        document.removeEventListener('keyup', this.cancelByEsc);
-        this.cancel()
-      }
     }
   },
   mounted() {
@@ -39,8 +34,6 @@ export default {
   }
 }
 </script>
-
-
 
 <style scoped>
 .deleteTaskDiv {

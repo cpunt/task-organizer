@@ -1,21 +1,19 @@
 <template>
 <div class='timeframeDiv'>
 
-  <div class='sticky-top text-center headerDiv'>
-    <h3>{{ timeframeHeader }}</h3>
+  <div class='headerDiv sticky-top text-center'>
+    <h3 class='font-weight-normal'>{{ timeframeHeader }}</h3>
   </div>
 
-  <div class='tasksDiv'>
-
-    <div v-for='(datesObj, objIndex) in dates' :key='objIndex' class='text-left tasksDateDiv' :class='{ bottom: objIndex == (dates.length - 1) }'>
-      <h5 class='text-center dateHeader mb-0' :class='timeframeobj.timeframe'>{{ taskDate(datesObj.date) }}</h5>
+  <div>
+    <div v-for='(datesObj, objIndex) in dates' :key='objIndex' class='text-left' :class='{ bottom: objIndex == (dates.length - 1) }'>
+      <h5 class='dateHeader text-center mb-0 font-weight-normal' :class='timeframeobj.timeframe'>{{ taskDate(datesObj.date) }}</h5>
 
       <div class='mt-1 mb-1' v-for='(task, taskIndex) in datesObj.tasks' :key='taskIndex'>
         <TasksDate v-if='displayTask(task)' class='list-group' :tasks='[task]' :date='datesObj.date' :timeframe='timeframeobj.timeframe' v-on='$listeners'></TasksDate>
       </div>
 
     </div>
-
   </div>
 
 </div>
@@ -54,30 +52,33 @@ export default {
 </script>
 
 <style>
-.bottom {
-  margin-bottom: 75vh;
-}
-
-.dateHeader {
-  border-top: 2px solid #333;
-  border-bottom: 2px solid #333;
-  margin-top: -2px;
-}
-
 .timeframeDiv {
   display: inline-block;
   vertical-align: top;
   width: 25%;
   height: 100%;
-  border-right: 2px solid #333;
-  border-top: 2px solid #333;
-  border-bottom: 2px solid #333;
+  border-right: 1px solid black;
   overflow: scroll;
+  /* border-top: 2px solid black; */
+}
+
+.bottom {
+  margin-bottom: 75vh;
+}
+
+.dateHeader {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  margin-top: -1px;
 }
 
 .headerDiv {
-  border-bottom: 2px solid #333;
-  background-color: white;
+  border-bottom: 1px solid black;
   z-index: 1;
+}
+
+.headerDiv, .dateHeader {
+  background-color: #90a4ae;
+  color: white;
 }
 </style>

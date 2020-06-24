@@ -2,10 +2,10 @@
 <div class='viewTaskDiv card card-body shadow'>
   <div v-if='!edit'>
     <div class='taskOpBar'>
-      <img class='opBarIcons mb-4' src='../assets/close-cross-gray.svg' alt='Close' title='Close' @click='cancel'>
-      <img class='opBarIcons mb-4' src='../assets/edit-gray.svg' alt='Edit' title='Edit' @click='toggleEdit'>
-      <img class='opBarIcons mb-4' src='../assets/delete-gray.svg' alt='Delete' title='Delete' @click='deleteTask'>
-      <img class='opBarIcons' src='../assets/add-gray.svg' alt='Add' title='Add' @click='addTask'>
+      <img class='opBarIcons mb-4' src='../assets/close-cross.svg' alt='Close' title='Close' @click='cancel'>
+      <img class='opBarIcons mb-4' src='../assets/edit.svg' alt='Edit' title='Edit' @click='toggleEdit'>
+      <img class='opBarIcons mb-4' src='../assets/delete.svg' alt='Delete' title='Delete' @click='confirmDeleteTask'>
+      <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click='addTask'>
     </div>
 
     <div class='taskDiv'>
@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  <EditTask v-else :taskobj='task'></EditTask>
+  <EditTask v-else :taskobj='task' @cancel='cancel' @confirm-delete-task='confirmDeleteTask'></EditTask>
 
 </div>
 </template>
@@ -47,8 +47,10 @@
 import EditTask from './EditTask.vue';
 
 import { toggleTaskCompleted } from '../js/timeframe/timeframeMethods.js';
-import { addZero } from '../js/sharedFunctions.js';
-import { nodeDFS } from '../js/nodeFunctions.js';
+import { formatDate } from '../js/sharedFunctions.js';
+import { addTask, cancel, cancelByEsc, confirmDeleteTask } from '../js/sharedMethods.js';
+import { toggleEdit } from '../js/viewTask/viewTaskMethods.js';
+import { getSubTasks } from '../js/viewTask/viewTaskComputed.js';
 
 export default {
   name: 'ViewTask',
@@ -65,46 +67,15 @@ export default {
   },
   methods: {
     toggleTaskCompleted,
-    formatDate(dateStr) {
-      const date = new Date(dateStr),
-            day = addZero(date.getDate()),
-            month = addZero(date.getMonth() + 1),
-            year = addZero(date.getFullYear());
-
-      return `${day}/${month}/${year}`;
-    },
-    cancel() {
-      this.$emit('cancel');
-    },
-    deleteTask() {
-      this.$emit('confirm-delete-task', this.task);
-    },
-    addTask() {
-      this.$emit('add-task', this.task);
-    },
-    toggleEdit() {
-      this.edit = !this.edit;
-    },
-    cancelByEsc(e) {
-      if(e.keyCode == '27') {
-        document.removeEventListener('keyup', this.cancelByEsc);
-        this.cancel()
-      }
-    }
+    formatDate,
+    toggleEdit,
+    addTask,
+    cancel,
+    cancelByEsc,
+    confirmDeleteTask
   },
   computed: {
-    getSubTasks() {
-      const tasks = [],
-            currentTask = this.task.task;
-
-      nodeDFS(function(node) {
-        if(node.task != currentTask && node.children.length == 0) {
-          tasks.push(node);
-        }
-      }, this.task);
-
-      return tasks;
-    }
+    getSubTasks
   },
   components: {
     EditTask
