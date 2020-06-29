@@ -1,11 +1,11 @@
 <template>
 <div class='newTaskDiv card card-body shadow'>
   <img class='float-left icon' src='../assets/close-cross.svg' alt='Close' title='Close' @click='cancel'>
-  <h3 class='text-center mb-0'>New Task</h3>
+  <h3 class='text-center mb-0 header'>New Task</h3>
 
   <div class='taskDiv'>
     <div class='taskInputDiv'>
-      <label class='w-100 mb-0'>Task Parent:
+      <label class='w-100 mb-0 header'>Task Parent:
         <select class='form-control mb-0' v-model='taskParent'>
           <option :value='null'></option>
           <option v-for='(taskObj, index) in taskPaths()' :value='taskObj.task' :key='index'>{{ taskObj.path.join('/') }}</option>
@@ -14,14 +14,14 @@
     </div>
 
     <div class='taskInputDiv'>
-      <label class='w-100 mb-0'>Task:
+      <label class='w-100 mb-0 header'>Task:
         <input v-model='task' class='form-control' :class='{ invalidInput: errors.task }' type='text' maxlength='50'>
       </label>
       <p v-if='errors.task' class='invalidFeedback'>*Tasks length needs to be between 3-50 characters</p>
     </div>
 
     <div class='desDiv'>
-      <label class='w-100 mb-0'>Description:
+      <label class='w-100 mb-0 header'>Description:
         <textarea v-model='description' class='desTextarea rounded w-100' :class='{ invalidInput: errors.description }' maxlength='500' placeholder='(optional)' >
         </textarea>
       </label>
@@ -29,7 +29,7 @@
     </div>
 
     <div class='taskInputDiv'>
-      <label class='w-100 mb-0'>Timeframe:
+      <label class='w-100 mb-0 header'>Timeframe:
         <select v-model='timeframe' class='form-control' :class='{ invalidInput: errors.timeframe }'>
           <option selected hidden disabled value=''></option>
           <option v-for='timeframeOption in timeframeOptions' :key='timeframeOption' :value='timeframeOption'>{{ capitalizeFirstLetter(timeframeOption) }}</option>
@@ -39,7 +39,7 @@
     </div>
 
     <div class='taskInputDiv'>
-      <label class='mb-0 w-100'>Start Date:
+      <label class='mb-0 w-100 header'>Start Date:
         <input v-model='startDate'
                type='date'
                class='form-control'
@@ -52,7 +52,7 @@
     </div>
 
     <div class='taskInputDiv'>
-      <label class='mb-0 w-100'>End Date:
+      <label class='mb-0 w-100 header'>End Date:
         <input v-model='endDate'
                type='date'
                class='form-control'
@@ -212,5 +212,9 @@ export default {
 
 .desDiv {
   min-height: 90px;
+}
+
+.header {
+  color: #37474F
 }
 </style>

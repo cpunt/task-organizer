@@ -39,28 +39,4 @@ ul  {
    list-style:none;
    padding-inline-start: 10px;
 }
-
-.caret {
-  cursor: pointer;
-  user-select: none;
-  vertical-align: middle;
-}
-
-.caret::before {
-  content: '\25B6';
-  color: white;
-  display: inline-block;
-  margin-right: 6px;
-}
-
-.caret::before {
-  content: '\25B6';
-  color: white;
-  display: inline-block;
-  margin-right: 6px;
-}
-
-.caret-down::before {
-  transform: rotate(90deg);
-}
 </style>

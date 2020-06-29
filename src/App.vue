@@ -2,14 +2,25 @@
 <div id='app'>
   <div v-if='bgScreen' class='backgroundScreen' @click='closeScreen'></div>
 
-  <TaskBar v-if='false' class='taskBar mb-0' @add-task='addTask' @update-task-selected='updateTaskSelected' :roots='roots' :timeframes='timeframes' :taskselected='taskselected'></TaskBar>
+  <SideBar class='sideBar'
+           :class='{ sideBarOpen: sideBarActive, sideBarClosed: !sideBarActive }'
+           :roots='roots'
+           :timeframes='timeframes'
+           :taskselected='taskselected'
+           :sidebaractive='sideBarActive'
+           @toggle-side-bar='toggleSideBar'
+           @add-task='addTask'
+           @update-task-selected='updateTaskSelected'
+           @update-date-selected='updateDateSelected'
+  >
+  </SideBar>
 
-  <div id='timeframesDiv' class='text-center'>
+  <div id='timeframesDiv' class='text-center' :class='{ tfDSidebar: sideBarActive, tfDNoSidebar: !sideBarActive}'>
     <TimeframeDivs v-for='(timeframeObj, index) in timeframes'
                    :key='index'
-                   :class='{ borderLeft: index == 0 }'
                    :timeframeobj='timeframeObj'
                    :taskselected='taskselected'
+                   :dateselected='dateselected'
                    v-on='$listeners'
                    @view-task='viewTask'
                    @confirm-delete-task='confirmDeleteTask'
@@ -26,7 +37,7 @@
 </template>
 
 <script>
-import TaskBar from './components/TaskBar.vue';
+import SideBar from './components/SideBar.vue';
 import TimeframeDivs from './components/TimeframeDivs.vue';
 import ViewTask from './components/ViewTask.vue';
 import NewTask from './components/NewTask.vue';
@@ -41,11 +52,13 @@ export default {
     return {
       roots: [],
       taskselected: '',
+      dateselected: '',
       task: null,
       vtask: false,
       ntask: false,
       dtask: false,
-      bgScreen: false
+      bgScreen: false,
+      sideBarActive: false
     }
   },
   methods: {
@@ -93,13 +106,19 @@ export default {
       this.bgScreen = true;
       this.dtask = true;
       this.task = task;
+    },
+    updateDateSelected(date) {
+      this.dateselected = date;
+    },
+    toggleSideBar() {
+      this.sideBarActive = !this.sideBarActive;
     }
   },
   computed: {
     timeframes
   },
   components: {
-    TaskBar,
+    SideBar,
     TimeframeDivs,
     ViewTask,
     NewTask,
@@ -115,20 +134,15 @@ input[type=date]::-webkit-inner-spin-button {
 }
 
 body {
-  /* background-color: #f8f9fa; */
-
    /* background-color: #b8c6db;
    background-image: linear-gradient(315deg, #b8c6db 0%, #f5f7fa 74%); */
 
    /* background-color: #f3f4f7;
    background-image: linear-gradient(315deg, #f3f4f7 0%, #caccd1 74%); */
-}
 
-html {
-  height: 100%;
-  background-color: #f5f5f5;
+   height: 100%;
+   background-color: #f5f5f5;
 }
-
 .backgroundScreen {
   position:fixed;
   padding:0;
@@ -141,17 +155,33 @@ html {
   z-index: 10;
 }
 
-.taskBar {
-  margin-bottom: 10px;
+.sideBar {
+  z-index: 2;
+  border-right: 1px solid #333;
+  background-color: #f5f5f5
 }
 
-.borderLeft {
-  border-left: 1px solid #333;
+.sideBarClosed {
+  width: 3%;
 }
 
-#timeframesDiv {
-  width: 100%;
-  height: 100%;
+.sideBarOpen {
+  width: 20%;
+}
+
+.tfDSidebar {
+  width: 80%;
+  left: 20%;
+}
+
+.tfDNoSidebar {
+  width: 97%;
+  left: 3%;
+}
+
+#timeframesDiv, .sideBar {
+  display: inline-block;
   position: absolute;
+  height: 100%;
 }
 </style>

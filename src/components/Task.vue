@@ -3,7 +3,7 @@
   <div class='taskDiv card card-body shadow-sm rounded p-0' :class="{ highlightTask: task.highlight == true }" @mouseover='highlightTasks' @mouseleave='unhighlightTasks'>
     <p class='mb-1 taskHeader'>{{ task.task }}</p>
 
-    <div v-if='task.children.length > 0' class='progressBarDiv text-center my-2'>
+    <div v-if='task.children.length > 0' class='progressBarDiv text-center mb-1'>
       <p class='pBText my-0'>{{ leavesCompleted }} / {{ leaves }}</p>
       <div class='progress my-0 barDiv progressBar'>
         <div class='progress-bar progressBarPercent' role='progressbar' :style='{ width: `${percent}%` }' aria-valuenow='25' aria-valuemin='0' aria-valuemax='100'></div>
@@ -15,7 +15,11 @@
       <img class='opBarIcons' src='../assets/delete.svg' alt='Delete' title='Delete' @click='confirmDeleteTask(); unhighlightTasks()'>
       <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click='addTask(); unhighlightTasks()'>
       <span class='checkBoxDiv rounded' :class="{ 'bgChecked': task.dateTaskCompleted[completedIndex], 'bgUnchecked': !task.dateTaskCompleted[completedIndex] }" v-if='task.children.length == 0' @click='toggleDateTaskCompleted' title='Toggle Check'></span>
-      <span class='caret opBarIcons' :class="{ 'caret-down': showChildren }" v-if='taskHasValidChild' @click='toggleShowChildren' title='Toggle Children'></span>
+
+      <div v-if='taskHasValidChild' class='d-inline'>
+        <img v-if='showChildren' class='opBarIcons angle' src='../assets/angle-down.svg' alt='Angle Down' title='Hide Children' @click='toggleShowChildren'>
+        <img v-else class='opBarIcons angle' src='../assets/angle-right.svg' alt='Angle Right' title='Toggle Children' @click='toggleShowChildren'>
+      </div>
     </div>
   </div>
 
@@ -83,10 +87,9 @@ export default {
 
 <style scoped>
 .taskDiv {
-  width: 200px;
+  width: 175px;
   margin-left: 5px;
   margin-bottom: 3px;
-  cursor: pointer;
   border: 1px solid #f8f9fa;
 }
 
@@ -110,8 +113,12 @@ export default {
   margin-top: 2px;
   cursor: pointer;
   height: 18px;
-  margin-left: 8px;
-  margin-right: 8px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.angle {
+  width: 12px;
 }
 
 .highlightTask {
@@ -128,7 +135,6 @@ export default {
 
 .progressBarDiv {
   position: relative;
-  height: 30px;
 }
 
 .progressBar {
@@ -141,7 +147,7 @@ export default {
 
 .pBText {
   position: absolute;
-  line-height: 30px;
+  line-height: 25px;
   width: 100%
 }
 
@@ -149,6 +155,10 @@ export default {
   margin-left: auto;
   margin-right: auto;
   width: 90%;
-  height: 30px;
 }
+
+.barDiv, .progressBarDiv {
+  height: 25px;
+}
+
 </style>

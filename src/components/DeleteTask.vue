@@ -1,5 +1,6 @@
 <template>
 <div class='deleteTaskDiv card card-body shadow'>
+  <img class='float-left icon' src='../assets/close-cross.svg' alt='Close' title='Close' @click='cancel'>
   <div class='deleteDiv'>
     <h3>Are you sure you want to delete: <h3>{{ task.task }}?</h3></h3>
 
@@ -57,5 +58,11 @@ export default {
   position: absolute;
   bottom: 0;
   width: 100%;
+}
+
+.icon {
+  cursor: pointer;
+  height: 24px;
+  position: absolute;
 }
 </style>
