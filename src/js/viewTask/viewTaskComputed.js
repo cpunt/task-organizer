@@ -8,7 +8,7 @@ function getSubTasks() {
     if(node.task != currentTask && node.children.length == 0) {
       tasks.push(node);
     }
-  }, this.task);
+  }, this.task, this.tasks);
 
   return tasks;
 }

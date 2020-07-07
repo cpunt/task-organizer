@@ -1,5 +1,3 @@
-import { nodeDFS } from '../nodeFunctions.js';
-
 function timeframes() {
   let timeframesObj = [
     {
@@ -19,6 +17,7 @@ function timeframes() {
       tasks: []
     }
   ];
+
   let index = {
     yearly: 0,
     monthly: 1,
@@ -26,15 +25,38 @@ function timeframes() {
     daily: 3
   };
 
-  for(let i = 0; i < this.roots.length; i++) {
-    nodeDFS(function(node) {
-      if(node.parent == null || node.parent.time.timeframe != node.time.timeframe) {
-        timeframesObj[index[node.time.timeframe]].tasks.push(node);
-      }
-    }, this.roots[i]);
-  }
+  bfs(function(id, nodeTimeframe, parentTimeframe) {
+    if(!parentTimeframe || parentTimeframe != nodeTimeframe) {
+      timeframesObj[index[nodeTimeframe]].tasks.push(id);
+    }
+  }, this.roots, this.tasks);
 
   return timeframesObj;
+}
+
+function bfs(callback, roots, tasks) {
+  let queue, currentId, currentNode, len, parentTimeframe;
+
+  for(let i = 0; i < roots.length; i++) {
+    queue = [];
+    queue.push(roots[i]);
+    currentId = queue.pop();
+    currentNode = tasks[currentId];
+
+    while(currentNode) {
+      len = currentNode.children.length;
+      parentTimeframe = currentNode.parent ? tasks[currentNode.parent].time.timeframe : '';
+
+      for(let i = 0; i < len; i++) {
+        queue.unshift(currentNode.children[i]);
+      }
+
+      callback(currentId, currentNode.time.timeframe, parentTimeframe);
+
+      currentId = queue.pop();
+      currentNode = tasks[currentId];
+    }
+  }
 }
 
 export { timeframes };

@@ -1,6 +1,7 @@
 <template>
 <div class='text-center'>
-  <div class='taskDiv card card-body shadow-sm rounded p-0' :class="{ highlightTask: task.highlight == true }" @mouseover='highlightTasks' @mouseleave='unhighlightTasks'>
+  <div class='taskDiv card card-body shadow-sm rounded p-0'
+  >
     <p class='mb-1 taskHeader'>{{ task.task }}</p>
 
     <div v-if='task.children.length > 0' class='progressBarDiv text-center mb-1'>
@@ -23,10 +24,23 @@
     </div>
   </div>
 
-  <TasksDate v-if='showChildren ' :tasks='task.children' :date='date' :timeframe='timeframe' v-on='$listeners'></TasksDate>
+  <TasksDate v-if='showChildren '
+             :tasksids='task.children'
+             :date='date'
+             :timeframe='timeframe'
+             :tasks='tasks'
+             v-on='$listeners'
+  >
+  </TasksDate>
 </div>
 </template>
 
+<!--
+Add back to div
+:class="{ highlightTask: task.highlight }"
+@mouseover='highlightTasks'
+@mouseleave='unhighlightTasks'
+-->
 
 <script>
 import { completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired } from '../js/timeframe/timeframeComputed.js';
@@ -37,8 +51,8 @@ import { viewTask, highlightTasks, unhighlightTasks } from '../js/task/taskMetho
 export default {
   name: 'Task',
   props: {
-    task: {
-      type: Object,
+    taskid: {
+      type: String,
       required: true
     },
     date: {
@@ -47,6 +61,10 @@ export default {
     },
     timeframe: {
       type: String,
+      required: true
+    },
+    tasks: {
+      type: Object,
       required: true
     }
   },
@@ -76,7 +94,10 @@ export default {
     leaves,
     leavesCompleted,
     percent,
-    expired
+    expired,
+    task() {
+      return this.tasks[this.taskid];
+    }
   },
   components: {
     TasksDate: () => import('./TasksDate.vue')
@@ -160,5 +181,4 @@ export default {
 .barDiv, .progressBarDiv {
   height: 25px;
 }
-
 </style>

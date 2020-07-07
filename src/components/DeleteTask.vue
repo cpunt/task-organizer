@@ -2,7 +2,7 @@
 <div class='deleteTaskDiv card card-body shadow'>
   <img class='float-left icon' src='../assets/close-cross.svg' alt='Close' title='Close' @click='cancel'>
   <div class='deleteDiv'>
-    <h3>Are you sure you want to delete: <h3>{{ task.task }}?</h3></h3>
+    <h3>Are you sure you want to delete: <h3>{{ tasks[taskid].task }}?</h3></h3>
 
     <div class='text-center btnDiv'>
       <button type='button' class='btn btn-primary d-inline mx-3' @click='cancel'>Cancel</button>
@@ -14,11 +14,16 @@
 
 <script>
 import { cancel, cancelByEsc } from '../js/sharedMethods.js';
+import { deleteTaskDB } from '../js/server/firestore.js';
 
 export default {
   name: 'DeleteTask',
   props: {
-    task: {
+    taskid: {
+      type: String,
+      required: true
+    },
+    tasks: {
       type: Object,
       required: true
     }
@@ -27,7 +32,8 @@ export default {
     cancel,
     cancelByEsc,
     deleteTask() {
-      this.$emit('delete-task', this.task);
+      deleteTaskDB(this.tasks, this.taskid, this.tasks[this.taskid].parent);
+      this.cancel();
     }
   },
   mounted() {

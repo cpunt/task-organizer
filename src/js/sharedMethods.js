@@ -1,5 +1,5 @@
 function addTask() {
-  this.$emit('add-task', this.task);
+  this.$emit('add-task', this.taskid);
 }
 
 function cancel() {
@@ -14,7 +14,7 @@ function cancelByEsc(e) {
 }
 
 function confirmDeleteTask() {
-  this.$emit('confirm-delete-task', this.task);
+  this.$emit('confirm-delete-task', this.taskid);
 }
 
 export { addTask, cancel, cancelByEsc, confirmDeleteTask };

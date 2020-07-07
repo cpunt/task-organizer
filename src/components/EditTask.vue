@@ -78,22 +78,29 @@
 import { startDateMin, startDateMax, endDateMin, endDateMax } from '../js/newTask/newTaskComputed.js';
 import { task, description, timeframe, startDate, endDate } from '../js/newTask/newTaskWatchers.js';
 import { validateTasks } from '../js/newTask/newTaskMethods.js';
-import { validateChildrenDates, updateTask, updateDateTaskCompleted, cancelEdit } from '../js/editTask/editTaskMethods.js';
+import { validateChildrenDates, updateTask, getDateTaskCompleted, getTaskCompleted, cancelEdit } from '../js/editTask/editTaskMethods.js';
 import { cancel, confirmDeleteTask } from '../js/sharedMethods.js';
 import { formatDate } from '../js/sharedFunctions.js';
-
+import { updateTaskDB } from '../js/server/firestore.js';
 
 export default {
   name: 'EditTask',
   props: {
+    taskid: {
+      type: String,
+      required: true
+    },
     taskobj: {
+      type: Object,
+      required: true
+    },
+    tasks: {
       type: Object,
       required: true
     }
   },
   data() {
     return {
-      taskParent: this.taskobj.parent,
       task: this.taskobj.task,
       description: this.taskobj.description,
       timeframe: this.taskobj.time.timeframe,
@@ -119,17 +126,22 @@ export default {
     validateTasks,
     validateChildrenDates,
     updateTask,
-    updateDateTaskCompleted,
+    getDateTaskCompleted,
+    getTaskCompleted,
     cancelEdit,
     cancel,
     confirmDeleteTask,
-    formatDate
+    formatDate,
+    updateTaskDB
   },
   computed: {
     startDateMin,
     startDateMax,
     endDateMin,
-    endDateMax
+    endDateMax,
+    taskParent() {
+      return this.tasks[this.taskobj.parent] ? this.tasks[this.taskobj.parent] : null;
+    }
   }
 }
 </script>

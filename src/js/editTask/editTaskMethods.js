@@ -11,7 +11,7 @@ function validateChildrenDates() {
           childEndDate;
 
       for(let i = 0; i < this.taskobj.children.length; i++) {
-        child = this.taskobj.children[i];
+        child = this.tasks[this.taskobj.children[i]];
         childStartDate = new Date(child.time.startDate);
         childEndDate = new Date(child.time.endDate);
 
@@ -37,41 +37,33 @@ function updateTask() {
         validChildrenDates = this.validateChildrenDates();
 
   if(validTasks && validChildrenDates) {
-    if(this.taskobj.task != this.task) {
-      this.taskobj.task = this.task;
+    const dateTaskCompleted = this.getDateTaskCompleted(),
+          taskCompleted = this.getTaskCompleted(dateTaskCompleted);
+
+    const task = {
+      task: this.task,
+      description: this.description,
+      time: {
+        timeframe: this.timeframe,
+        startDate: this.startDate,
+        endDate: this.endDate
+      },
+      dateTaskCompleted: dateTaskCompleted,
+      taskCompleted: taskCompleted,
     }
 
-    if(this.taskobj.description != this.description) {
-      this.taskobj.description = this.description;
-    }
-
-    if(this.taskobj.time.timeframe != this.timeframe) {
-      this.taskobj.time.timeframe = this.timeframe;
-    }
-
-    if(this.taskobj.time.endDate != this.endDate || this.taskobj.time.startDate != this.startDate) {
-      this.updateDateTaskCompleted();
-    }
-
-    if(this.taskobj.time.startDate != this.startDate) {
-      this.taskobj.time.startDate = this.startDate;
-    }
-
-    if(this.taskobj.time.endDate != this.endDate) {
-      this.taskobj.time.endDate = this.endDate;
-    }
-
+    this.updateTaskDB(task, this.taskid);
     this.cancel();
   }
 }
 
-function updateDateTaskCompleted() {
+function getDateTaskCompleted() {
   const timeframe = this.taskobj.time.timeframe,
+        dateTaskCompleted = this.taskobj.dateTaskCompleted,
         startDate = new Date(this.taskobj.time.startDate),
         endDate = new Date(this.taskobj.time.endDate),
         newStartDate = new Date(this.startDate),
         newEndDate = new Date(this.endDate);
-
 
   let startIndex = getDateIndex(timeframe, startDate, newStartDate),
       endIndex = getDateIndex(timeframe, endDate, newEndDate);
@@ -79,41 +71,42 @@ function updateDateTaskCompleted() {
   if(startIndex > 0) {
     while(startIndex > 0) {
       startIndex--;
-      this.taskobj.dateTaskCompleted.shift();
+      dateTaskCompleted.shift();
     }
   } else if(startIndex < 0) {
     while(startIndex < 0) {
       startIndex++;
-      this.taskobj.dateTaskCompleted.unshift(false);
+      dateTaskCompleted.unshift(false);
     }
   }
 
   if(endIndex > 0) {
     while(endIndex > 0) {
       endIndex--;
-      this.taskobj.dateTaskCompleted.push(false);
+      dateTaskCompleted.push(false);
     }
   } else if(endIndex < 0) {
     while(endIndex < 0) {
       endIndex++;
-      this.taskobj.dateTaskCompleted.pop();
+      dateTaskCompleted.pop();
     }
   }
 
-  let dateTaskArr = this.taskobj.dateTaskCompleted
+  return dateTaskCompleted;
+}
 
+function getTaskCompleted(dateTaskArr) {
   for(let i = 0; i < dateTaskArr.length; i++) {
     if(dateTaskArr[i] == false) {
-      this.taskobj.taskCompleted = false;
-      return;
+      return false;
     }
   }
 
-  this.taskobj.taskCompleted = true;
+  return true;
 }
 
 function cancelEdit() {
   this.$parent.toggleEdit();
 }
 
-export { validateChildrenDates, updateTask, updateDateTaskCompleted, cancelEdit };
+export { validateChildrenDates, updateTask, getDateTaskCompleted, getTaskCompleted, cancelEdit };

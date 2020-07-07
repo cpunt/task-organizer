@@ -1,5 +1,5 @@
-import Vue from 'vue';
 import { addZero } from '../sharedFunctions.js';
+import { updateDateTaskCompleted, updateTaskCompleted } from '../server/firestore.js';
 
 function taskDate(date) {
   const d = new Date(date);
@@ -18,40 +18,42 @@ function taskDate(date) {
       dayWeek = addZero(week.getDate());
       monthWeek = addZero(week.getMonth() + 1);
       yearWeek = week.getFullYear();
-
       return `${day}/${month}/${year} - ${dayWeek}/${monthWeek}/${yearWeek}`;
     case 'daily':
       return `${day}/${month}/${year}`;
   }
 }
 
-function displayTask(task) {
+function displayTask(taskid) {
   if(this.taskselected.length == 0) {
     return true;
   }
+  let node = this.tasks[taskid],
+      parentid = taskid;
 
-  while(task.parent != null) {
-    task = task.parent;
+  while(node.parent) {
+    parentid = node.parent;
+    node = this.tasks[parentid];
   }
 
-  return this.taskselected == task.task;
+  return this.taskselected == parentid;
 }
 
 function toggleDateTaskCompleted() {
-  Vue.set(this.task.dateTaskCompleted, this.completedIndex, !this.task.dateTaskCompleted[this.completedIndex]);
-
-  for(let i = 0; i < this.task.dateTaskCompleted.length; i++) {
-    if(!this.task.dateTaskCompleted[i]) {
-      this.task.taskCompleted = false;
-      return;
-    }
+  // Update dateTaskCompleted
+  const dateTaskCompleted = this.task.dateTaskCompleted;
+  dateTaskCompleted[this.completedIndex] = !dateTaskCompleted[this.completedIndex];
+  updateDateTaskCompleted(dateTaskCompleted, this.taskid);
+  // Update taskCompleted
+  const taskComplete = dateTaskCompleted.every((val) => val === true);
+  if(taskComplete != this.task.taskCompleted) {
+    updateTaskCompleted(taskComplete, this.taskid);
   }
-
-  this.task.taskCompleted = true;
 }
 
 function toggleTaskCompleted() {
-  this.task.taskCompleted = !this.task.taskCompleted;
+  const taskCompleted = !this.task.taskCompleted;
+  updateTaskCompleted(taskCompleted, this.taskid);
 }
 
 function toggleShowChildren() {

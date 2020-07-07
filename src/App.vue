@@ -5,12 +5,12 @@
   <SideBar class='sideBar'
            :class='{ sideBarOpen: sideBarActive, sideBarClosed: !sideBarActive }'
            :roots='roots'
-           :timeframes='timeframes'
+           :tasks='tasks'
            :taskselected='taskselected'
            :sidebaractive='sideBarActive'
+           :user='user'
            @toggle-side-bar='toggleSideBar'
            @add-task='addTask'
-           @update-task-selected='updateTaskSelected'
            @update-date-selected='updateDateSelected'
   >
   </SideBar>
@@ -21,6 +21,7 @@
                    :timeframeobj='timeframeObj'
                    :taskselected='taskselected'
                    :dateselected='dateselected'
+                   :tasks='tasks'
                    v-on='$listeners'
                    @view-task='viewTask'
                    @confirm-delete-task='confirmDeleteTask'
@@ -29,9 +30,25 @@
     </TimeframeDivs>
   </div>
 
-  <ViewTask v-if='vtask' @cancel='closeScreen' @add-task='addTask' @confirm-delete-task='confirmDeleteTask' :task='task'></ViewTask>
-  <NewTask v-if='ntask' @cancel='closeScreen' @create-task='createTask' :tasks='roots' :parent='task'></NewTask>
-  <DeleteTask v-if='dtask' @cancel='closeScreen' @delete-task='deleteTask' :task='task'></DeleteTask>
+  <ViewTask v-if='vtask'
+            @cancel='closeScreen'
+            @add-task='addTask'
+            @confirm-delete-task='confirmDeleteTask'
+            :taskid='taskid'
+            :tasks='tasks'
+  >
+  </ViewTask>
+  <NewTask v-if='ntask'
+           @cancel='closeScreen'
+           :taskid='taskid'
+           :tasks='tasks'
+  >
+  </NewTask>
+  <DeleteTask v-if='dtask'
+              @cancel='closeScreen'
+              :taskid='taskid'
+              :tasks='tasks'>
+  </DeleteTask>
 
 </div>
 </template>
@@ -43,76 +60,59 @@ import ViewTask from './components/ViewTask.vue';
 import NewTask from './components/NewTask.vue';
 import DeleteTask from './components/DeleteTask.vue';
 
-import { updateTaskSelected, createTask, viewTask, deleteTask } from './js/app/appMethods.js';
+import { viewTask } from './js/app/appMethods.js';
 import { timeframes } from './js/app/appComputed.js';
+import { getTasksDB, getSidebarDB } from './js/server/firestore.js';
+import { userStatus } from './js/server/auth.js';
+
 
 export default {
   name: 'App',
   data: function() {
     return {
+      tasks: {},
       roots: [],
+      taskid: '',
       taskselected: '',
       dateselected: '',
-      task: null,
       vtask: false,
       ntask: false,
       dtask: false,
       bgScreen: false,
-      sideBarActive: false
+      sideBarActive: false,
+      user: null
     }
   },
   methods: {
-    updateTaskSelected,
-    createTask,
     viewTask,
-    deleteTask,
-    addTask(task) {
+    addTask(taskid) {
       this.bgScreen = true;
-
-      if(this.vtask) {
-        this.vtask = false;
-      }
-
+      this.vtask = false;
       this.ntask = true;
-      this.task = task;
+      this.taskid = taskid ? taskid : '';
     },
     closeScreen() {
+      this.taskid = '';
+      this.vtask = false;
+      this.ntask = false;
+      this.dtask = false;
       this.bgScreen = false;
-
-      if(this.task != null) {
-        this.task = null;
-      }
-
-      //View task screen
-      if(this.vtask) {
-        this.vtask = false;
-      }
-
-      //Create / add task screen
-      if(this.ntask) {
-        this.ntask = false;
-      }
-
-      //Delete screen
-      if(this.dtask) {
-        this.dtask = false;
-      }
     },
-    confirmDeleteTask(task) {
-      if(this.vtask) {
-        this.vtask = false;
-      }
-
+    confirmDeleteTask(taskid) {
+      this.vtask = false;
       this.bgScreen = true;
       this.dtask = true;
-      this.task = task;
+      this.taskid = taskid;
     },
     updateDateSelected(date) {
       this.dateselected = date;
     },
     toggleSideBar() {
       this.sideBarActive = !this.sideBarActive;
-    }
+    },
+    getTasksDB,
+    getSidebarDB,
+    userStatus
   },
   computed: {
     timeframes
@@ -123,6 +123,11 @@ export default {
     ViewTask,
     NewTask,
     DeleteTask
+  },
+  mounted: function() {
+    this.getTasksDB();
+    this.getSidebarDB();
+    this.userStatus();
   }
 }
 </script>
@@ -143,6 +148,7 @@ body {
    height: 100%;
    background-color: #f5f5f5;
 }
+
 .backgroundScreen {
   position:fixed;
   padding:0;
@@ -158,15 +164,23 @@ body {
 .sideBar {
   z-index: 2;
   border-right: 1px solid #333;
-  background-color: #f5f5f5
+  background-color: #f5f5f5;
 }
 
 .sideBarClosed {
   width: 3%;
+  border-bottom: 1px solid #333;
+  height: 42px;
+  cursor: pointer;
+}
+
+.sideBarClosed:hover {
+  background-color: #e3e3e3;
 }
 
 .sideBarOpen {
   width: 20%;
+  height: 100%;
 }
 
 .tfDSidebar {
@@ -175,13 +189,15 @@ body {
 }
 
 .tfDNoSidebar {
-  width: 97%;
-  left: 3%;
+  width: 100%;
 }
 
 #timeframesDiv, .sideBar {
   display: inline-block;
   position: absolute;
+}
+
+#timeframesDiv {
   height: 100%;
 }
 </style>

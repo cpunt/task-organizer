@@ -10,14 +10,16 @@ function dates() {
   }
 
   //Add dates
-  let startDate = new Date(this.timeframeobj.tasks[0].time.startDate),
-      endDate = new Date(this.timeframeobj.tasks[0].time.endDate),
+  const tasks = this.timeframeobj.tasks;
+
+  let startDate = new Date(this.tasks[tasks[0]].time.startDate),
+      endDate = new Date(this.tasks[tasks[0]].time.endDate),
       startDateTemp,
       endDateTemp;
 
-  for(let i = 1; i < this.timeframeobj.tasks.length; i++) {
-    startDateTemp = new Date(this.timeframeobj.tasks[i].time.startDate);
-    endDateTemp = new Date(this.timeframeobj.tasks[i].time.endDate);
+  for(let i = 1; i < tasks.length; i++) {
+    startDateTemp = new Date(this.tasks[tasks[i]].time.startDate);
+    endDateTemp = new Date(this.tasks[tasks[i]].time.endDate);
 
     if(startDateTemp < startDate) {
       startDate = startDateTemp;
@@ -42,13 +44,13 @@ function dates() {
       startDateIndex,
       endDateIndex;
 
-  for(let i = 0; i < this.timeframeobj.tasks.length; i++) {
-    task = this.timeframeobj.tasks[i];
+  for(let i = 0; i < tasks.length; i++) {
+    task = this.tasks[tasks[i]];
     startDateIndex = getDateIndex(this.timeframeobj.timeframe, datesArr[0].date, new Date(task.time.startDate));
     endDateIndex = getDateIndex(this.timeframeobj.timeframe, datesArr[0].date, new Date(task.time.endDate));
 
     for(let j = startDateIndex; j <= endDateIndex; j++) {
-      datesArr[j].tasks.push(task);
+      datesArr[j].tasks.push(tasks[i]);
     }
   }
 
@@ -60,19 +62,19 @@ function timeframeHeader() {
 }
 
 function validTasks() {
-  let taskStartDate = this.date,
-      timeframe = this.timeframe,
-      startDate,
+  let startDate,
       endDate;
 
-  taskStartDate.setHours(0,0,0,0);
+  this.date.setHours(0,0,0,0);
 
-  return this.tasks.filter(function(task) {
-    if(task.time.timeframe == timeframe) {
-      startDate = setDateToTimeframe(timeframe , new Date(task.time.startDate));
-      endDate = setDateToTimeframe(timeframe , new Date(task.time.endDate));
+  return this.tasksids.filter((taskId) => {
+    let task = this.tasks[taskId];
 
-      if(startDate <= taskStartDate && endDate >= taskStartDate) {
+    if(task.time.timeframe == this.timeframe) {
+      startDate = setDateToTimeframe(this.timeframe , new Date(task.time.startDate));
+      endDate = setDateToTimeframe(this.timeframe , new Date(task.time.endDate));
+
+      if(startDate <= this.date && endDate >= this.date) {
         return true;
       }
     }
@@ -88,15 +90,15 @@ function completedIndex() {
 function taskHasValidChild() {
   let childrenLen = this.task.children.length
   if(childrenLen > 0) {
-    let time,
+    let child,
         startDate,
         endDate;
 
     for(let i = 0; i < childrenLen; i++) {
-      time = this.task.children[i].time;
-      if(this.timeframe == time.timeframe) {
-        startDate = setDateToTimeframe(this.timeframe, new Date(time.startDate));
-        endDate = setDateToTimeframe(this.timeframe, new Date(time.endDate));
+      child = this.tasks[this.task.children[i]];
+      if(this.timeframe == child.time.timeframe) {
+        startDate = setDateToTimeframe(this.timeframe, new Date(child.time.startDate));
+        endDate = setDateToTimeframe(this.timeframe, new Date(child.time.endDate));
 
         if(startDate <= this.date && endDate >= this.date) {
           return true;
@@ -115,7 +117,7 @@ function leaves() {
     if(node.children.length == 0) {
       counter++;
     }
-  }, this.task);
+  }, this.task, this.tasks);
 
   return counter;
 }
@@ -127,7 +129,7 @@ function leavesCompleted() {
     if(node.children.length == 0 && node.taskCompleted) {
       counter++;
     }
-  }, this.task);
+  }, this.task, this.tasks);
 
   return counter;
 }

@@ -38,7 +38,14 @@
     </div>
   </div>
 
-  <EditTask v-else :taskobj='task' @cancel='cancel' @confirm-delete-task='confirmDeleteTask'></EditTask>
+  <EditTask v-else
+            :taskid='taskid'
+            :taskobj='task'
+            :tasks='tasks'
+            @cancel='cancel'
+            @confirm-delete-task='confirmDeleteTask'
+  >
+  </EditTask>
 
 </div>
 </template>
@@ -55,7 +62,11 @@ import { getSubTasks } from '../js/viewTask/viewTaskComputed.js';
 export default {
   name: 'ViewTask',
   props: {
-    task: {
+    taskid: {
+      type: String,
+      required: true
+    },
+    tasks: {
       type: Object,
       required: true
     }
@@ -75,7 +86,10 @@ export default {
     confirmDeleteTask
   },
   computed: {
-    getSubTasks
+    getSubTasks,
+    task() {
+      return this.tasks[this.taskid];
+    }
   },
   components: {
     EditTask

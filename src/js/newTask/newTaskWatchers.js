@@ -1,7 +1,11 @@
 import { dateOperatorTimeframe, convertDateToInputString, validDate } from './newTaskFunctions.js';
 
-function taskParent(val) {
-  this.updateTimeframe(val);
+function parentId(val) {
+  if(val) {
+    this.startDate = this.tasks[val].time.startDate;
+  } else {
+    this.startDate = convertDateToInputString(new Date());
+  }
 }
 
 function task() {
@@ -50,4 +54,4 @@ function endDate() {
   }
 }
 
-export { taskParent, task, description, timeframe, startDate, endDate };
+export { parentId, task, description, timeframe, startDate, endDate };

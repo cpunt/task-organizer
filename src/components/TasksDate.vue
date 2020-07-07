@@ -1,7 +1,12 @@
 <template>
 <ul>
-  <li v-for='(task, index) in validTasks' :key='index'>
-    <Task :task='task' :date='date' :timeframe='timeframe' v-on='$listeners'></Task>
+  <li v-for='(taskId, index) in validTasks' :key='index'>
+    <Task :taskid='taskId'
+          :date='date'
+          :timeframe='timeframe'
+          :tasks='tasks'
+          v-on='$listeners'>
+    </Task>
   </li>
 </ul>
 </template>
@@ -12,7 +17,7 @@ import { validTasks } from '../js/timeframe/timeframeComputed.js';
 export default {
   name: 'TasksDate',
   props: {
-    tasks: {
+    tasksids: {
       type: Array,
       required: true
     },
@@ -22,6 +27,10 @@ export default {
     },
     timeframe: {
       type: String,
+      required: true
+    },
+    tasks: {
+      type: Object,
       required: true
     }
   },

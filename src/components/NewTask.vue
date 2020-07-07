@@ -6,9 +6,9 @@
   <div class='taskDiv'>
     <div class='taskInputDiv'>
       <label class='w-100 mb-0 header'>Task Parent:
-        <select class='form-control mb-0' v-model='taskParent'>
+        <select class='form-control mb-0' v-model='parentId'>
           <option :value='null'></option>
-          <option v-for='(taskObj, index) in taskPaths()' :value='taskObj.task' :key='index'>{{ taskObj.path.join('/') }}</option>
+          <option v-for='pathObj in taskPaths' :value='pathObj.id' :key='pathObj.id'>{{ pathObj.path }}</option>
         </select>
       </label>
     </div>
@@ -32,7 +32,7 @@
       <label class='w-100 mb-0 header'>Timeframe:
         <select v-model='timeframe' class='form-control' :class='{ invalidInput: errors.timeframe }'>
           <option selected hidden disabled value=''></option>
-          <option v-for='timeframeOption in timeframeOptions' :key='timeframeOption' :value='timeframeOption'>{{ capitalizeFirstLetter(timeframeOption) }}</option>
+          <option v-for='val in timeframes' :key='val' :value='val'>{{ capitalizeFirstLetter(val) }}</option>
         </select>
       </label>
       <p v-if='errors.timeframe' class='invalidFeedback'>*Timeframe needs to be selected</p>
@@ -74,20 +74,20 @@
 
 <script>
 import { startDateMin, startDateMax, endDateMin, endDateMax } from '../js/newTask/newTaskComputed.js';
-import { taskParent, task, description, timeframe, startDate, endDate } from '../js/newTask/newTaskWatchers.js';
-import { taskPaths, createTask, validateTasks, setStartDate, updateTimeframe } from '../js/newTask/newTaskMethods.js';
+import { parentId, task, description, timeframe, startDate, endDate } from '../js/newTask/newTaskWatchers.js';
+import { createTask, validateTasks, setStartDate } from '../js/newTask/newTaskMethods.js';
 import { capitalizeFirstLetter, formatDate } from '../js/sharedFunctions.js';
 import { cancel, cancelByEsc } from '../js/sharedMethods.js';
 
 export default {
   name: 'NewTask',
   props: {
-    tasks: {
-      type: Array,
-      required: true
+    taskid: {
+      type: String
     },
-    parent: {
+    tasks: {
       type: Object,
+      required: true
     }
   },
   data() {
@@ -97,8 +97,7 @@ export default {
       timeframe: '',
       startDate: '',
       endDate: '',
-      taskParent: this.parent,
-      timeframeOptions: ['yearly', 'monthly', 'weekly', 'daily'],
+      parentId: this.taskid,
       errors: {
         task: false,
         description: false,
@@ -109,7 +108,7 @@ export default {
     }
   },
   watch: {
-    taskParent,
+    parentId,
     task,
     description,
     timeframe,
@@ -121,11 +120,9 @@ export default {
     }
   },
   methods: {
-    taskPaths,
     createTask,
     validateTasks,
     setStartDate,
-    updateTimeframe,
     capitalizeFirstLetter,
     formatDate,
     cancel,
@@ -135,11 +132,60 @@ export default {
     startDateMin,
     startDateMax,
     endDateMin,
-    endDateMax
+    endDateMax,
+    taskPaths() {
+      let paths = [];
+      let map = {};
+      let node, parentId;
+
+      for(const key in this.tasks) {
+        node = this.tasks[key];
+        map['id'] = key;
+        map['path'] = node.task;
+
+        while(node != null) {
+          parentId = node.parent;
+          if(parentId) {
+            node = this.tasks[parentId];
+            map['path'] = `${node.task}/${map['path']}`;
+          } else {
+            node = null;
+          }
+        }
+        paths.push(map);
+        map = {};
+      }
+
+      return paths.sort((a,b) =>  {
+        return a.path == b.path ? 0 : a.path > b.path || -1
+      });
+    },
+    timeframes() {
+      const node = this.parentId ? this.tasks[this.parentId] : null;
+      let timeframesArr = ['yearly', 'monthly', 'weekly', 'daily'];
+
+      if(node) {
+        switch(node.time.timeframe) {
+          case 'monthly':
+            timeframesArr = timeframesArr.slice(1);
+            break;
+          case 'weekly':
+            timeframesArr = timeframesArr.slice(2);
+            break;
+          case 'daily':
+            timeframesArr = timeframesArr.slice(3);
+            break;
+        }
+      }
+
+      return timeframesArr;
+    },
+    taskParent() {
+      return this.tasks[this.taskid] ? this.tasks[this.taskid] : null;
+    }
   },
   mounted() {
     this.setStartDate();
-    this.updateTimeframe(this.parent);
     document.addEventListener('keyup', this.cancelByEsc);
   }
 }

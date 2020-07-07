@@ -8,8 +8,16 @@
   <div v-for='(datesObj, datesIndex) in dates' :key='datesIndex' class='tasksDiv text-left' :class='{ bottom: datesIndex == (dates.length - 1) }'>
     <h5 class='dateHeader text-center mb-0 font-weight-normal' :class='timeframeobj.timeframe'>{{ taskDate(datesObj.date) }}</h5>
 
-    <div class='mt-1 mb-1' v-for='(task, taskIndex) in datesObj.tasks' :key='taskIndex'>
-      <TasksDate v-if='displayTask(task)' class='list-group' :tasks='[task]' :date='datesObj.date' :timeframe='timeframeobj.timeframe' v-on='$listeners'></TasksDate>
+    <div v-for='(task, taskIndex) in datesObj.tasks' :key='taskIndex'>
+      <TasksDate v-if='displayTask(task)'
+                 class='list-group my-2'
+                 :tasksids='[task]'
+                 :date='datesObj.date'
+                 :timeframe='timeframeobj.timeframe'
+                 :tasks='tasks'
+                 v-on='$listeners'
+      >
+      </TasksDate>
     </div>
   </div>
 
@@ -35,6 +43,10 @@ export default {
     },
     dateselected: {
       type: String,
+      required: true
+    },
+    tasks: {
+      type: Object,
       required: true
     }
   },
@@ -68,11 +80,7 @@ export default {
   },
   computed: {
     timeframeHeader,
-    dates,
-    datesFiltered() {
-      //May not need
-      return this.dates.filter(obj => obj.tasks.length > 0);
-    }
+    dates
   },
   components: {
     TasksDate

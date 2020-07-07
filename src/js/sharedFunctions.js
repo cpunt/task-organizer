@@ -57,4 +57,8 @@ function formatDate(dateString) {
   return `${day}/${month}/${year}`;
 }
 
-export { capitalizeFirstLetter, currentDate, addZero, setDateToTimeframe, formatDate };
+function convertToDate(seconds) {
+  return new Date(seconds * 1000);
+}
+
+export { capitalizeFirstLetter, currentDate, addZero, setDateToTimeframe, formatDate, convertToDate };
