@@ -1,124 +1,61 @@
 <template>
 <div id='app'>
-  <div v-if='bgScreen' class='backgroundScreen' @click='closeScreen'></div>
 
-  <SideBar class='sideBar'
-           :class='{ sideBarOpen: sideBarActive, sideBarClosed: !sideBarActive }'
-           :roots='roots'
-           :tasks='tasks'
-           :taskselected='taskselected'
-           :sidebaractive='sideBarActive'
-           :user='user'
-           @toggle-side-bar='toggleSideBar'
-           @add-task='addTask'
-           @update-date-selected='updateDateSelected'
-  >
-  </SideBar>
+  <div v-if='display.bgScreen' class='backgroundScreen' @click='cancel'></div>
 
-  <div id='timeframesDiv' class='text-center' :class='{ tfDSidebar: sideBarActive, tfDNoSidebar: !sideBarActive}'>
+  <Sidebar class='sideBar' :class='{ sideBarOpen: sidebar.sidebarActive, sideBarClosed: !sidebar.sidebarActive }' />
+
+  <div id='timeframesDiv' :class='{ tfDSidebar: sidebar.sidebarActive, tfDNoSidebar: !sidebar.sidebarActive}'>
     <TimeframeDivs v-for='(timeframeObj, index) in timeframes'
                    :key='index'
                    :timeframeobj='timeframeObj'
-                   :taskselected='taskselected'
-                   :dateselected='dateselected'
-                   :tasks='tasks'
-                   v-on='$listeners'
-                   @view-task='viewTask'
-                   @confirm-delete-task='confirmDeleteTask'
-                   @add-task='addTask'
-    >
-    </TimeframeDivs>
+    />
   </div>
 
-  <ViewTask v-if='vtask'
-            @cancel='closeScreen'
-            @add-task='addTask'
-            @confirm-delete-task='confirmDeleteTask'
-            :taskid='taskid'
-            :tasks='tasks'
-  >
-  </ViewTask>
-  <NewTask v-if='ntask'
-           @cancel='closeScreen'
-           :taskid='taskid'
-           :tasks='tasks'
-  >
-  </NewTask>
-  <DeleteTask v-if='dtask'
-              @cancel='closeScreen'
-              :taskid='taskid'
-              :tasks='tasks'>
-  </DeleteTask>
+  <ViewTask v-if='display.vtask' />
+
+  <NewTask v-if='display.ntask' />
+
+  <DeleteTask v-if='display.dtask' />
 
 </div>
 </template>
 
 <script>
-import SideBar from './components/SideBar.vue';
+import Sidebar from './components/SideBar.vue';
 import TimeframeDivs from './components/TimeframeDivs.vue';
 import ViewTask from './components/ViewTask.vue';
 import NewTask from './components/NewTask.vue';
 import DeleteTask from './components/DeleteTask.vue';
 
-import { viewTask } from './js/app/appMethods.js';
 import { timeframes } from './js/app/appComputed.js';
+import { cancel } from './js/sharedMethods.js';
 import { getTasksDB, getSidebarDB } from './js/server/firestore.js';
 import { userStatus } from './js/server/auth.js';
-
+import { store } from './store/store.js';
+import { mapState } from 'vuex'
 
 export default {
   name: 'App',
-  data: function() {
-    return {
-      tasks: {},
-      roots: [],
-      taskid: '',
-      taskselected: '',
-      dateselected: '',
-      vtask: false,
-      ntask: false,
-      dtask: false,
-      bgScreen: false,
-      sideBarActive: false,
-      user: null
-    }
-  },
+  store,
   methods: {
-    viewTask,
-    addTask(taskid) {
-      this.bgScreen = true;
-      this.vtask = false;
-      this.ntask = true;
-      this.taskid = taskid ? taskid : '';
-    },
-    closeScreen() {
-      this.taskid = '';
-      this.vtask = false;
-      this.ntask = false;
-      this.dtask = false;
-      this.bgScreen = false;
-    },
-    confirmDeleteTask(taskid) {
-      this.vtask = false;
-      this.bgScreen = true;
-      this.dtask = true;
-      this.taskid = taskid;
-    },
-    updateDateSelected(date) {
-      this.dateselected = date;
-    },
-    toggleSideBar() {
-      this.sideBarActive = !this.sideBarActive;
-    },
     getTasksDB,
     getSidebarDB,
-    userStatus
+    userStatus,
+    cancel
   },
   computed: {
-    timeframes
+    timeframes,
+    ...mapState([
+      'roots',
+      'tasks',
+      'user',
+      'sidebar',
+      'display'
+    ])
   },
   components: {
-    SideBar,
+    Sidebar,
     TimeframeDivs,
     ViewTask,
     NewTask,

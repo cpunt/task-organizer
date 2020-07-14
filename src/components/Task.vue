@@ -13,9 +13,9 @@
 
     <div class='taskOpBar'>
       <img class='opBarIcons' src='../assets/eye-open.svg' alt='View' title='View' @click='viewTask(); unhighlightTasks()'>
-      <img class='opBarIcons' src='../assets/delete.svg' alt='Delete' title='Delete' @click='confirmDeleteTask(); unhighlightTasks()'>
-      <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click='addTask(); unhighlightTasks()'>
-      <span class='checkBoxDiv rounded' :class="{ 'bgChecked': task.dateTaskCompleted[completedIndex], 'bgUnchecked': !task.dateTaskCompleted[completedIndex] }" v-if='task.children.length == 0' @click='toggleDateTaskCompleted' title='Toggle Check'></span>
+      <img class='opBarIcons' src='../assets/delete.svg' alt='Delete' title='Delete' @click='confirmDeleteTask(taskid); unhighlightTasks()'>
+      <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click='addTask(taskid); unhighlightTasks()'>
+      <span class='checkBoxDiv rounded' :class="{ 'bgChecked': task.dateTaskCompleted[completedIndex], 'bgUnchecked': !task.dateTaskCompleted[completedIndex] }" v-if='task.children.length == 0' @click='updateDateTaskCompletedDB' title='Toggle Check'></span>
 
       <div v-if='taskHasValidChild' class='d-inline'>
         <img v-if='showChildren' class='opBarIcons angle' src='../assets/angle-down.svg' alt='Angle Down' title='Hide Children' @click='toggleShowChildren'>
@@ -24,12 +24,10 @@
     </div>
   </div>
 
-  <TasksDate v-if='showChildren '
+  <TasksDate v-if='showChildren'
              :tasksids='task.children'
              :date='date'
              :timeframe='timeframe'
-             :tasks='tasks'
-             v-on='$listeners'
   >
   </TasksDate>
 </div>
@@ -44,9 +42,11 @@ Add back to div
 
 <script>
 import { completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired } from '../js/timeframe/timeframeComputed.js';
-import { toggleDateTaskCompleted, toggleTaskCompleted, toggleShowChildren, } from '../js/timeframe/timeframeMethods.js';
+import { updateDateTaskCompletedDB } from '../js/server/firestore.js';
+import { toggleShowChildren, } from '../js/timeframe/timeframeMethods.js';
 import { addTask, confirmDeleteTask } from '../js/sharedMethods.js';
-import { viewTask, highlightTasks, unhighlightTasks } from '../js/task/taskMethods.js';
+import { highlightTasks, unhighlightTasks } from '../js/task/taskMethods.js';
+import { mapState } from 'vuex'
 
 export default {
   name: 'Task',
@@ -55,16 +55,16 @@ export default {
       type: String,
       required: true
     },
+    task: {
+      type: Object,
+      required: true
+    },
     date: {
       type: Date,
       required: true
     },
     timeframe: {
       type: String,
-      required: true
-    },
-    tasks: {
-      type: Object,
       required: true
     }
   },
@@ -77,17 +77,27 @@ export default {
     percent(val) {
       this.task.taskCompleted = val == 100;
     }
+    // task: {
+    //   handler(val) {
+    //     console.log(val);
+    //     console.log('I changed');
+    //   },
+    //   deep: true,
+    //   immediate: true
+    // }
   },
   methods: {
-    toggleDateTaskCompleted,
-    toggleTaskCompleted,
+    updateDateTaskCompletedDB,
     toggleShowChildren,
     addTask,
-    confirmDeleteTask,
-    viewTask,
     highlightTasks,
-    unhighlightTasks
-  },
+    unhighlightTasks,
+    viewTask() {
+      this.$store.commit('SET_DISPLAY', { bgScreen: true, vtask: true });
+      this.$store.commit('SET_TASKID', { taskId: this.taskid})
+    },
+    confirmDeleteTask
+   },
   computed: {
     completedIndex,
     taskHasValidChild,
@@ -95,9 +105,10 @@ export default {
     leavesCompleted,
     percent,
     expired,
-    task() {
-      return this.tasks[this.taskid];
-    }
+    ...mapState([
+      'tasks',
+      'sidebar'
+    ])
   },
   components: {
     TasksDate: () => import('./TasksDate.vue')

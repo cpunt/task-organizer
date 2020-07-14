@@ -2,7 +2,7 @@
 <div class='deleteTaskDiv card card-body shadow'>
   <img class='float-left icon' src='../assets/close-cross.svg' alt='Close' title='Close' @click='cancel'>
   <div class='deleteDiv'>
-    <h3>Are you sure you want to delete: <h3>{{ tasks[taskid].task }}?</h3></h3>
+    <h3>Are you sure you want to delete: <h3>{{ tasks[taskId].task }}?</h3></h3>
 
     <div class='text-center btnDiv'>
       <button type='button' class='btn btn-primary d-inline mx-3' @click='cancel'>Cancel</button>
@@ -15,26 +15,25 @@
 <script>
 import { cancel, cancelByEsc } from '../js/sharedMethods.js';
 import { deleteTaskDB } from '../js/server/firestore.js';
+import { mapState } from 'vuex'
 
 export default {
   name: 'DeleteTask',
-  props: {
-    taskid: {
-      type: String,
-      required: true
-    },
-    tasks: {
-      type: Object,
-      required: true
-    }
-  },
   methods: {
     cancel,
     cancelByEsc,
+    deleteTaskDB,
     deleteTask() {
-      deleteTaskDB(this.tasks, this.taskid, this.tasks[this.taskid].parent);
+      this.deleteTaskDB();
       this.cancel();
     }
+  },
+  computed: {
+    ...mapState([
+      'tasks',
+      'taskId',
+      'display'
+    ])
   },
   mounted() {
     document.addEventListener('keyup', this.cancelByEsc);

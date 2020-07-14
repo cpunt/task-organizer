@@ -1,6 +1,6 @@
 <template>
 <div class='text-center'>
-  <div v-if='!sidebaractive' class='h-100 pt-2' @click='toggleSideBar'>
+  <div v-if='!sidebar.sidebarActive' class='h-100 pt-2' @click='toggleSideBar'>
     <img class='icon' src='../assets/right-arrow.svg' alt='Right Arrow' title='Open SideBar' >
     <!-- <img class='icon my-4' src='../assets/add.svg' alt='Cross' title='Add Task' @click='addTask'> -->
   </div>
@@ -37,16 +37,16 @@
         <p class='my-0 text-primary d-inline ml-2 text'>Add Task</p>
       </div>
 
-      <div class='hoverDiv py-2' :class="{ dropdown: display.fromDate }" @click='display.fromDate = !display.fromDate'>
+      <div class='hoverDiv py-2' :class="{ dropdown: sidebarDisplay.fromDate }" @click='sidebarDisplay.fromDate = !sidebarDisplay.fromDate'>
         <img class='textIcon d-inline ml-3' src='../assets/sidebar/calendar.svg' alt='Calendar' title='Calendar'>
         <p class='my-0 text-primary d-inline ml-2 text'>From Date</p>
 
-        <img v-if='!display.fromDate' class='angle mr-2 d-inline' src='../assets/sidebar/angle-right.svg'>
+        <img v-if='!sidebarDisplay.fromDate' class='angle mr-2 d-inline' src='../assets/sidebar/angle-right.svg'>
         <img v-else class='angle mr-2 d-inline' src='../assets/sidebar/angle-down.svg'>
 
-        <div v-if='display.fromDate' class='py-2 dropdown'>
-          <input v-model='dateselected'
-                 class='ml-3 form-control w-75'
+        <div v-if='sidebarDisplay.fromDate' class='py-2 dropdown'>
+          <input class='ml-3 form-control w-75'
+                 :value='display.dateSelected'
                  type='date'
                  @change='updateDate'
                  @click.stop='stopTheEvent'
@@ -54,29 +54,29 @@
         </div>
       </div>
 
-      <div class='hoverDiv py-2' :class="{ dropdown: display.selectTask }" @click='display.selectTask = !display.selectTask'>
+      <div class='hoverDiv py-2' :class="{ dropdown: sidebarDisplay.selectTask }" @click='sidebarDisplay.selectTask = !sidebarDisplay.selectTask'>
         <img class='textIcon d-inline ml-3' src='../assets/sidebar/thumbtack.svg' alt='Thumbtack' title='Thumbtack'>
         <p class='my-0 text-primary d-inline ml-2 text'>Select Task</p>
 
-        <img v-if='!display.selectTask' class='angle mr-2 d-inline' src='../assets/sidebar/angle-right.svg'>
+        <img v-if='!sidebarDisplay.selectTask' class='angle mr-2 d-inline' src='../assets/sidebar/angle-right.svg'>
         <img v-else class='angle mr-2 d-inline' src='../assets/sidebar/angle-down.svg'>
 
-        <div v-if='display.selectTask' class='py-2 dropdown'>
-          <select class='ml-3 form-control w-75' v-model='taskid' @change='updateTaskSelected' @click.stop='stopTheEvent'>
+        <div v-if='sidebarDisplay.selectTask' class='py-2 dropdown'>
+          <select class='ml-3 form-control w-75' :value='sidebar.taskSelected' @change='updateTaskSelectedDB' @click.stop='stopTheEvent'>
             <option value=''></option>
             <option v-for='rootid in roots' :key='rootid' :value='rootid'>{{ tasks[rootid].task }}</option>
           </select>
         </div>
       </div>
 
-      <div class='hoverDiv py-2' :class="{ dropdown: display.taskStatus }" @click='display.taskStatus = !display.taskStatus'>
+      <div class='hoverDiv py-2' :class="{ dropdown: sidebarDisplay.taskStatus }" @click='sidebarDisplay.taskStatus = !sidebarDisplay.taskStatus'>
         <img class='textIcon d-inline ml-3' src='../assets/sidebar/status.svg' alt='Status' title='Status'>
         <p class='my-0 text-primary d-inline ml-2 text'>Task Status</p>
 
-        <img v-if='!display.taskStatus' class='angle mr-2 d-inline' src='../assets/sidebar/angle-right.svg'>
+        <img v-if='!sidebarDisplay.taskStatus' class='angle mr-2 d-inline' src='../assets/sidebar/angle-right.svg'>
         <img v-else class='angle mr-2 d-inline' src='../assets/sidebar/angle-down.svg'>
 
-        <div v-if='display.taskStatus' class='py-2 dropdown'>
+        <div v-if='sidebarDisplay.taskStatus' class='py-2 dropdown'>
           <select class='ml-3 form-control w-75' v-model='taskstatus' @click.stop='stopTheEvent'>
             <option value=''></option>
             <option value='Active'>Active</option>
@@ -86,14 +86,14 @@
         </div>
       </div>
 
-      <div class='hoverDiv py-2' :class="{ dropdown: display.childrenDisplayed }" @click='display.childrenDisplayed = !display.childrenDisplayed'>
+      <div class='hoverDiv py-2' :class="{ dropdown: sidebarDisplay.childrenDisplayed }" @click='sidebarDisplay.childrenDisplayed = !sidebarDisplay.childrenDisplayed'>
         <img class='textIcon d-inline ml-3' src='../assets/sidebar/depth.svg' alt='Depth' title='Depth'>
         <p class='my-0 text-primary d-inline ml-2 text'>Children Displayed</p>
 
         <img v-if='!display.childrenDisplayed' class='angle mr-2 d-inline' src='../assets/sidebar/angle-right.svg'>
         <img v-else class='angle mr-2 d-inline' src='../assets/sidebar/angle-down.svg'>
 
-        <div v-if='display.childrenDisplayed' class='py-2 dropdown'>
+        <div v-if='sidebarDisplay.childrenDisplayed' class='py-2 dropdown'>
           <select class='ml-3 form-control w-75' v-model='childrendisplayed' @click.stop='stopTheEvent'>
             <option value='0'>0</option>
             <option value='1'>1</option>
@@ -115,38 +115,18 @@
 import { currentDate } from '../js/sharedFunctions.js';
 import { updateTaskSelectedDB } from '../js/server/firestore.js';
 import { signIn, signOut } from '../js/server/auth.js';
+import { store } from '../store/store.js';
+import { mapState } from 'vuex'
 
 export default {
-  name: 'SideBar',
-  props: {
-    roots: {
-      type: Array,
-      required: true
-    },
-    tasks: {
-      type: Object,
-      required: true
-    },
-    taskselected: {
-      type: String,
-      required: true
-    },
-    sidebaractive: {
-      type: Boolean,
-      required: true
-    },
-    user: {
-      type: Object,
-      required: false
-    }
-  },
+  name: 'Sidebar',
+  store,
   data: function() {
     return {
-      dateselected: '',
-      taskid: this.taskselected,
+      // TaskStatus and childrenDisplayed will be added to database
       taskstatus: '',
       childrendisplayed: 0,
-      display: {
+      sidebarDisplay: {
         fromDate: false,
         selectTask: false,
         taskStatus: false,
@@ -154,24 +134,19 @@ export default {
       }
     };
   },
-  watch: {
-    taskselected(val) {
-      this.taskid = val;
-    }
-  },
   methods: {
     currentDate,
+    updateTaskSelectedDB,
     addTask() {
-      this.$emit('add-task', '');
+      this.$store.commit('SET_DISPLAY', { bgScreen: true, vtask: false, ntask: true });
+    },
+    updateDate(date=null) {
+      const dateSelected = date ? date.target.value : new Date();
+
+      this.$store.commit('SET_SIDEBAR', { dateSelected: dateSelected });
     },
     toggleSideBar() {
-      this.$emit('toggle-side-bar');
-    },
-    updateTaskSelected() {
-      updateTaskSelectedDB(this.taskid);
-    },
-    updateDate() {
-      this.$emit('update-date-selected', this.dateselected);
+      this.$store.commit('SET_SIDEBAR', { sidebarActive: !this.sidebar.sidebarActive });
     },
     stopTheEvent(event) {
       event.stopPropagation();
@@ -179,9 +154,17 @@ export default {
     signIn,
     signOut
   },
+  computed: {
+    ...mapState([
+      'roots',
+      'tasks',
+      'user',
+      'sidebar',
+      'display'
+    ])
+  },
   mounted: function() {
-    this.dateselected = this.currentDate();
-    this.updateDate();
+    // this.updateDate();
   }
 }
 </script>

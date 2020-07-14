@@ -2,10 +2,10 @@
 <ul>
   <li v-for='(taskId, index) in validTasks' :key='index'>
     <Task :taskid='taskId'
+          :task='tasks[taskId]'
           :date='date'
           :timeframe='timeframe'
-          :tasks='tasks'
-          v-on='$listeners'>
+    >
     </Task>
   </li>
 </ul>
@@ -13,6 +13,7 @@
 
 <script>
 import { validTasks } from '../js/timeframe/timeframeComputed.js';
+import { mapState } from 'vuex'
 
 export default {
   name: 'TasksDate',
@@ -28,14 +29,13 @@ export default {
     timeframe: {
       type: String,
       required: true
-    },
-    tasks: {
-      type: Object,
-      required: true
     }
   },
   computed: {
-    validTasks
+    validTasks,
+    ...mapState([
+      'tasks'
+    ])
   },
   components: {
     Task: () => import('./Task.vue')

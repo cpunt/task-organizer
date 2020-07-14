@@ -1,5 +1,4 @@
 import { addZero } from '../sharedFunctions.js';
-import { updateDateTaskCompleted, updateTaskCompleted } from '../server/firestore.js';
 
 function taskDate(date) {
   const d = new Date(date);
@@ -25,7 +24,7 @@ function taskDate(date) {
 }
 
 function displayTask(taskid) {
-  if(this.taskselected.length == 0) {
+  if(this.sidebar.taskSelected.length == 0) {
     return true;
   }
   let node = this.tasks[taskid],
@@ -36,28 +35,11 @@ function displayTask(taskid) {
     node = this.tasks[parentid];
   }
 
-  return this.taskselected == parentid;
-}
-
-function toggleDateTaskCompleted() {
-  // Update dateTaskCompleted
-  const dateTaskCompleted = this.task.dateTaskCompleted;
-  dateTaskCompleted[this.completedIndex] = !dateTaskCompleted[this.completedIndex];
-  updateDateTaskCompleted(dateTaskCompleted, this.taskid);
-  // Update taskCompleted
-  const taskComplete = dateTaskCompleted.every((val) => val === true);
-  if(taskComplete != this.task.taskCompleted) {
-    updateTaskCompleted(taskComplete, this.taskid);
-  }
-}
-
-function toggleTaskCompleted() {
-  const taskCompleted = !this.task.taskCompleted;
-  updateTaskCompleted(taskCompleted, this.taskid);
+  return this.sidebar.taskSelected == parentid;
 }
 
 function toggleShowChildren() {
   this.showChildren = !this.showChildren;
 }
 
-export { taskDate, displayTask, toggleDateTaskCompleted, toggleTaskCompleted, toggleShowChildren };
+export { taskDate, displayTask, toggleShowChildren };

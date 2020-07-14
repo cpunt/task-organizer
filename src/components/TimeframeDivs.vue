@@ -14,8 +14,6 @@
                  :tasksids='[task]'
                  :date='datesObj.date'
                  :timeframe='timeframeobj.timeframe'
-                 :tasks='tasks'
-                 v-on='$listeners'
       >
       </TasksDate>
     </div>
@@ -29,6 +27,7 @@ import TasksDate from './TasksDate.vue';
 import { taskDate, displayTask } from '../js/timeframe/timeframeMethods.js';
 import { dates, timeframeHeader } from '../js/timeframe/timeframeComputed.js';
 import { getDateIndex } from '../js/app/appFunctions.js';
+import { mapState } from 'vuex'
 
 export default {
   name: 'TimeframeDivs',
@@ -36,22 +35,10 @@ export default {
     timeframeobj: {
       type: Object,
       required: true
-    },
-    taskselected: {
-      type: String,
-      required: true
-    },
-    dateselected: {
-      type: String,
-      required: true
-    },
-    tasks: {
-      type: Object,
-      required: true
     }
   },
   watch: {
-    dateselected() {
+    'sidebar.dateSelected'() {
       this.scrollToDate();
     }
   },
@@ -59,9 +46,9 @@ export default {
     taskDate,
     displayTask,
     scrollToDate() {
-      if(this.dates.length > 0 && this.dateselected.length > 0) {
+      if(this.dates.length > 0 && this.sidebar.dateSelected.length > 0) {
         const timeframe = this.timeframeobj.timeframe;
-        const dateIndex = getDateIndex(timeframe, this.dates[0].date, new Date(this.dateselected));
+        const dateIndex = getDateIndex(timeframe, this.dates[0].date, new Date(this.sidebar.dateSelected));
         const timeframeDiv = this.$refs[timeframe];
         const taskDivs = timeframeDiv.querySelectorAll('.tasksDiv');
 
@@ -80,7 +67,12 @@ export default {
   },
   computed: {
     timeframeHeader,
-    dates
+    dates,
+    ...mapState([
+      'tasks',
+      'sidebar',
+      'display'
+    ])
   },
   components: {
     TasksDate

@@ -7,7 +7,7 @@
     <div class='taskInputDiv'>
       <label class='w-100 mb-0 header'>Task Parent:
         <select class='form-control mb-0' v-model='parentId'>
-          <option :value='null'></option>
+          <option value=''></option>
           <option v-for='pathObj in taskPaths' :value='pathObj.id' :key='pathObj.id'>{{ pathObj.path }}</option>
         </select>
       </label>
@@ -78,18 +78,10 @@ import { parentId, task, description, timeframe, startDate, endDate } from '../j
 import { createTask, validateTasks, setStartDate } from '../js/newTask/newTaskMethods.js';
 import { capitalizeFirstLetter, formatDate } from '../js/sharedFunctions.js';
 import { cancel, cancelByEsc } from '../js/sharedMethods.js';
+import { mapState } from 'vuex'
 
 export default {
   name: 'NewTask',
-  props: {
-    taskid: {
-      type: String
-    },
-    tasks: {
-      type: Object,
-      required: true
-    }
-  },
   data() {
     return {
       task: '',
@@ -97,7 +89,7 @@ export default {
       timeframe: '',
       startDate: '',
       endDate: '',
-      parentId: this.taskid,
+      parentId: this.taskId || '',
       errors: {
         task: false,
         description: false,
@@ -181,8 +173,13 @@ export default {
       return timeframesArr;
     },
     taskParent() {
-      return this.tasks[this.taskid] ? this.tasks[this.taskid] : null;
-    }
+      return this.tasks[this.taskId] ? this.tasks[this.taskId] : null;
+    },
+    ...mapState([
+      'tasks',
+      'taskId',
+      'display'
+    ])
   },
   mounted() {
     this.setStartDate();

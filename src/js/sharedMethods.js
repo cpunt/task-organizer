@@ -1,9 +1,11 @@
-function addTask() {
-  this.$emit('add-task', this.taskid);
+function addTask(taskId) {
+  this.$store.commit('SET_DISPLAY', { vtask: false, ntask: true, dtask: false, bgScreen: true })
+  this.$store.commit('SET_TASKID', { taskId: taskId})
 }
 
 function cancel() {
-  this.$emit('cancel');
+  this.$store.commit('SET_DISPLAY', { vtask: false, ntask: false, dtask: false, bgScreen: false })
+  this.$store.commit('SET_TASKID', { taskId: ''})
 }
 
 function cancelByEsc(e) {
@@ -13,8 +15,9 @@ function cancelByEsc(e) {
   }
 }
 
-function confirmDeleteTask() {
-  this.$emit('confirm-delete-task', this.taskid);
+function confirmDeleteTask(taskId) {
+  this.$store.commit('SET_DISPLAY', { vtask: false, dtask: true, bgScreen: true });
+  this.$store.commit('SET_TASKID', { taskId: taskId})
 }
 
 export { addTask, cancel, cancelByEsc, confirmDeleteTask };

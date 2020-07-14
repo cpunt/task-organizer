@@ -11,6 +11,8 @@ function highlightTasks() {
     while(parentid) {
       parent = this.tasks[parentid];
       this.$set(parent, 'highlight', true);
+      this.tasks[parentid]['highlight'] = true;
+
       parentid = parent.parent;
     }
   }

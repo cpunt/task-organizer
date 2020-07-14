@@ -4,8 +4,8 @@
     <div class='taskOpBar'>
       <img class='opBarIcons mb-4' src='../assets/close-cross.svg' alt='Close' title='Close' @click='cancel'>
       <img class='opBarIcons mb-4' src='../assets/edit.svg' alt='Edit' title='Edit' @click='toggleEdit'>
-      <img class='opBarIcons mb-4' src='../assets/delete.svg' alt='Delete' title='Delete' @click='confirmDeleteTask'>
-      <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click='addTask'>
+      <img class='opBarIcons mb-4' src='../assets/delete.svg' alt='Delete' title='Delete' @click='confirmDeleteTask(taskId)'>
+      <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click='addTask(taskId)'>
     </div>
 
     <div class='taskDiv'>
@@ -39,11 +39,7 @@
   </div>
 
   <EditTask v-else
-            :taskid='taskid'
             :taskobj='task'
-            :tasks='tasks'
-            @cancel='cancel'
-            @confirm-delete-task='confirmDeleteTask'
   >
   </EditTask>
 
@@ -58,19 +54,10 @@ import { formatDate } from '../js/sharedFunctions.js';
 import { addTask, cancel, cancelByEsc, confirmDeleteTask } from '../js/sharedMethods.js';
 import { toggleEdit } from '../js/viewTask/viewTaskMethods.js';
 import { getSubTasks } from '../js/viewTask/viewTaskComputed.js';
+import { mapState } from 'vuex'
 
 export default {
   name: 'ViewTask',
-  props: {
-    taskid: {
-      type: String,
-      required: true
-    },
-    tasks: {
-      type: Object,
-      required: true
-    }
-  },
   data() {
     return {
       edit: false
@@ -88,8 +75,13 @@ export default {
   computed: {
     getSubTasks,
     task() {
-      return this.tasks[this.taskid];
-    }
+      return this.tasks[this.taskId];
+    },
+    ...mapState([
+      'tasks',
+      'taskId',
+      'display'
+    ])
   },
   components: {
     EditTask

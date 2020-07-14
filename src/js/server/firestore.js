@@ -3,14 +3,17 @@ import { db } from './config.js'
 function getTasksDB() {
   db.collection('tasks')
     .onSnapshot((querySnapshot) => {
-      this.roots = [];
-      this.tasks = {};
       console.log('Im doing something');
-      querySnapshot.forEach((doc) => {
-        if(!doc.data().parent) {
-          this.roots.push(doc.id);
+
+      querySnapshot.docChanges().forEach(change => {
+        // console.log(change.type);
+        // console.log(change.doc.data());
+        if(change.type === 'added' || change.type === 'modified') {
+          if(!change.doc.data().parent) {
+            this.$store.commit('SET_ROOT', { id: change.doc.id });
+          }
+          this.$store.commit('SET_TASK', { id: change.doc.id, task: change.doc.data() });
         }
-        this.tasks[doc.id] = doc.data();
       });
     });
 }
@@ -20,15 +23,16 @@ function getSidebarDB() {
     .doc('sidebar')
     .onSnapshot((querySnapshot) => {
       const data = querySnapshot.data();
-      this.taskselected = data.taskSelected;
+      this.$store.commit('SET_SIDEBAR', { taskSelected: data.taskSelected });
     });
 }
 
-function updateTaskSelectedDB(taskid) {
+function updateTaskSelectedDB(event) {
+  const taskSelected = event.target.value;
   db.collection('sidebar')
     .doc('sidebar')
     .update({
-      taskSelected: taskid
+      taskSelected: taskSelected
     });
 }
 
@@ -38,16 +42,24 @@ function updateTaskDB(task, taskid) {
     .update(task);
 }
 
-// Change to db and get rid of toggle methods
-function updateDateTaskCompleted(dateArr, taskid) {
+function updateDateTaskCompletedDB() {
+  const dates = this.task.dateTaskCompleted;
+  dates[this.completedIndex] = !dates[this.completedIndex];
+
   db.collection('tasks')
-    .doc(taskid)
+    .doc(this.taskid)
     .update({
-      dateTaskCompleted: dateArr
+      dateTaskCompleted: dates
     });
+
+  const taskComplete = dates.every((val) => val === true);
+
+  if(taskComplete != this.task.taskCompleted) {
+    updateTaskCompletedDB(taskComplete, this.taskid);
+  }
 }
-// Change to db and get rid of toggle methods
-function updateTaskCompleted(taskComplete, taskid) {
+
+function updateTaskCompletedDB(taskComplete, taskid) {
   db.collection('tasks')
     .doc(taskid)
     .update({
@@ -73,27 +85,39 @@ function addTaskDB(task, parentChildren) {
   }
 }
 
-function deleteTaskDB(tasks, taskid, parentid) {
+function deleteTaskDB() {
+  const parentId = this.tasks[this.taskId].parent;
+  const toDelete = getToDelete(this.tasks, this.taskId);
+
   //Delete task from parent task (send Children?)
-  if(parentid) {
-    let parent = tasks[parentid],
-        parentChildren = parent.children,
-        index = parentChildren.indexOf(taskid);
+  if(parentId) {
+    let parentChildren = this.tasks[parentId].children,
+        index = parentChildren.indexOf(this.taskId);
 
     parentChildren.splice(index, 1);
 
     db.collection('tasks')
-      .doc(parentid)
+      .doc(parentId)
       .update({
         children: parentChildren
       });
   }
   // Delete Task and children tasks
+  toDelete.forEach(id => {
+    db.collection('tasks')
+      .doc(id)
+      .delete();
+
+    this.$store.commit('DELETE_TASK', { id: id });
+  });
+}
+
+function getToDelete(tasks, taskId) {
   let currentId;
   const toDelete = [],
         queue = [];
 
-  queue.push(taskid);
+  queue.push(taskId);
   currentId = queue.pop();
 
   while(currentId) {
@@ -107,11 +131,7 @@ function deleteTaskDB(tasks, taskid, parentid) {
     currentId = queue.pop();
   }
 
-  toDelete.forEach(item => {
-    db.collection('tasks')
-      .doc(item)
-      .delete();
-  })
+  return toDelete;
 }
 
-export { getTasksDB, getSidebarDB, updateTaskSelectedDB, updateTaskDB, updateDateTaskCompleted, updateTaskCompleted, addTaskDB, deleteTaskDB };
+export { getTasksDB, getSidebarDB, updateTaskSelectedDB, updateTaskDB, updateDateTaskCompletedDB, updateTaskCompletedDB, addTaskDB, deleteTaskDB };

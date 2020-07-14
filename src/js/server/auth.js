@@ -23,11 +23,9 @@ function userStatus() {
   firebase.auth().onAuthStateChanged(user => {
     this.bgScreen = false;
     if(user) {
-      this.user = {};
-      this.user['email'] = user.email;
-      this.user['username'] = user.displayName;
+      this.$store.commit('SET_USER', { email: user.email, username: user.displayName });
     } else {
-      this.user = null;
+      this.$store.commit('SET_USER', { email: null, username: null });
     }
   });
 }

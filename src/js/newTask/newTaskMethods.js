@@ -29,7 +29,7 @@ function createTask() {
     }
 
     addTaskDB(taskData, parentChildren);
-    this.$emit('cancel');
+    this.cancel();
   }
 }
 

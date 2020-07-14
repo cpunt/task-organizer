@@ -67,7 +67,7 @@
 
     <div class='text-center'>
       <button type='button' class='btn btn-primary mx-2' @click='cancelEdit'>Cancel</button>
-      <button type='button' class='btn btn-primary mx-2' @click='confirmDeleteTask'>Delete Task</button>
+      <button type='button' class='btn btn-primary mx-2' @click='confirmDeleteTask(taskId)'>Delete Task</button>
       <button type='button' class='btn btn-primary mx-2' @click='updateTask'>Update Task</button>
     </div>
   </div>
@@ -82,19 +82,12 @@ import { validateChildrenDates, updateTask, getDateTaskCompleted, getTaskComplet
 import { cancel, confirmDeleteTask } from '../js/sharedMethods.js';
 import { formatDate } from '../js/sharedFunctions.js';
 import { updateTaskDB } from '../js/server/firestore.js';
+import { mapState } from 'vuex'
 
 export default {
   name: 'EditTask',
   props: {
-    taskid: {
-      type: String,
-      required: true
-    },
     taskobj: {
-      type: Object,
-      required: true
-    },
-    tasks: {
       type: Object,
       required: true
     }
@@ -141,7 +134,12 @@ export default {
     endDateMax,
     taskParent() {
       return this.tasks[this.taskobj.parent] ? this.tasks[this.taskobj.parent] : null;
-    }
+    },
+    ...mapState([
+      'tasks',
+      'taskId',
+      'display'
+    ])
   }
 }
 </script>
