@@ -79,9 +79,8 @@ import { startDateMin, startDateMax, endDateMin, endDateMax } from '../js/newTas
 import { task, description, timeframe, startDate, endDate } from '../js/newTask/newTaskWatchers.js';
 import { validateTasks } from '../js/newTask/newTaskMethods.js';
 import { validateChildrenDates, updateTask, getDateTaskCompleted, getTaskCompleted, cancelEdit } from '../js/editTask/editTaskMethods.js';
-import { cancel, confirmDeleteTask } from '../js/sharedMethods.js';
 import { formatDate } from '../js/sharedFunctions.js';
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'EditTask',
@@ -115,14 +114,16 @@ export default {
     endDate
   },
   methods: {
+    ...mapActions('display', [
+      'cancel',
+      'confirmDeleteTask'
+    ]),
     validateTasks,
     validateChildrenDates,
     updateTask,
     getDateTaskCompleted,
     getTaskCompleted,
     cancelEdit,
-    cancel,
-    confirmDeleteTask,
     formatDate
   },
   computed: {
@@ -133,12 +134,11 @@ export default {
     taskParent() {
       return this.tasks[this.taskobj.parent] ? this.tasks[this.taskobj.parent] : null;
     },
-    ...mapState([
-      'taskId',
-      'display'
-    ]),
     ...mapState('tasks', [
       'tasks'
+    ]),
+    ...mapState('display', [
+      'taskId',
     ])
   }
 }

@@ -38,7 +38,7 @@ export default {
     }
   },
   watch: {
-    'sidebar.dateSelected'() {
+    dateSelected() {
       this.scrollToDate();
     }
   },
@@ -46,9 +46,9 @@ export default {
     taskDate,
     displayTask,
     scrollToDate() {
-      if(this.dates.length > 0 && this.sidebar.dateSelected.length > 0) {
+      if(this.dates.length > 0 && this.dateSelected.length > 0) {
         const timeframe = this.timeframeobj.timeframe;
-        const dateIndex = getDateIndex(timeframe, this.dates[0].date, new Date(this.sidebar.dateSelected));
+        const dateIndex = getDateIndex(timeframe, this.dates[0].date, new Date(this.dateSelected));
         const timeframeDiv = this.$refs[timeframe];
         const taskDivs = timeframeDiv.querySelectorAll('.tasksDiv');
 
@@ -68,9 +68,9 @@ export default {
   computed: {
     timeframeHeader,
     dates,
-    ...mapState([
-      'sidebar',
-      'display'
+    ...mapState('sidebar', [
+      'dateSelected',
+      'taskSelected'
     ]),
     ...mapState('tasks', [
       'tasks'

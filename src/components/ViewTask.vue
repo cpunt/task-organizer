@@ -50,10 +50,10 @@
 import EditTask from './EditTask.vue';
 
 import { formatDate } from '../js/sharedFunctions.js';
-import { addTask, cancel, cancelByEsc, confirmDeleteTask } from '../js/sharedMethods.js';
+import { cancelByEsc } from '../js/sharedMethods.js';
 import { toggleEdit } from '../js/viewTask/viewTaskMethods.js';
 import { getSubTasks } from '../js/viewTask/viewTaskComputed.js';
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'ViewTask',
@@ -63,12 +63,14 @@ export default {
     }
   },
   methods: {
+    ...mapActions('display', [
+      'cancel',
+      'addTask',
+      'confirmDeleteTask'
+    ]),
     formatDate,
     toggleEdit,
-    addTask,
-    cancel,
     cancelByEsc,
-    confirmDeleteTask,
     updateTaskCompleted() {
       this.$store.dispatch('tasks/updateTaskCompleted', this.taskId);
     }
@@ -78,9 +80,8 @@ export default {
     task() {
       return this.tasks[this.taskId];
     },
-    ...mapState([
-      'taskId',
-      'display'
+    ...mapState('display', [
+      'taskId'
     ]),
     ...mapState('tasks', [
       'tasks'

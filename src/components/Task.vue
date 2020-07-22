@@ -12,7 +12,7 @@
     </div>
 
     <div class='taskOpBar'>
-      <img class='opBarIcons' src='../assets/eye-open.svg' alt='View' title='View' @click='viewTask(); unhighlightTasks()'>
+      <img class='opBarIcons' src='../assets/eye-open.svg' alt='View' title='View' @click='viewTask(taskid); unhighlightTasks()'>
       <img class='opBarIcons' src='../assets/delete.svg' alt='Delete' title='Delete' @click='confirmDeleteTask(taskid); unhighlightTasks()'>
       <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click='addTask(taskid); unhighlightTasks()'>
       <span class='checkBoxDiv rounded' :class="{ 'bgChecked': task.dateTaskCompleted[completedIndex], 'bgUnchecked': !task.dateTaskCompleted[completedIndex] }" v-if='task.children.length == 0' @click='updateDateTaskCompleted' title='Toggle Check'></span>
@@ -43,9 +43,8 @@ Add back to div
 <script>
 import { completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired } from '../js/timeframe/timeframeComputed.js';
 import { toggleShowChildren, } from '../js/timeframe/timeframeMethods.js';
-import { addTask, confirmDeleteTask } from '../js/sharedMethods.js';
 import { highlightTasks, unhighlightTasks } from '../js/task/taskMethods.js';
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'Task',
@@ -86,15 +85,14 @@ export default {
     // }
   },
   methods: {
+    ...mapActions('display', [
+      'viewTask',
+      'addTask',
+      'confirmDeleteTask'
+    ]),
     toggleShowChildren,
-    addTask,
     highlightTasks,
     unhighlightTasks,
-    viewTask() {
-      this.$store.commit('SET_DISPLAY', { bgScreen: true, vtask: true });
-      this.$store.commit('SET_TASKID', { taskId: this.taskid})
-    },
-    confirmDeleteTask,
     updateDateTaskCompleted() {
       this.$store.dispatch('tasks/updateDateTaskCompleted', {
         task: this.task,
@@ -110,9 +108,6 @@ export default {
     leavesCompleted,
     percent,
     expired,
-    ...mapState([
-      'sidebar'
-    ]),
     ...mapState('tasks', [
       'tasks'
     ])

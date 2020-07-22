@@ -13,13 +13,15 @@
 </template>
 
 <script>
-import { cancel, cancelByEsc } from '../js/sharedMethods.js';
-import { mapState } from 'vuex'
+import { cancelByEsc } from '../js/sharedMethods.js';
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'DeleteTask',
   methods: {
-    cancel,
+    ...mapActions('display', [
+      'cancel'
+    ]),
     cancelByEsc,
     deleteTask() {
       this.$store.dispatch('tasks/deleteTask', this.taskId);
@@ -27,12 +29,11 @@ export default {
     }
   },
   computed: {
-    ...mapState([
-      'taskId',
-      'display'
-    ]),
     ...mapState('tasks', [
       'tasks'
+    ]),
+    ...mapState('display', [
+      'taskId'
     ])
   },
   mounted() {

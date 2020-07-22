@@ -32,7 +32,7 @@
     <div>
       <p class='my-0 ml-3 py-2 font-weight-bold'>Features</p>
 
-      <div class='hoverDiv py-2' @click='addTask'>
+      <div class='hoverDiv py-2' @click="addTask('')">
         <img class='textIcon d-inline ml-3' src='../assets/sidebar/add.svg' alt='Add' title='Add'>
         <p class='my-0 text-primary d-inline ml-2 text'>Add Task</p>
       </div>
@@ -46,7 +46,7 @@
 
         <div v-if='sidebarDisplay.fromDate' class='py-2 dropdown'>
           <input class='ml-3 form-control w-75'
-                 :value='display.dateSelected'
+                 :value='dateSelected'
                  type='date'
                  @change='updateDateSelected'
                  @click.stop='stopTheEvent'
@@ -90,7 +90,7 @@
         <img class='textIcon d-inline ml-3' src='../assets/sidebar/depth.svg' alt='Depth' title='Depth'>
         <p class='my-0 text-primary d-inline ml-2 text'>Children Displayed</p>
 
-        <img v-if='!display.childrenDisplayed' class='angle mr-2 d-inline' src='../assets/sidebar/angle-right.svg'>
+        <img v-if='!sidebarDisplay.childrenDisplayed' class='angle mr-2 d-inline' src='../assets/sidebar/angle-right.svg'>
         <img v-else class='angle mr-2 d-inline' src='../assets/sidebar/angle-down.svg'>
 
         <div v-if='sidebarDisplay.childrenDisplayed' class='py-2 dropdown'>
@@ -141,10 +141,10 @@ export default {
       'updateTaskSelected',
       'updateDateSelected'
     ]),
+    ...mapActions('display', [
+      'addTask'
+    ]),
     currentDate,
-    addTask() {
-      this.$store.commit('SET_DISPLAY', { bgScreen: true, vtask: false, ntask: true });
-    },
     stopTheEvent(event) {
       event.stopPropagation();
     },
@@ -153,14 +153,14 @@ export default {
   },
   computed: {
     ...mapState([
-      'user',
-      'display'
+      'user'
     ]),
     ...mapState('tasks', [
       'roots',
       'tasks'
     ]),
     ...mapState('sidebar', [
+      'dateSelected',
       'taskSelected',
       'sidebarActive'
     ])

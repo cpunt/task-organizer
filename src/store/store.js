@@ -4,24 +4,19 @@ import { firebase, db } from '../js/server/config.js';
 
 import tasks from './remote/tasks.js';
 import sidebar from './remote/sidebar.js';
+import display from './remote/display.js';
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
   modules: {
     tasks,
-    sidebar
+    sidebar,
+    display
   },
   state: {
     db: db,
-    taskId: '',
-    user: null,
-    display: {
-      vtask: false,
-      ntask: false,
-      dtask: false,
-      bgScreen: false
-    }
+    user: null
   },
   mutations: {
     SET_USER(state, { email, username }) {
@@ -33,26 +28,6 @@ const store = new Vuex.Store({
       } else {
         state['user'] = null
       }
-    },
-    SET_DISPLAY(state, { vtask, ntask, dtask, bgScreen }) {
-      if(vtask != undefined) {
-        Vue.set(state['display'], 'vtask', vtask);
-      }
-
-      if(ntask != undefined) {
-        Vue.set(state['display'], 'ntask', ntask);
-      }
-
-      if(dtask != undefined) {
-        Vue.set(state['display'], 'dtask', dtask);
-      }
-
-      if(bgScreen != undefined) {
-        Vue.set(state['display'], 'bgScreen', bgScreen);
-      }
-    },
-    SET_TASKID(state, { taskId }) {
-      state['taskId'] = taskId;
     }
   },
   actions: {

@@ -8,15 +8,15 @@ export default {
   },
   mutations: {
     SET_ROOT(state, { id }) {
-      if(!state['roots'].includes(id)) {
-        state['roots'].push(id);
+      if(!state.roots.includes(id)) {
+        state.roots.push(id);
       }
     },
     SET_TASK(state, { id, task }) {
-      Vue.set(state['tasks'], id, task);
+      Vue.set(state.tasks, id, task);
     },
     DELETE_TASK(state, { id }) {
-      Vue.delete(state['tasks'], id);
+      Vue.delete(state.tasks, id);
     },
     DELETE_ROOT(state, { id }) {
       const index = state.roots.indexOf(id);

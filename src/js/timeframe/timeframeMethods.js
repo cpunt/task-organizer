@@ -24,7 +24,7 @@ function taskDate(date) {
 }
 
 function displayTask(taskid) {
-  if(this.sidebar.taskSelected.length == 0) {
+  if(this.taskSelected.length == 0) {
     return true;
   }
   let node = this.tasks[taskid],
@@ -35,7 +35,7 @@ function displayTask(taskid) {
     node = this.tasks[parentid];
   }
 
-  return this.sidebar.taskSelected == parentid;
+  return this.taskSelected == parentid;
 }
 
 function toggleShowChildren() {

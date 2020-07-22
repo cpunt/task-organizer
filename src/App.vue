@@ -1,7 +1,7 @@
 <template>
 <div id='app'>
 
-  <div v-if='display.bgScreen' class='backgroundScreen' @click='cancel'></div>
+  <div v-if='bgScreen' class='backgroundScreen' @click='cancel'></div>
 
   <Sidebar class='sideBar' :class='{ sideBarOpen: sidebarActive, sideBarClosed: !sidebarActive }' />
 
@@ -12,37 +12,37 @@
     />
   </div>
 
-  <ViewTask v-if='display.vtask' />
+  <ViewTask v-if='vtask' />
 
-  <NewTask v-if='display.ntask' />
+  <NewTask v-if='ntask' />
 
-  <DeleteTask v-if='display.dtask' />
+  <DeleteTask v-if='dtask' />
 
 </div>
 </template>
 
 <script>
-import Sidebar from './components/SideBar.vue';
+import Sidebar from './components/Sidebar.vue';
 import TimeframeDivs from './components/TimeframeDivs.vue';
 import ViewTask from './components/ViewTask.vue';
 import NewTask from './components/NewTask.vue';
 import DeleteTask from './components/DeleteTask.vue';
 
 import { timeframes } from './js/app/appComputed.js';
-import { cancel } from './js/sharedMethods.js';
 import { store } from './store/store.js';
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'App',
   store,
   methods: {
-    cancel
+    ...mapActions('display', [
+      'cancel'
+    ])
   },
   computed: {
     ...mapState([
       'user',
-      'display'
     ]),
     ...mapState('tasks', [
       'roots',
@@ -50,6 +50,12 @@ export default {
     ]),
     ...mapState('sidebar', [
       'sidebarActive'
+    ]),
+    ...mapState('display', [
+      'vtask',
+      'ntask',
+      'dtask',
+      'bgScreen'
     ]),
     timeframes
   },
