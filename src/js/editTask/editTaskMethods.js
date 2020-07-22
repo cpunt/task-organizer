@@ -52,7 +52,7 @@ function updateTask() {
       taskCompleted: taskCompleted,
     }
 
-    this.updateTaskDB(task, this.taskid);
+    this.$store.dispatch('task/updateTask', { task: task, taskId: this.taskId});
     this.cancel();
   }
 }

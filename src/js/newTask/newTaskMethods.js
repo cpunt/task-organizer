@@ -1,6 +1,5 @@
 import { convertDateToInputString, validDate } from './newTaskFunctions.js';
 import { getDateIndex } from '../app/appFunctions.js';
-import { addTaskDB } from '../server/firestore.js';
 
 function createTask() {
   if(this.validateTasks()) {
@@ -28,7 +27,11 @@ function createTask() {
       parentChildren = this.tasks[this.parentId].children;
     }
 
-    addTaskDB(taskData, parentChildren);
+    this.$store.dispatch('tasks/addTask', {
+      task: taskData,
+      parentChildren: parentChildren
+    });
+
     this.cancel();
   }
 }

@@ -89,7 +89,7 @@ export default {
       timeframe: '',
       startDate: '',
       endDate: '',
-      parentId: this.taskId || '',
+      parentId: '',
       errors: {
         task: false,
         description: false,
@@ -109,6 +109,12 @@ export default {
     startDateMin() {
       //Update start date
       this.setStartDate();
+    },
+    taskId: {
+      immediate: true,
+      handler(val) {
+        this.parentId = val;
+      }
     }
   },
   methods: {
@@ -176,9 +182,11 @@ export default {
       return this.tasks[this.taskId] ? this.tasks[this.taskId] : null;
     },
     ...mapState([
-      'tasks',
       'taskId',
       'display'
+    ]),
+    ...mapState('tasks', [
+      'tasks'
     ])
   },
   mounted() {

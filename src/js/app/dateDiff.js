@@ -7,7 +7,7 @@ function daysDiff(startDate, date) {
 
 function weeksDiff(startDate, date) {
   const days = daysDiff(startDate, date);
-  const weeksDiff = Math.floor(days / 7);
+  const weeksDiff = Math.round(days / 7);
 
   return weeksDiff;
 }

@@ -3,9 +3,9 @@
 
   <div v-if='display.bgScreen' class='backgroundScreen' @click='cancel'></div>
 
-  <Sidebar class='sideBar' :class='{ sideBarOpen: sidebar.sidebarActive, sideBarClosed: !sidebar.sidebarActive }' />
+  <Sidebar class='sideBar' :class='{ sideBarOpen: sidebarActive, sideBarClosed: !sidebarActive }' />
 
-  <div id='timeframesDiv' :class='{ tfDSidebar: sidebar.sidebarActive, tfDNoSidebar: !sidebar.sidebarActive}'>
+  <div id='timeframesDiv' :class='{ tfDSidebar: sidebarActive, tfDNoSidebar: !sidebarActive}'>
     <TimeframeDivs v-for='(timeframeObj, index) in timeframes'
                    :key='index'
                    :timeframeobj='timeframeObj'
@@ -30,8 +30,6 @@ import DeleteTask from './components/DeleteTask.vue';
 
 import { timeframes } from './js/app/appComputed.js';
 import { cancel } from './js/sharedMethods.js';
-import { getTasksDB, getSidebarDB } from './js/server/firestore.js';
-import { userStatus } from './js/server/auth.js';
 import { store } from './store/store.js';
 import { mapState } from 'vuex'
 
@@ -39,20 +37,21 @@ export default {
   name: 'App',
   store,
   methods: {
-    getTasksDB,
-    getSidebarDB,
-    userStatus,
     cancel
   },
   computed: {
-    timeframes,
     ...mapState([
-      'roots',
-      'tasks',
       'user',
-      'sidebar',
       'display'
-    ])
+    ]),
+    ...mapState('tasks', [
+      'roots',
+      'tasks'
+    ]),
+    ...mapState('sidebar', [
+      'sidebarActive'
+    ]),
+    timeframes
   },
   components: {
     Sidebar,
@@ -62,9 +61,7 @@ export default {
     DeleteTask
   },
   mounted: function() {
-    this.getTasksDB();
-    this.getSidebarDB();
-    this.userStatus();
+    this.$store.dispatch('userStatus');
   }
 }
 </script>

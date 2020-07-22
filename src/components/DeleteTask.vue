@@ -14,7 +14,6 @@
 
 <script>
 import { cancel, cancelByEsc } from '../js/sharedMethods.js';
-import { deleteTaskDB } from '../js/server/firestore.js';
 import { mapState } from 'vuex'
 
 export default {
@@ -22,17 +21,18 @@ export default {
   methods: {
     cancel,
     cancelByEsc,
-    deleteTaskDB,
     deleteTask() {
-      this.deleteTaskDB();
+      this.$store.dispatch('tasks/deleteTask', this.taskId);
       this.cancel();
     }
   },
   computed: {
     ...mapState([
-      'tasks',
       'taskId',
       'display'
+    ]),
+    ...mapState('tasks', [
+      'tasks'
     ])
   },
   mounted() {

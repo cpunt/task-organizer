@@ -30,7 +30,7 @@
       </div>
 
       <div v-else class='text-center btnDiv'>
-        <button type='button' class='btn btn-primary' @click='toggleTaskCompleted'>
+        <button type='button' class='btn btn-primary' @click='updateTaskCompleted'>
           <p class='mb-0' v-if='!task.taskCompleted'>Complete Task</p>
           <p class='mb-0' v-else>Uncomplete Task</p>
         </button>
@@ -49,7 +49,6 @@
 <script>
 import EditTask from './EditTask.vue';
 
-import { toggleTaskCompleted } from '../js/timeframe/timeframeMethods.js';
 import { formatDate } from '../js/sharedFunctions.js';
 import { addTask, cancel, cancelByEsc, confirmDeleteTask } from '../js/sharedMethods.js';
 import { toggleEdit } from '../js/viewTask/viewTaskMethods.js';
@@ -64,13 +63,15 @@ export default {
     }
   },
   methods: {
-    toggleTaskCompleted,
     formatDate,
     toggleEdit,
     addTask,
     cancel,
     cancelByEsc,
-    confirmDeleteTask
+    confirmDeleteTask,
+    updateTaskCompleted() {
+      this.$store.dispatch('tasks/updateTaskCompleted', this.taskId);
+    }
   },
   computed: {
     getSubTasks,
@@ -78,9 +79,11 @@ export default {
       return this.tasks[this.taskId];
     },
     ...mapState([
-      'tasks',
       'taskId',
       'display'
+    ]),
+    ...mapState('tasks', [
+      'tasks'
     ])
   },
   components: {

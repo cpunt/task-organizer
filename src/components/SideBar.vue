@@ -1,6 +1,6 @@
 <template>
 <div class='text-center'>
-  <div v-if='!sidebar.sidebarActive' class='h-100 pt-2' @click='toggleSideBar'>
+  <div v-if='!sidebarActive' class='h-100 pt-2' @click='toggleSideBar(!sidebarActive)'>
     <img class='icon' src='../assets/right-arrow.svg' alt='Right Arrow' title='Open SideBar' >
     <!-- <img class='icon my-4' src='../assets/add.svg' alt='Cross' title='Add Task' @click='addTask'> -->
   </div>
@@ -10,7 +10,7 @@
     <div class='divTop borderBtm'>
       <div class='ml-3 pt-2'>
         <h5 class='d-inline'>Task Organizer</h5>
-        <img class='icon mr-3 float-right' src='../assets/left-arrow.svg' alt='left-arrow' title='Close SideBar' @click='toggleSideBar'>
+        <img class='icon mr-3 float-right' src='../assets/left-arrow.svg' alt='left-arrow' title='Close SideBar' @click='toggleSideBar(!sidebarActive)'>
       </div>
     </div>
 
@@ -48,7 +48,7 @@
           <input class='ml-3 form-control w-75'
                  :value='display.dateSelected'
                  type='date'
-                 @change='updateDate'
+                 @change='updateDateSelected'
                  @click.stop='stopTheEvent'
           >
         </div>
@@ -62,7 +62,7 @@
         <img v-else class='angle mr-2 d-inline' src='../assets/sidebar/angle-down.svg'>
 
         <div v-if='sidebarDisplay.selectTask' class='py-2 dropdown'>
-          <select class='ml-3 form-control w-75' :value='sidebar.taskSelected' @change='updateTaskSelectedDB' @click.stop='stopTheEvent'>
+          <select class='ml-3 form-control w-75' :value='taskSelected' @change='updateTaskSelected' @click.stop='stopTheEvent'>
             <option value=''></option>
             <option v-for='rootid in roots' :key='rootid' :value='rootid'>{{ tasks[rootid].task }}</option>
           </select>
@@ -113,10 +113,9 @@
 
 <script>
 import { currentDate } from '../js/sharedFunctions.js';
-import { updateTaskSelectedDB } from '../js/server/firestore.js';
 import { signIn, signOut } from '../js/server/auth.js';
 import { store } from '../store/store.js';
-import { mapState } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'Sidebar',
@@ -135,18 +134,16 @@ export default {
     };
   },
   methods: {
+    ...mapMutations('sidebar', {
+      toggleSideBar: 'SET_SIDEBAR_ACTIVE'
+    }),
+    ...mapActions('sidebar', [
+      'updateTaskSelected',
+      'updateDateSelected'
+    ]),
     currentDate,
-    updateTaskSelectedDB,
     addTask() {
       this.$store.commit('SET_DISPLAY', { bgScreen: true, vtask: false, ntask: true });
-    },
-    updateDate(date=null) {
-      const dateSelected = date ? date.target.value : new Date();
-
-      this.$store.commit('SET_SIDEBAR', { dateSelected: dateSelected });
-    },
-    toggleSideBar() {
-      this.$store.commit('SET_SIDEBAR', { sidebarActive: !this.sidebar.sidebarActive });
     },
     stopTheEvent(event) {
       event.stopPropagation();
@@ -156,15 +153,17 @@ export default {
   },
   computed: {
     ...mapState([
-      'roots',
-      'tasks',
       'user',
-      'sidebar',
       'display'
+    ]),
+    ...mapState('tasks', [
+      'roots',
+      'tasks'
+    ]),
+    ...mapState('sidebar', [
+      'taskSelected',
+      'sidebarActive'
     ])
-  },
-  mounted: function() {
-    // this.updateDate();
   }
 }
 </script>

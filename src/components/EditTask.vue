@@ -81,7 +81,6 @@ import { validateTasks } from '../js/newTask/newTaskMethods.js';
 import { validateChildrenDates, updateTask, getDateTaskCompleted, getTaskCompleted, cancelEdit } from '../js/editTask/editTaskMethods.js';
 import { cancel, confirmDeleteTask } from '../js/sharedMethods.js';
 import { formatDate } from '../js/sharedFunctions.js';
-import { updateTaskDB } from '../js/server/firestore.js';
 import { mapState } from 'vuex'
 
 export default {
@@ -124,8 +123,7 @@ export default {
     cancelEdit,
     cancel,
     confirmDeleteTask,
-    formatDate,
-    updateTaskDB
+    formatDate
   },
   computed: {
     startDateMin,
@@ -136,9 +134,11 @@ export default {
       return this.tasks[this.taskobj.parent] ? this.tasks[this.taskobj.parent] : null;
     },
     ...mapState([
-      'tasks',
       'taskId',
       'display'
+    ]),
+    ...mapState('tasks', [
+      'tasks'
     ])
   }
 }

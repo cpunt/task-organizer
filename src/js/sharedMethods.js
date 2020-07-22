@@ -1,4 +1,4 @@
-function addTask(taskId) {
+function addTask(taskId='') {
   this.$store.commit('SET_DISPLAY', { vtask: false, ntask: true, dtask: false, bgScreen: true })
   this.$store.commit('SET_TASKID', { taskId: taskId})
 }

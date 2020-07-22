@@ -69,9 +69,11 @@ export default {
     timeframeHeader,
     dates,
     ...mapState([
-      'tasks',
       'sidebar',
       'display'
+    ]),
+    ...mapState('tasks', [
+      'tasks'
     ])
   },
   components: {

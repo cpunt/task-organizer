@@ -50,7 +50,9 @@ function dates() {
     endDateIndex = getDateIndex(this.timeframeobj.timeframe, datesArr[0].date, new Date(task.time.endDate));
 
     for(let j = startDateIndex; j <= endDateIndex; j++) {
-      datesArr[j].tasks.push(tasks[i]);
+      if(datesArr[j]) {
+        datesArr[j].tasks.push(tasks[i]);
+      }
     }
   }
 

@@ -1,19 +1,21 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
+import { firebase, db } from '../js/server/config.js';
 
-Vue.use(Vuex)
+import tasks from './remote/tasks.js';
+import sidebar from './remote/sidebar.js';
+
+Vue.use(Vuex);
 
 const store = new Vuex.Store({
+  modules: {
+    tasks,
+    sidebar
+  },
   state: {
-    roots: [],
-    tasks: {},
+    db: db,
     taskId: '',
     user: null,
-    sidebar: {
-      taskSelected: '',
-      dateSelected: '',
-      sidebarActive: false
-    },
     display: {
       vtask: false,
       ntask: false,
@@ -22,14 +24,6 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
-    SET_ROOT(state, { id }) {
-      if(!state['roots'].includes(id)) {
-        state['roots'].push(id);
-      }
-    },
-    SET_TASK(state, { id, task }) {
-      Vue.set(state['tasks'], id, task);
-    },
     SET_USER(state, { email, username }) {
       // Maybe change to set
       if(email && username) {
@@ -38,19 +32,6 @@ const store = new Vuex.Store({
         state['user']['username'] = username;
       } else {
         state['user'] = null
-      }
-    },
-    SET_SIDEBAR(state, { taskSelected, dateSelected, sidebarActive }) {
-      if(taskSelected != undefined) {
-        Vue.set(state['sidebar'], 'taskSelected', taskSelected);
-      }
-
-      if(dateSelected != undefined) {
-        Vue.set(state['sidebar'], 'dateSelected', dateSelected);
-      }
-
-      if(sidebarActive != undefined) {
-        Vue.set(state['sidebar'], 'sidebarActive', sidebarActive);
       }
     },
     SET_DISPLAY(state, { vtask, ntask, dtask, bgScreen }) {
@@ -72,9 +53,19 @@ const store = new Vuex.Store({
     },
     SET_TASKID(state, { taskId }) {
       state['taskId'] = taskId;
-    },
-    DELETE_TASK(state, { id }) {
-      Vue.delete(state['tasks'], id);
+    }
+  },
+  actions: {
+    userStatus({ commit, dispatch }) {
+      firebase.auth().onAuthStateChanged(user => {
+        if(user) {
+          commit('SET_USER', { email: user.email, username: user.displayName });
+          dispatch('tasks/trackTasks');
+          dispatch('sidebar/trackSidebar');
+        } else {
+          commit('SET_USER', { email: null, username: null });
+        }
+      });
     }
   }
 });

@@ -33,7 +33,7 @@ export default {
   },
   computed: {
     validTasks,
-    ...mapState([
+    ...mapState('tasks', [
       'tasks'
     ])
   },

@@ -15,7 +15,7 @@
       <img class='opBarIcons' src='../assets/eye-open.svg' alt='View' title='View' @click='viewTask(); unhighlightTasks()'>
       <img class='opBarIcons' src='../assets/delete.svg' alt='Delete' title='Delete' @click='confirmDeleteTask(taskid); unhighlightTasks()'>
       <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click='addTask(taskid); unhighlightTasks()'>
-      <span class='checkBoxDiv rounded' :class="{ 'bgChecked': task.dateTaskCompleted[completedIndex], 'bgUnchecked': !task.dateTaskCompleted[completedIndex] }" v-if='task.children.length == 0' @click='updateDateTaskCompletedDB' title='Toggle Check'></span>
+      <span class='checkBoxDiv rounded' :class="{ 'bgChecked': task.dateTaskCompleted[completedIndex], 'bgUnchecked': !task.dateTaskCompleted[completedIndex] }" v-if='task.children.length == 0' @click='updateDateTaskCompleted' title='Toggle Check'></span>
 
       <div v-if='taskHasValidChild' class='d-inline'>
         <img v-if='showChildren' class='opBarIcons angle' src='../assets/angle-down.svg' alt='Angle Down' title='Hide Children' @click='toggleShowChildren'>
@@ -42,7 +42,6 @@ Add back to div
 
 <script>
 import { completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired } from '../js/timeframe/timeframeComputed.js';
-import { updateDateTaskCompletedDB } from '../js/server/firestore.js';
 import { toggleShowChildren, } from '../js/timeframe/timeframeMethods.js';
 import { addTask, confirmDeleteTask } from '../js/sharedMethods.js';
 import { highlightTasks, unhighlightTasks } from '../js/task/taskMethods.js';
@@ -87,7 +86,6 @@ export default {
     // }
   },
   methods: {
-    updateDateTaskCompletedDB,
     toggleShowChildren,
     addTask,
     highlightTasks,
@@ -96,7 +94,14 @@ export default {
       this.$store.commit('SET_DISPLAY', { bgScreen: true, vtask: true });
       this.$store.commit('SET_TASKID', { taskId: this.taskid})
     },
-    confirmDeleteTask
+    confirmDeleteTask,
+    updateDateTaskCompleted() {
+      this.$store.dispatch('tasks/updateDateTaskCompleted', {
+        task: this.task,
+        taskId: this.taskid,
+        completedIndex: this.completedIndex
+      });
+    }
    },
   computed: {
     completedIndex,
@@ -106,8 +111,10 @@ export default {
     percent,
     expired,
     ...mapState([
-      'tasks',
       'sidebar'
+    ]),
+    ...mapState('tasks', [
+      'tasks'
     ])
   },
   components: {
