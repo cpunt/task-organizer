@@ -4,7 +4,7 @@ import { firebase, db } from '../js/server/config.js';
 
 import tasks from './remote/tasks.js';
 import sidebar from './remote/sidebar.js';
-import display from './remote/display.js';
+import display from './local/display.js';
 
 Vue.use(Vuex);
 
@@ -33,6 +33,8 @@ const store = new Vuex.Store({
   actions: {
     userStatus({ commit, dispatch }) {
       firebase.auth().onAuthStateChanged(user => {
+        commit('display/SET_BGSCREEN', false);
+
         if(user) {
           commit('SET_USER', { email: user.email, username: user.displayName });
           dispatch('tasks/trackTasks');
@@ -40,6 +42,24 @@ const store = new Vuex.Store({
         } else {
           commit('SET_USER', { email: null, username: null });
         }
+      });
+    },
+    signIn({ commit }) {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      commit('display/SET_BGSCREEN', true);
+
+      firebase.auth().signInWithPopup(provider).then(result => {
+        console.log(result);
+      }).catch(function(error) {
+        console.log(error);
+      });
+    },
+    signOut() {
+      firebase.auth().signOut().then(() => {
+        location.reload();
+        console.log('User signed out');
+      }).catch(function(error) {
+        console.log(error);
       });
     }
   }

@@ -2,6 +2,7 @@ import { convertDateToInputString, dateOperatorTimeframe } from './newTaskFuncti
 
 function startDateMin() {
   let startDateMin;
+
   if(this.taskParent == null) {
     startDateMin = convertDateToInputString(new Date(2010, 0));
   } else {
@@ -43,6 +44,7 @@ function endDateMin() {
 
 function endDateMax() {
   let endDateMax;
+
   if(this.taskParent == null) {
     let today = new Date();
     endDateMax = convertDateToInputString(new Date(today.getFullYear() + 25, today.getMonth(), today.getDate()));

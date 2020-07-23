@@ -4,10 +4,10 @@ export default {
   namespaced: true,
   state: {
     roots: [],
-    tasks: {},
+    tasks: {}
   },
   mutations: {
-    SET_ROOT(state, { id }) {
+    SET_ROOT(state, id) {
       if(!state.roots.includes(id)) {
         state.roots.push(id);
       }
@@ -15,13 +15,19 @@ export default {
     SET_TASK(state, { id, task }) {
       Vue.set(state.tasks, id, task);
     },
-    DELETE_TASK(state, { id }) {
+    DELETE_TASK(state, id) {
       Vue.delete(state.tasks, id);
     },
-    DELETE_ROOT(state, { id }) {
+    DELETE_ROOT(state, id) {
       const index = state.roots.indexOf(id);
 
       state.roots.splice(index, 1);
+    },
+    SET_TASK_HIGHLIGHT(state, id) {
+      Vue.set(state.tasks[id], 'highlight', true);
+    },
+    UNSET_TASK_HIGHLIGHT(state, id) {
+      Vue.set(state.tasks[id], 'highlight', false);
     }
   },
   actions: {
@@ -34,7 +40,7 @@ export default {
           querySnapshot.docChanges().forEach(change => {
             if(change.type === 'added' || change.type === 'modified') {
               if(!change.doc.data().parent) {
-                commit('SET_ROOT', { id: change.doc.id });
+                commit('SET_ROOT', change.doc.id);
               }
               commit('SET_TASK', { id: change.doc.id, task: change.doc.data() });
             }
@@ -79,7 +85,7 @@ export default {
         tasksRef.doc(id)
           .delete();
 
-        commit('DELETE_TASK', { id: id });
+        commit('DELETE_TASK', id);
       });
 
       if(parentId) {
@@ -93,7 +99,7 @@ export default {
             children: parentChildren
           });
       } else {
-        commit('DELETE_ROOT', { id: taskId });
+        commit('DELETE_ROOT', taskId);
       }
     },
     updateDateTaskCompleted({ rootState, dispatch }, taskData) {
@@ -124,6 +130,20 @@ export default {
         .update({
           taskCompleted: taskCompleted
         });
+    },
+    highlightTasks({ state, commit } , taskIds) {
+      taskIds.forEach(id => {
+        if (!('hightlight' in state.tasks[id]) || !state.tasks[id].highlight) {
+          commit('SET_TASK_HIGHLIGHT', id);
+        }
+      });
+    },
+    unhighlightTasks({ state, commit } , taskIds) {
+      taskIds.forEach(id => {
+        if (!('hightlight' in state.tasks[id]) || state.tasks[id].highlight) {
+          commit('UNSET_TASK_HIGHLIGHT', id);
+        }
+      });
     }
   },
   getters: {

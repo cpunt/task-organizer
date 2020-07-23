@@ -1,6 +1,9 @@
 <template>
 <div class='text-center'>
   <div class='taskDiv card card-body shadow-sm rounded p-0'
+    :class="{ highlightTask: task.highlight }"
+    @mouseover="highlightTasks('highlight')"
+    @mouseleave="highlightTasks('unhighlight')"
   >
     <p class='mb-1 taskHeader'>{{ task.task }}</p>
 
@@ -12,9 +15,9 @@
     </div>
 
     <div class='taskOpBar'>
-      <img class='opBarIcons' src='../assets/eye-open.svg' alt='View' title='View' @click='viewTask(taskid); unhighlightTasks()'>
-      <img class='opBarIcons' src='../assets/delete.svg' alt='Delete' title='Delete' @click='confirmDeleteTask(taskid); unhighlightTasks()'>
-      <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click='addTask(taskid); unhighlightTasks()'>
+      <img class='opBarIcons' src='../assets/eye-open.svg' alt='View' title='View' @click="viewTask(taskid); highlightTasks('unhighlight')">
+      <img class='opBarIcons' src='../assets/delete.svg' alt='Delete' title='Delete' @click="confirmDeleteTask(taskid); highlightTasks('unhighlight')">
+      <img class='opBarIcons' src='../assets/add.svg' alt='Add' title='Add' @click="addTask(taskid); highlightTasks('unhighlight')">
       <span class='checkBoxDiv rounded' :class="{ 'bgChecked': task.dateTaskCompleted[completedIndex], 'bgUnchecked': !task.dateTaskCompleted[completedIndex] }" v-if='task.children.length == 0' @click='updateDateTaskCompleted' title='Toggle Check'></span>
 
       <div v-if='taskHasValidChild' class='d-inline'>
@@ -33,17 +36,10 @@
 </div>
 </template>
 
-<!--
-Add back to div
-:class="{ highlightTask: task.highlight }"
-@mouseover='highlightTasks'
-@mouseleave='unhighlightTasks'
--->
 
 <script>
 import { completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired } from '../js/timeframe/timeframeComputed.js';
 import { toggleShowChildren, } from '../js/timeframe/timeframeMethods.js';
-import { highlightTasks, unhighlightTasks } from '../js/task/taskMethods.js';
 import { mapState, mapActions } from 'vuex'
 
 export default {
@@ -75,14 +71,6 @@ export default {
     percent(val) {
       this.task.taskCompleted = val == 100;
     }
-    // task: {
-    //   handler(val) {
-    //     console.log(val);
-    //     console.log('I changed');
-    //   },
-    //   deep: true,
-    //   immediate: true
-    // }
   },
   methods: {
     ...mapActions('display', [
@@ -90,15 +78,56 @@ export default {
       'addTask',
       'confirmDeleteTask'
     ]),
-    toggleShowChildren,
-    highlightTasks,
-    unhighlightTasks,
     updateDateTaskCompleted() {
       this.$store.dispatch('tasks/updateDateTaskCompleted', {
         task: this.task,
         taskId: this.taskid,
         completedIndex: this.completedIndex
       });
+    },
+    toggleShowChildren,
+    highlightTasks(type) {
+      const taskIds = this.getTaskIds();
+
+      switch(type) {
+        case 'highlight':
+          this.$store.dispatch('tasks/highlightTasks', taskIds);
+          break;
+        case 'unhighlight':
+          this.$store.dispatch('tasks/unhighlightTasks', taskIds);
+          break;
+      }
+    },
+    getTaskIds() {
+      const taskIds = [];
+      let id = this.taskid,
+          node;
+      // Get current task to root task
+      while(id) {
+        node = this.tasks[id];
+        taskIds.push(id);
+
+        id = node.parent;
+      }
+      // Get children tasks
+      let queue = [];
+      queue.push(this.tasks[this.taskid]);
+
+      let currentNode = queue.pop(),
+          currentId;
+
+      while(currentNode) {
+        let length = currentNode.children.length;
+
+        for(let i = 0; i < length; i++) {
+          currentId = currentNode.children[i];
+          taskIds.push(currentId);
+          queue.unshift(this.tasks[currentId]);
+        }
+        currentNode = queue.pop();
+      }
+
+      return taskIds;
     }
    },
   computed: {

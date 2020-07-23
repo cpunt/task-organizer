@@ -113,7 +113,6 @@
 
 <script>
 import { currentDate } from '../js/sharedFunctions.js';
-import { signIn, signOut } from '../js/server/auth.js';
 import { store } from '../store/store.js';
 import { mapState, mapActions, mapMutations } from 'vuex'
 
@@ -144,12 +143,14 @@ export default {
     ...mapActions('display', [
       'addTask'
     ]),
+    ...mapActions([
+      'signIn',
+      'signOut'
+    ]),
     currentDate,
     stopTheEvent(event) {
       event.stopPropagation();
-    },
-    signIn,
-    signOut
+    }
   },
   computed: {
     ...mapState([
