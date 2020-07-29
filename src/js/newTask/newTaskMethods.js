@@ -1,15 +1,15 @@
 import { convertDateToInputString, validDate } from './newTaskFunctions.js';
-import { getDateIndex } from '../app/appFunctions.js';
+// import { getDateIndex } from '../app/appFunctions.js';
 
 function createTask() {
   if(this.validateTasks()) {
-    const dateTaskCompletedLen = getDateIndex(this.timeframe, new Date(this.startDate), new Date(this.endDate)) + 1,
-          dateTaskCompleted = new Array(dateTaskCompletedLen)
-    dateTaskCompleted.fill(false, 0, dateTaskCompletedLen);
+    // const dateTaskCompletedLen = getDateIndex(this.timeframe, new Date(this.startDate), new Date(this.endDate)) + 1,
+    //       dateTaskCompleted = new Array(dateTaskCompletedLen)
+    // dateTaskCompleted.fill(false, 0, dateTaskCompletedLen);
 
     const taskData = {
       children: [],
-      dateTaskCompleted: dateTaskCompleted,
+      dateTaskCompleted: {},
       description: this.description,
       parent: this.parentId,
       task: this.task,
