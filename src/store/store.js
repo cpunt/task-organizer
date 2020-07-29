@@ -4,7 +4,9 @@ import { firebase, db } from '../js/server/config.js';
 
 import tasks from './remote/tasks.js';
 import sidebar from './remote/sidebar.js';
+
 import display from './local/display.js';
+import timeframes from './local/timeframes.js';
 
 Vue.use(Vuex);
 
@@ -12,7 +14,8 @@ const store = new Vuex.Store({
   modules: {
     tasks,
     sidebar,
-    display
+    display,
+    timeframes
   },
   state: {
     db: db,

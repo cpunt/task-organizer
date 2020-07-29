@@ -1,66 +1,9 @@
-import { getDateIndex, getTaskDates } from '../app/appFunctions.js';
+import { getDateIndex } from '../app/appFunctions.js';
 import { capitalizeFirstLetter, setDateToTimeframe } from '../sharedFunctions.js';
 import { nodeDFS } from '../nodeFunctions.js';
 
-function dates() {
-  let datesArr = [];
-
-  if(this.timeframeobj.tasks.length == 0) {
-    return datesArr;
-  }
-
-  //Add dates
-  const tasks = this.timeframeobj.tasks;
-
-  let startDate = new Date(this.tasks[tasks[0]].time.startDate),
-      endDate = new Date(this.tasks[tasks[0]].time.endDate),
-      startDateTemp,
-      endDateTemp;
-
-  for(let i = 1; i < tasks.length; i++) {
-    startDateTemp = new Date(this.tasks[tasks[i]].time.startDate);
-    endDateTemp = new Date(this.tasks[tasks[i]].time.endDate);
-
-    if(startDateTemp < startDate) {
-      startDate = startDateTemp;
-    }
-
-    if(endDateTemp > endDate) {
-      endDate = endDateTemp;
-    }
-  }
-
-  const taskDates = getTaskDates(this.timeframeobj.timeframe, startDate, endDate);
-  let dateMap = {};
-
-  for(let i = 0; i < taskDates.length; i++) {
-    dateMap['date'] = taskDates[i];
-    dateMap['tasks'] = [];
-    datesArr.push(dateMap);
-    dateMap = {};
-  }
-  //Add tasks
-  let task,
-      startDateIndex,
-      endDateIndex;
-
-  for(let i = 0; i < tasks.length; i++) {
-    task = this.tasks[tasks[i]];
-    startDateIndex = getDateIndex(this.timeframeobj.timeframe, datesArr[0].date, new Date(task.time.startDate));
-    endDateIndex = getDateIndex(this.timeframeobj.timeframe, datesArr[0].date, new Date(task.time.endDate));
-
-    for(let j = startDateIndex; j <= endDateIndex; j++) {
-      if(datesArr[j]) {
-        datesArr[j].tasks.push(tasks[i]);
-      }
-    }
-  }
-
-  return datesArr;
-}
-
 function timeframeHeader() {
-  return capitalizeFirstLetter(this.timeframeobj.timeframe);
+  return capitalizeFirstLetter(this.timeframe);
 }
 
 function validTasks() {
@@ -165,4 +108,4 @@ function expired() {
   return false;
 }
 
-export { dates, timeframeHeader, validTasks, completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired };
+export { timeframeHeader, validTasks, completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired };
