@@ -7,7 +7,7 @@ function taskDate(date) {
   let year = d.getFullYear();
   let week, dayWeek, monthWeek, yearWeek;
 
-  switch(this.timeframeobj.timeframe) {
+  switch(this.timeframe) {
     case 'yearly':
       return year;
     case 'monthly':

@@ -31,7 +31,7 @@ export default {
     }
   },
   actions: {
-    trackTasks({ rootState, commit }) {
+    trackTasks({ rootState, commit, dispatch }) {
       rootState.db.collection('users')
         .doc(rootState.user.email)
         .collection('tasks')
@@ -44,7 +44,10 @@ export default {
               }
               commit('SET_TASK', { id: change.doc.id, task: change.doc.data() });
             }
+
           });
+
+          dispatch('timeframes/setTimeframes', null, { root: true });
         });
     },
     addTask({ rootState }, taskData) {
@@ -85,6 +88,7 @@ export default {
         tasksRef.doc(id)
           .delete();
 
+        commit('timeframes/DELETE_TASK', { taskId: id, timeframe: state.tasks[id].time.timeframe }, { root: true });
         commit('DELETE_TASK', id);
       });
 

@@ -1,15 +1,15 @@
 <template>
 <div id='app'>
 
-  <div v-if='bgScreen' class='backgroundScreen' @click='cancel'></div>
+  <BackgroundScreen v-if='bgScreen' />
 
   <Sidebar class='sideBar' :class='{ sideBarOpen: sidebarActive, sideBarClosed: !sidebarActive }' />
 
-  <div id='timeframesDiv' :class='{ tfDSidebar: sidebarActive, tfDNoSidebar: !sidebarActive}'>
-    <TimeframeDivs v-for='(timeframeObj, index) in timeframes'
-                   :key='index'
-                   :timeframeobj='timeframeObj'
-    />
+  <div id='timeframesDiv' :class='{ tfDSidebar: sidebarActive, tfDNoSidebar: !sidebarActive }'>
+    <TimeframeDivs :timeframetasks="timeframes['yearly']" timeframe='yearly' />
+    <TimeframeDivs :timeframetasks="timeframes['monthly']" timeframe='monthly' />
+    <TimeframeDivs :timeframetasks="timeframes['weekly']" timeframe='weekly' />
+    <TimeframeDivs :timeframetasks="timeframes['daily']" timeframe='daily' />
   </div>
 
   <ViewTask v-if='vtask' />
@@ -27,8 +27,8 @@ import TimeframeDivs from './components/TimeframeDivs.vue';
 import ViewTask from './components/ViewTask.vue';
 import NewTask from './components/NewTask.vue';
 import DeleteTask from './components/DeleteTask.vue';
+import BackgroundScreen from './components/BackgroundScreen.vue';
 
-import { timeframes } from './js/app/appComputed.js';
 import { store } from './store/store.js';
 import { mapState, mapActions } from 'vuex'
 
@@ -57,14 +57,17 @@ export default {
       'dtask',
       'bgScreen'
     ]),
-    timeframes
+    ...mapState('timeframes', [
+      'timeframes'
+    ])
   },
   components: {
     Sidebar,
     TimeframeDivs,
     ViewTask,
     NewTask,
-    DeleteTask
+    DeleteTask,
+    BackgroundScreen
   },
   mounted: function() {
     this.$store.dispatch('userStatus');
