@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { getDateIndex } from '../../js/app/appFunctions.js';
 
 export default {
   namespaced: true,
@@ -108,7 +109,12 @@ export default {
     },
     updateDateTaskCompleted({ rootState, dispatch }, taskData) {
       const dates = taskData.task.dateTaskCompleted;
-      dates[taskData.completedIndex] = !dates[taskData.completedIndex];
+
+      if (taskData.completedIndex in dates) {
+        delete dates[taskData.completedIndex];
+      } else {
+        dates[taskData.completedIndex] = true;
+      }
 
       rootState.db.collection('users')
         .doc(rootState.user.email)
@@ -116,9 +122,11 @@ export default {
         .doc(taskData.taskId)
         .update({
           dateTaskCompleted: dates
-        })
+        });
 
-      const taskComplete = dates.every((val) => val === true);
+      const time = taskData.task.time;
+      const datesTotal = getDateIndex(time.timeframe, new Date(time.startDate), new Date(time.endDate)) + 1;
+      const taskComplete = Object.keys(dates).length === datesTotal;
 
       if(taskComplete != taskData.task.taskCompleted) {
         dispatch('updateTaskCompleted', taskData.taskId);

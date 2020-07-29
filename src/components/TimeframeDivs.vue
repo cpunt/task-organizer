@@ -106,57 +106,37 @@ export default {
       }
     },
     getDates() {
-      let datesArr = [];
-      const tasks = this.timeframetasks;
       console.log('I reset the dates');
-      if(tasks.length == 0) {
-        return datesArr;
-      }
+      const taskIds = this.timeframetasks;
 
+      if(taskIds.length == 0) {
+        return [];
+      }
       //Add dates
-      let startDate = new Date(this.tasks[tasks[0]].time.startDate),
-          endDate = new Date(this.tasks[tasks[0]].time.endDate),
-          startDateTemp,
-          endDateTemp;
+      let minDate = new Date(Math.min.apply(null, taskIds.map(taskId => new Date(this.tasks[taskId].time.startDate))));
+      let maxDate = new Date(Math.max.apply(null, taskIds.map(taskId => new Date(this.tasks[taskId].time.endDate))));
+      let datesArr = [];
+      const taskDates = getTaskDates(this.timeframe, minDate, maxDate);
 
-      for(let i = 1; i < tasks.length; i++) {
-        startDateTemp = new Date(this.tasks[tasks[i]].time.startDate);
-        endDateTemp = new Date(this.tasks[tasks[i]].time.endDate);
+      taskDates.forEach(date => datesArr.push({
+        date: date,
+        tasks: []
+      }));
 
-        if(startDateTemp < startDate) {
-          startDate = startDateTemp;
-        }
-
-        if(endDateTemp > endDate) {
-          endDate = endDateTemp;
-        }
-      }
-
-      const taskDates = getTaskDates(this.timeframe, startDate, endDate);
-      let dateMap = {};
-
-      for(let i = 0; i < taskDates.length; i++) {
-        dateMap['date'] = taskDates[i];
-        dateMap['tasks'] = [];
-        datesArr.push(dateMap);
-        dateMap = {};
-      }
       //Add tasks
-      let task,
-          startDateIndex,
-          endDateIndex;
+      let task, startDateIndex, endDateIndex;
 
-      for(let i = 0; i < tasks.length; i++) {
-        task = this.tasks[tasks[i]];
+      taskIds.forEach(taskId => {
+        task = this.tasks[taskId];
         startDateIndex = getDateIndex(this.timeframe, datesArr[0].date, new Date(task.time.startDate));
         endDateIndex = getDateIndex(this.timeframe, datesArr[0].date, new Date(task.time.endDate));
 
         for(let j = startDateIndex; j <= endDateIndex; j++) {
           if(datesArr[j]) {
-            datesArr[j].tasks.push(tasks[i]);
+            datesArr[j].tasks.push(taskId);
           }
         }
-      }
+      });
 
       return datesArr;
     }
