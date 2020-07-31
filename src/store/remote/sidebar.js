@@ -1,3 +1,4 @@
+import { currentDate } from '../../js/sharedFunctions.js';
 
 export default {
   namespaced: true,
@@ -14,7 +15,7 @@ export default {
       state.dateSelected = dateSelected;
     },
     SET_SIDEBAR_ACTIVE(state, sidebarActive) {
-      state.sidebarActive = sidebarActive
+      state.sidebarActive = sidebarActive;
     }
   },
   actions: {
@@ -33,10 +34,10 @@ export default {
         .doc(rootState.user.email)
         .update({
           taskSelected: taskSelected
-        })
+        });
     },
     updateDateSelected({ commit }, event) {
-      const dateSelected = event ? event.target.value : new Date();
+      const dateSelected = event ? event.target.value : currentDate();
       commit('SET_DATE_SELECTED', dateSelected);
     }
   }

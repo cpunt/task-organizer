@@ -7,6 +7,7 @@ import sidebar from './remote/sidebar.js';
 
 import display from './local/display.js';
 import timeframes from './local/timeframes.js';
+import dates from './local/dates.js';
 
 Vue.use(Vuex);
 
@@ -15,7 +16,8 @@ const store = new Vuex.Store({
     tasks,
     sidebar,
     display,
-    timeframes
+    timeframes,
+    dates
   },
   state: {
     db: db,
@@ -37,7 +39,6 @@ const store = new Vuex.Store({
     userStatus({ commit, dispatch }) {
       firebase.auth().onAuthStateChanged(user => {
         commit('display/SET_BGSCREEN', false);
-
         if(user) {
           commit('SET_USER', { email: user.email, username: user.displayName });
           dispatch('tasks/trackTasks');

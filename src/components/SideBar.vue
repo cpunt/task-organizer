@@ -165,6 +165,9 @@ export default {
       'taskSelected',
       'sidebarActive'
     ])
+  },
+  mounted: function() {
+    this.$store.dispatch('sidebar/updateDateSelected', null);
   }
 }
 </script>
