@@ -72,10 +72,6 @@ export default {
       commit('SET_TIMEFRAME_DATES', { dates: datesArr, timeframe: timeframe });
       commit('SET_TIMEFRAME_DATES_RANGE', { timeframe: timeframe, start: 0, stop: datesArr.length > 25 ? 25 : datesArr.length });
     }
-    // setTimeframeDatesRange({ state }, { timeframe, dateSelected }) {
-    //   const dateSelectedIndex = getDateIndex(timeframe, state.dates[timeframe][0].date,  new Date(dateSelected))
-    //   console.log(dateSelectedIndex);
-    // }
   },
   getters: {
     getTimeframeDates: state => timeframe => {

@@ -44,6 +44,22 @@ export default {
       required: true
     }
   },
+  computed: {
+    timeframeHeader,
+    ...mapState('sidebar', [
+      'dateSelected',
+      'taskSelected'
+    ]),
+    ...mapState('tasks', [
+      'tasks'
+    ]),
+    ...mapState('dates', [
+      'datesRange'
+    ]),
+    dates() {
+      return this.$store.getters['dates/getTimeframeDates'](this.timeframe);
+    }
+  },
   watch: {
     dateSelected() {
       // ToDo make scrollToDate work
@@ -105,84 +121,54 @@ export default {
         return date;
       }
     },
+    loadTasks() {
+      const timeframeDiv = document.getElementById(this.timeframe);
 
-  },
-  computed: {
-    timeframeHeader,
-    ...mapState('sidebar', [
-      'dateSelected',
-      'taskSelected'
-    ]),
-    ...mapState('tasks', [
-      'tasks'
-    ]),
-    ...mapState('dates', [
-      'datesRange'
-    ]),
-    dates() {
-      return this.$store.getters['dates/getTimeframeDates'](this.timeframe);
+      if (this.dates.length < 25) {
+        timeframeDiv.removeEventListener('scroll', this.loadTasks);
+        return;
+      }
+
+      const tasksDiv = timeframeDiv.getElementsByClassName('tasksDiv'),
+            bottom = timeframeDiv.scrollHeight - timeframeDiv.offsetHeight,
+            scrollPosition = timeframeDiv.scrollTop;
+
+      let start = this.datesRange[this.timeframe].start,
+          stop = this.datesRange[this.timeframe].stop,
+          newStart;
+
+      if (scrollPosition === bottom) {
+        newStart = start + 10 > this.dates.length ? this.dates.length - 25 : start + 10;
+
+        if (start !== this.dates.length - 25) {
+          tasksDiv[15].scrollIntoView(false);
+
+          this.$store.commit('dates/SET_TIMEFRAME_DATES_RANGE', {
+            timeframe: this.timeframe,
+            start: newStart,
+            stop: stop
+          }, { root: true });
+        }
+      } else if (scrollPosition === 0) {
+        newStart = start - 10 < 0 ? 0 : start - 10;
+
+        if (start !== 0) {
+          tasksDiv[10].scrollIntoView(true);
+
+          this.$store.commit('dates/SET_TIMEFRAME_DATES_RANGE', {
+            timeframe: this.timeframe,
+            start: newStart,
+            stop: stop
+          }, { root: true });
+        }
+      }
     }
   },
   components: {
     TasksDate
   },
   mounted: function() {
-    const timeframeDiv = document.getElementById(this.timeframe);
-    // Function will need to be moved to methods.
-    timeframeDiv.addEventListener("scroll", () => {
-      if (this.dates.length < 25) {
-        // Remove event listener
-        return;
-      }
-      const tasksDiv = timeframeDiv.getElementsByClassName('tasksDiv');
-      const bottom = timeframeDiv.scrollHeight - timeframeDiv.offsetHeight;
-      const scrollPosition = timeframeDiv.scrollTop;
-      let start = this.datesRange[this.timeframe].start;
-      let stop = this.datesRange[this.timeframe].stop;
-
-      // Have to add scroll for going up aswell
-
-      if (scrollPosition === bottom) {
-        console.log('Load down');
-        tasksDiv[15].scrollIntoView(false);
-
-        if (start + 10 > this.dates.length) {
-          if (start !== this.dates.length - 25) {
-            this.$store.commit('dates/SET_TIMEFRAME_DATES_RANGE', {
-              timeframe: this.timeframe,
-              start: this.dates.length - 25,
-              stop: stop
-            }, { root: true });
-          }
-        } else {
-          this.$store.commit('dates/SET_TIMEFRAME_DATES_RANGE', {
-            timeframe: this.timeframe,
-            start: start + 10,
-            stop: stop
-          }, { root: true });
-        }
-      } else if (scrollPosition === 0) {
-        if (start - 10 < 0) {
-          if (start !== 0) {
-            tasksDiv[10].scrollIntoView(true);
-
-            this.$store.commit('dates/SET_TIMEFRAME_DATES_RANGE', {
-              timeframe: this.timeframe,
-              start: 0,
-              stop: stop
-            }, { root: true });
-          }
-        } else {
-          tasksDiv[10].scrollIntoView(true);
-
-          this.$store.commit('dates/SET_TIMEFRAME_DATES_RANGE', {
-            timeframe: this.timeframe,
-            start: start - 10,
-            stop: stop
-          }, { root: true });
-        }
-      }
-    });
+    document.getElementById(this.timeframe).addEventListener('scroll', this.loadTasks);
   }
 }
 </script>
@@ -217,40 +203,3 @@ export default {
   color: white;
 }
 </style>
-
-
-<!-- getDates() {
-  console.log('I reset the dates');
-  const taskIds = this.timeframetasks;
-
-  if(taskIds.length == 0) {
-    return [];
-  }
-  //Add dates
-  let minDate = new Date(Math.min.apply(null, taskIds.map(taskId => new Date(this.tasks[taskId].time.startDate))));
-  let maxDate = new Date(Math.max.apply(null, taskIds.map(taskId => new Date(this.tasks[taskId].time.endDate))));
-  let datesArr = [];
-  const taskDates = getTaskDates(this.timeframe, minDate, maxDate);
-
-  taskDates.forEach(date => datesArr.push({
-    date: date,
-    tasks: []
-  }));
-
-  //Add tasks
-  let task, startDateIndex, endDateIndex;
-
-  taskIds.forEach(taskId => {
-    task = this.tasks[taskId];
-    startDateIndex = getDateIndex(this.timeframe, datesArr[0].date, new Date(task.time.startDate));
-    endDateIndex = getDateIndex(this.timeframe, datesArr[0].date, new Date(task.time.endDate));
-
-    for(let j = startDateIndex; j <= endDateIndex; j++) {
-      if(datesArr[j]) {
-        datesArr[j].tasks.push(taskId);
-      }
-    }
-  });
-
-  return datesArr;
-} -->
