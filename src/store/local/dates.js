@@ -13,20 +13,32 @@ export default {
     },
     datesRange: {
       yearly: {
-        start: 0,
-        stop: 0
+        index: 0,
+        range: 0,
+        n: 0,
+        max: 0,
+        scroll: false
       },
       monthly: {
-        start: 0,
-        stop: 0
+        index: 0,
+        range: 0,
+        n: 0,
+        max: 0,
+        scroll: false
       },
       weekly: {
-        start: 0,
-        stop: 0
+        index: 0,
+        range: 0,
+        n: 0,
+        max: 0,
+        scroll: false
       },
       daily: {
-        start: 0,
-        stop: 0
+        index: 0,
+        range: 0,
+        n: 0,
+        max: 0,
+        scroll: false
       }
     }
   },
@@ -37,19 +49,28 @@ export default {
     UNSET_TIMEFRAME_DATES(state, timeframe) {
       Vue.set(state.dates, timeframe, []);
       Vue.set(state.datesRange, timeframe, {
-        start: 0,
-        stop: 0
+        index: 0,
+        range: 0,
+        n: 0,
+        max: 0,
+        scroll: false
       });
     },
-    SET_TIMEFRAME_DATES_RANGE(state, { timeframe, start, stop }) {
+    SET_DATES_RANGE(state, { timeframe, index, range, n, max, scroll }) {
       Vue.set(state.datesRange, timeframe, {
-        start: start,
-        stop: stop
+        index: index,
+        range: range,
+        n: n,
+        max: max,
+        scroll: scroll
       });
+    },
+    SET_DATES_RANGE_INDEX(state, { timeframe, index }) {
+      Vue.set(state.datesRange[timeframe], 'index', index);
     }
   },
   actions: {
-    setTimeframeDates({ commit }, { taskIds, tasks, timeframe }) {
+    setTimeframeDates({ commit, dispatch }, { taskIds, tasks, timeframe }) {
       console.log('I reset the dates');
       if(taskIds.length == 0) {
         return [];
@@ -70,7 +91,42 @@ export default {
       });
 
       commit('SET_TIMEFRAME_DATES', { dates: datesArr, timeframe: timeframe });
-      commit('SET_TIMEFRAME_DATES_RANGE', { timeframe: timeframe, start: 0, stop: datesArr.length > 25 ? 25 : datesArr.length });
+      dispatch('setTimeframeDatesRange', timeframe);
+    },
+    setTimeframeDatesRange ({ state, commit }, timeframe) {
+      const dates = state.dates[timeframe];
+      let max = 0,
+          scroll = false,
+          n = 10,
+          index = 0,
+          range = 25,
+          counter = 0;
+
+
+      for (let i = dates.length - 1; i >= 0; i--) {
+        if (dates[i].tasks.length > 0) {
+          counter++;
+        }
+
+        if (counter === range) {
+          max = i;
+          counter = 0;
+
+          if (i > 0) {
+            scroll = true;
+          }
+          break;
+        }
+      }
+
+      commit('SET_DATES_RANGE', {
+        timeframe: timeframe,
+        index: index,
+        range: range,
+        n: n,
+        max: max,
+        scroll: scroll
+      });
     }
   },
   getters: {
