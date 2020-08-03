@@ -43,10 +43,10 @@ export default {
     }
   },
   mutations: {
-    SET_TIMEFRAME_DATES(state, { dates, timeframe }) {
+    SET_DATES(state, { dates, timeframe }) {
       Vue.set(state.dates, timeframe, dates);
     },
-    UNSET_TIMEFRAME_DATES(state, timeframe) {
+    UNSET_DATES(state, timeframe) {
       Vue.set(state.dates, timeframe, []);
       Vue.set(state.datesRange, timeframe, {
         index: 0,
@@ -70,7 +70,7 @@ export default {
     }
   },
   actions: {
-    setTimeframeDates({ commit, dispatch }, { taskIds, tasks, timeframe }) {
+    setDates({ commit, dispatch }, { taskIds, tasks, timeframe }) {
       console.log('I reset the dates');
       if(taskIds.length == 0) {
         return [];
@@ -90,10 +90,10 @@ export default {
         }
       });
 
-      commit('SET_TIMEFRAME_DATES', { dates: datesArr, timeframe: timeframe });
-      dispatch('setTimeframeDatesRange', timeframe);
+      commit('SET_DATES', { dates: datesArr, timeframe: timeframe });
+      dispatch('setDatesRange', timeframe);
     },
-    setTimeframeDatesRange ({ state, commit }, timeframe) {
+    setDatesRange ({ state, commit }, timeframe) {
       const dates = state.dates[timeframe];
       let max = 0,
           scroll = false,
@@ -127,11 +127,6 @@ export default {
         max: max,
         scroll: scroll
       });
-    }
-  },
-  getters: {
-    getTimeframeDates: state => timeframe => {
-      return state.dates[timeframe];
     }
   }
 }
