@@ -7,8 +7,8 @@
 
   <div v-for='(datesObj, i) in displayDates' :key='i' class='tasksDiv text-left'>
     <div v-if='datesObj.tasks.length === 0'>
-      <h5 v-if='dates[i-1].tasks.length > 0 && dates[i+1].tasks.length > 0' class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>{{ taskDate(datesObj.date) }}</h5>
-      <h5 v-else-if='dates[i-1].tasks.length > 0' class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>{{ taskDate(datesObj.date) }}...</h5>
+      <h5 v-if='displayDates[datesRange[timeframe].index + (i-1)].tasks.length > 0 && displayDates[datesRange[timeframe].index + (i+1)].tasks.length > 0' class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>{{ taskDate(datesObj.date) }}</h5>
+      <h5 v-else-if='displayDates[datesRange[timeframe].index + (i-1)].tasks.length > 0' class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>{{ taskDate(datesObj.date) }}...</h5>
       <h5 v-else class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>...{{ taskDate(datesObj.date) }}</h5>
     </div>
 
@@ -59,7 +59,7 @@ export default {
       'datesRange'
     ]),
     dates() {
-      return this.$store.getters['dates/getTimeframeDates'](this.timeframe);
+      return this.$store.state.dates.dates[this.timeframe];
     },
     displayDates() {
       if (this.dates.length === 0) {
@@ -97,18 +97,8 @@ export default {
     }
   },
   watch: {
-    dateSelected() {
-      // ToDo make scrollToDate work
-      // this.scrollToDate();
-    },
-    timeframetasks(val) {
-      this.$store.commit('dates/UNSET_TIMEFRAME_DATES', this.timeframe);
-      this.$store.dispatch('dates/setTimeframeDates', {
-        taskIds: val,
-        tasks: this.tasks,
-        timeframe: this.timeframe,
-        dateSelected: this.dateSelected
-       });
+    displayDates () {
+      document.getElementById(this.timeframe).addEventListener('scroll', this.loadTasks);
     }
   },
   methods: {
@@ -173,9 +163,6 @@ export default {
   },
   components: {
     TasksDate
-  },
-  mounted: function() {
-    document.getElementById(this.timeframe).addEventListener('scroll', this.loadTasks);
   }
 }
 </script>

@@ -1,5 +1,3 @@
-import { getDateIndex } from '../app/appFunctions.js';
-
 function validateChildrenDates() {
   if(this.taskobj.children.length > 0) {
     if(this.taskobj.time.startDate != this.startDate || this.taskobj.time.endDate != this.endDate) {
@@ -37,9 +35,6 @@ function updateTask() {
         validChildrenDates = this.validateChildrenDates();
 
   if(validTasks && validChildrenDates) {
-    const dateTaskCompleted = this.getDateTaskCompleted(),
-          taskCompleted = this.getTaskCompleted(dateTaskCompleted);
-
     const task = {
       task: this.task,
       description: this.description,
@@ -47,9 +42,7 @@ function updateTask() {
         timeframe: this.timeframe,
         startDate: this.startDate,
         endDate: this.endDate
-      },
-      dateTaskCompleted: dateTaskCompleted,
-      taskCompleted: taskCompleted,
+      }
     }
 
     this.$store.dispatch('tasks/updateTask', { task: task, taskId: this.taskId});
@@ -57,43 +50,6 @@ function updateTask() {
   }
 }
 
-function getDateTaskCompleted() {
-  const timeframe = this.taskobj.time.timeframe,
-        dateTaskCompleted = this.taskobj.dateTaskCompleted,
-        startDate = new Date(this.taskobj.time.startDate),
-        endDate = new Date(this.taskobj.time.endDate),
-        newStartDate = new Date(this.startDate),
-        newEndDate = new Date(this.endDate);
-
-  let startIndex = getDateIndex(timeframe, startDate, newStartDate),
-      endIndex = getDateIndex(timeframe, endDate, newEndDate);
-
-  if(startIndex > 0) {
-    while(startIndex > 0) {
-      startIndex--;
-      dateTaskCompleted.shift();
-    }
-  } else if(startIndex < 0) {
-    while(startIndex < 0) {
-      startIndex++;
-      dateTaskCompleted.unshift(false);
-    }
-  }
-
-  if(endIndex > 0) {
-    while(endIndex > 0) {
-      endIndex--;
-      dateTaskCompleted.push(false);
-    }
-  } else if(endIndex < 0) {
-    while(endIndex < 0) {
-      endIndex++;
-      dateTaskCompleted.pop();
-    }
-  }
-
-  return dateTaskCompleted;
-}
 
 function getTaskCompleted(dateTaskArr) {
   for(let i = 0; i < dateTaskArr.length; i++) {
@@ -109,4 +65,4 @@ function cancelEdit() {
   this.$parent.toggleEdit();
 }
 
-export { validateChildrenDates, updateTask, getDateTaskCompleted, getTaskCompleted, cancelEdit };
+export { validateChildrenDates, updateTask, getTaskCompleted, cancelEdit };

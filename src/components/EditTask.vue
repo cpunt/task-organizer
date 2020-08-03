@@ -78,7 +78,7 @@
 import { startDateMin, startDateMax, endDateMin, endDateMax } from '../js/newTask/newTaskComputed.js';
 import { task, description, timeframe, startDate, endDate } from '../js/newTask/newTaskWatchers.js';
 import { validateTasks } from '../js/newTask/newTaskMethods.js';
-import { validateChildrenDates, updateTask, getDateTaskCompleted, getTaskCompleted, cancelEdit } from '../js/editTask/editTaskMethods.js';
+import { validateChildrenDates, updateTask, cancelEdit } from '../js/editTask/editTaskMethods.js';
 import { formatDate } from '../js/sharedFunctions.js';
 import { mapState, mapActions } from 'vuex'
 
@@ -121,8 +121,6 @@ export default {
     validateTasks,
     validateChildrenDates,
     updateTask,
-    getDateTaskCompleted,
-    getTaskCompleted,
     cancelEdit,
     formatDate
   },

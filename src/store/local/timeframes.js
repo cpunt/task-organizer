@@ -20,21 +20,36 @@ export default {
     }
   },
   actions: {
-    setTimeframes({ rootState, state, commit }) {
+    setTimeframes({ rootState, state, commit, dispatch }, timeframe) {
+      const oldTasks = state.timeframes[timeframe];
+      const newTasks = [];
       const tasks = rootState.tasks.tasks;
-      let task, taskParentTimeframe, taskTimeframe;
+      let parentTimeframe, task;
 
       for(const taskId in tasks) {
         task = tasks[taskId];
-        taskParentTimeframe = task.parent ? tasks[task.parent].time.timeframe : '';
-        taskTimeframe = task.time.timeframe
+        if (task.time.timeframe !== timeframe) {
+          continue;
+        }
 
-        if(!taskParentTimeframe || taskParentTimeframe != taskTimeframe) {
-          if(!state.timeframes[taskTimeframe].includes(taskId)) {
-            commit('ADD_TASK', { taskId: taskId, timeframe: taskTimeframe });
-          }
+        parentTimeframe = task.parent ? tasks[task.parent].time.timeframe : '';
+        if(parentTimeframe !== task.time.timeframe) {
+          newTasks.push(taskId);
         }
       }
+
+      const added = newTasks.filter(taskId => !oldTasks.includes(taskId));
+      const deleted = oldTasks.filter(taskId => !newTasks.includes(taskId));
+
+      added.forEach(taskId => commit('ADD_TASK', { taskId: taskId, timeframe: timeframe }));
+      deleted.forEach(taskId => commit('DELETE_TASK', { taskId: taskId, timeframe: timeframe }));
+
+      commit('dates/UNSET_DATES', timeframe, { root: true });
+      dispatch('dates/setDates', {
+        taskIds: state.timeframes[timeframe],
+        tasks: rootState.tasks.tasks,
+        timeframe: timeframe
+      }, { root: true });
     }
   },
   getters: {

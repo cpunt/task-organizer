@@ -15,6 +15,10 @@ function validTasks() {
   return this.tasksids.filter((taskId) => {
     let task = this.tasks[taskId];
 
+    if (!task) {
+      return false;
+    }
+
     if(task.time.timeframe == this.timeframe) {
       startDate = setDateToTimeframe(this.timeframe , new Date(task.time.startDate));
       endDate = setDateToTimeframe(this.timeframe , new Date(task.time.endDate));

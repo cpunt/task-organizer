@@ -38,17 +38,34 @@ export default {
         .collection('tasks')
         .onSnapshot(querySnapshot => {
           console.log('Im doing something');
-          querySnapshot.docChanges().forEach(change => {
-            if(change.type === 'added' || change.type === 'modified') {
-              if(!change.doc.data().parent) {
-                commit('SET_ROOT', change.doc.id);
-              }
-              commit('SET_TASK', { id: change.doc.id, task: change.doc.data() });
-            }
+          const timeframes = [];
 
+          querySnapshot.docChanges().forEach(change => {
+            timeframes.push(change.doc.data().time.timeframe);
+
+            switch (change.type) {
+              case 'added':
+              case 'modified':
+                if (!change.doc.data().parent) {
+                  commit('SET_ROOT', change.doc.id);
+                }
+                commit('SET_TASK', {
+                  id: change.doc.id,
+                  task: change.doc.data()
+                });
+                break;
+              case 'removed':
+                if (!change.doc.data().parent) {
+                  commit('DELETE_ROOT', change.doc.id);
+                }
+                commit('DELETE_TASK', change.doc.id);
+                break;
+            }
           });
 
-          dispatch('timeframes/setTimeframes', null, { root: true });
+          timeframes.forEach(timeframe => {
+            dispatch('timeframes/setTimeframes', timeframe, { root: true })
+          });
         });
     },
     addTask({ rootState }, taskData) {
@@ -71,14 +88,14 @@ export default {
         });
       }
     },
-    updateTask({ rootState }, taskData) {
+    updateTask({ rootState }, body) {
       rootState.db.collection('users')
         .doc(rootState.user.email)
         .collection('tasks')
-        .doc(taskData.taskId)
-        .update(taskData.task);
+        .doc(body.taskId)
+        .update(body.task);
     },
-    deleteTask({ rootState, state, commit, getters }, taskId) {
+    deleteTask({ rootState, state, getters }, taskId) {
       const parentId = state.tasks[taskId].parent,
             toDelete = getters.getToDelete(taskId),
             tasksRef = rootState.db.collection('users')
@@ -88,9 +105,6 @@ export default {
       toDelete.forEach(id => {
         tasksRef.doc(id)
           .delete();
-
-        commit('timeframes/DELETE_TASK', { taskId: id, timeframe: state.tasks[id].time.timeframe }, { root: true });
-        commit('DELETE_TASK', id);
       });
 
       if(parentId) {
@@ -103,8 +117,6 @@ export default {
           .update({
             children: parentChildren
           });
-      } else {
-        commit('DELETE_ROOT', taskId);
       }
     },
     updateDateTaskCompleted({ rootState, dispatch }, taskData) {
