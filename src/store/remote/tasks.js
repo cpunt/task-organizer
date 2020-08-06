@@ -32,32 +32,51 @@ export default {
     }
   },
   actions: {
-    trackTasks({ rootState, commit, dispatch }) {
+    trackTasks({ rootState, state, commit, dispatch }) {
       rootState.db.collection('users')
         .doc(rootState.user.email)
         .collection('tasks')
         .onSnapshot(querySnapshot => {
           console.log('Im doing something');
           const timeframes = [];
+          let oldStartDate, oldEndDate, newStartDate, newEndDate;
 
           querySnapshot.docChanges().forEach(change => {
-            timeframes.push(change.doc.data().time.timeframe);
-
             switch (change.type) {
-              case 'added':
               case 'modified':
+                oldStartDate = new Date(state.tasks[change.doc.id].time.startDate).getTime();
+                oldEndDate = new Date(state.tasks[change.doc.id].time.endDate).getTime();
+                newStartDate = new Date(change.doc.data().time.startDate).getTime();
+                newEndDate = new Date(change.doc.data().time.endDate).getTime();
+
+                if (oldStartDate !== newStartDate || oldEndDate !== newEndDate) {
+                  timeframes.push(change.doc.data().time.timeframe);
+                }
+    
+                commit('SET_TASK', {
+                  id: change.doc.id,
+                  task: change.doc.data()
+                });
+                break;
+              case 'added':
+                timeframes.push(change.doc.data().time.timeframe);
+
                 if (!change.doc.data().parent) {
                   commit('SET_ROOT', change.doc.id);
                 }
+
                 commit('SET_TASK', {
                   id: change.doc.id,
                   task: change.doc.data()
                 });
                 break;
               case 'removed':
+                timeframes.push(change.doc.data().time.timeframe);
+
                 if (!change.doc.data().parent) {
                   commit('DELETE_ROOT', change.doc.id);
                 }
+
                 commit('DELETE_TASK', change.doc.id);
                 break;
             }
