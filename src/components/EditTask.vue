@@ -152,6 +152,7 @@ export default {
 .icon {
   cursor: pointer;
   height: 24px;
+  width: 24px;
   position: absolute;
 }
 

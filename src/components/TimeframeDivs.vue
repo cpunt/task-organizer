@@ -2,7 +2,7 @@
 <div :id='timeframe' class='timeframeDiv' :ref='timeframe'>
 
   <div class='headerDiv sticky-top text-center'>
-    <h3 class='font-weight-normal timeframeHeader'>{{ timeframeHeader }}</h3>
+    <h3 class='font-weight-normal timeframeHeader text-capitalize'>{{ timeframe }}</h3>
   </div>
 
   <div class='allTasksDiv'>
@@ -34,7 +34,6 @@
 import TasksDate from './TasksDate.vue';
 import { convertDateHeaderToDate } from '../js/timeframe/timeframeFunctions.js';
 import { taskDate, displayTask } from '../js/timeframe/timeframeMethods.js';
-import { timeframeHeader } from '../js/timeframe/timeframeComputed.js';
 import { setDateToTimeframe } from '../js/sharedFunctions.js';
 import { mapState } from 'vuex'
 
@@ -51,7 +50,6 @@ export default {
     }
   },
   computed: {
-    timeframeHeader,
     ...mapState('sidebar', [
       'dateSelected',
       'taskSelected'
