@@ -32,7 +32,7 @@
       <label class='w-100 mb-0 header'>Timeframe:
         <select v-model='timeframe' class='form-control' :class='{ invalidInput: errors.timeframe }'>
           <option selected hidden disabled value=''></option>
-          <option v-for='val in timeframes' :key='val' :value='val'>{{ capitalizeFirstLetter(val) }}</option>
+          <option v-for='val in timeframes' :key='val' :value='val' class='text-capitalize'>{{ val }}</option>
         </select>
       </label>
       <p v-if='errors.timeframe' class='invalidFeedback'>*Timeframe needs to be selected</p>
@@ -76,7 +76,7 @@
 import { startDateMin, startDateMax, endDateMin, endDateMax } from '../js/newTask/newTaskComputed.js';
 import { parentId, task, description, timeframe, startDate, endDate } from '../js/newTask/newTaskWatchers.js';
 import { createTask, validateTasks, setStartDate } from '../js/newTask/newTaskMethods.js';
-import { capitalizeFirstLetter, formatDate } from '../js/sharedFunctions.js';
+import { formatDate } from '../js/sharedFunctions.js';
 import { cancelByEsc } from '../js/sharedMethods.js';
 import { mapState, mapActions } from 'vuex'
 
@@ -124,7 +124,6 @@ export default {
     createTask,
     validateTasks,
     setStartDate,
-    capitalizeFirstLetter,
     formatDate,
     cancelByEsc
   },

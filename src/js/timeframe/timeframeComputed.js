@@ -1,10 +1,6 @@
 import { getDateIndex } from '../app/appFunctions.js';
-import { capitalizeFirstLetter, setDateToTimeframe } from '../sharedFunctions.js';
+import { setDateToTimeframe } from '../sharedFunctions.js';
 import { nodeDFS } from '../nodeFunctions.js';
-
-function timeframeHeader() {
-  return capitalizeFirstLetter(this.timeframe);
-}
 
 function validTasks() {
   let startDate,
@@ -112,4 +108,4 @@ function expired() {
   return false;
 }
 
-export { timeframeHeader, validTasks, completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired };
+export { validTasks, completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired };

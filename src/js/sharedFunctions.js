@@ -1,7 +1,3 @@
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
 function currentDate() {
   let date = new Date(),
       day = addZero(date.getDate()),
@@ -71,4 +67,4 @@ function setWeeklyDate (date) {
   return date;
 }
 
-export { capitalizeFirstLetter, currentDate, addZero, setDateToTimeframe, formatDate, convertToDate, setWeeklyDate };
+export { currentDate, addZero, setDateToTimeframe, formatDate, convertToDate, setWeeklyDate };
