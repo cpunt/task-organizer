@@ -5,23 +5,25 @@
     <h3 class='font-weight-normal timeframeHeader'>{{ timeframeHeader }}</h3>
   </div>
 
-  <div v-for='(datesObj, i) in displayDates' :key='i' class='tasksDiv text-left'>
-    <div v-if='datesObj.tasks.length === 0'>
-      <h5 v-if='displayDates[datesRange[timeframe].index + (i-1)].tasks.length > 0 && displayDates[datesRange[timeframe].index + (i+1)].tasks.length > 0' class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>{{ taskDate(datesObj.date) }}</h5>
-      <h5 v-else-if='displayDates[datesRange[timeframe].index + (i-1)].tasks.length > 0' class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>{{ taskDate(datesObj.date) }}...</h5>
-      <h5 v-else class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>...{{ taskDate(datesObj.date) }}</h5>
-    </div>
+  <div class='allTasksDiv'>
+    <div v-for='(datesObj, i) in displayDates' :key='i' class='tasksDiv text-left'>
+      <div v-if='datesObj.tasks.length === 0'>
+        <h5 v-if='displayDates[i-1].tasks.length > 0 && displayDates[i+1].tasks.length > 0' class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>{{ taskDate(datesObj.date) }}</h5>
+        <h5 v-else-if='displayDates[i-1].tasks.length > 0' class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>{{ taskDate(datesObj.date) }}...</h5>
+        <h5 v-else class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>...{{ taskDate(datesObj.date) }}</h5>
+      </div>
 
-    <div v-else>
-      <h5 class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>{{ taskDate(datesObj.date) }}</h5>
+      <div v-else>
+        <h5 class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>{{ taskDate(datesObj.date) }}</h5>
 
-      <div v-for='(task, taskIndex) in datesObj.tasks' :key='taskIndex'>
-        <TasksDate v-if='displayTask(task)'
-                   class='list-group my-2'
-                   :tasksids='[task]'
-                   :date='datesObj.date'
-                   :timeframe='timeframe'
-        />
+        <div v-for='(task, taskIndex) in datesObj.tasks' :key='taskIndex'>
+          <TasksDate v-if='displayTask(task)'
+                     class='list-group my-2'
+                     :tasksids='[task]'
+                     :date='datesObj.date'
+                     :timeframe='timeframe'
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -30,8 +32,10 @@
 
 <script>
 import TasksDate from './TasksDate.vue';
+import { convertDateHeaderToDate } from '../js/timeframe/timeframeFunctions.js';
 import { taskDate, displayTask } from '../js/timeframe/timeframeMethods.js';
 import { timeframeHeader } from '../js/timeframe/timeframeComputed.js';
+import { setDateToTimeframe } from '../js/sharedFunctions.js';
 import { mapState } from 'vuex'
 
 export default {
@@ -61,27 +65,16 @@ export default {
     dates() {
       return this.$store.state.dates.dates[this.timeframe];
     },
-    displayDates() {
+    displayDates () {
+      const start = this.datesRange[this.timeframe].start;
+      const end = this.datesRange[this.timeframe].end;
+      const datesArr = [];
+
       if (this.dates.length === 0) {
-        return [];
+        return datesArr;
       }
 
-      if (!this.datesRange[this.timeframe].scroll) {
-        const timeframeDiv = document.getElementById(this.timeframe);
-        timeframeDiv.removeEventListener('scroll', this.loadTasks);
-      }
-
-      const datesArr = [],
-            range = this.datesRange[this.timeframe].range,
-            index = this.datesRange[this.timeframe].index;
-
-      let counter = 0;
-
-      for (let i = index; i < this.dates.length; i++) {
-        if (counter === range) {
-          break;
-        }
-
+      for (let i = start; i <= end; i++) {
         if (this.dates[i].tasks.length === 0) {
           if (this.dates[i - 1].tasks.length > 0 || this.dates[i + 1].tasks.length > 0) {
             datesArr.push(this.dates[i]);
@@ -89,80 +82,110 @@ export default {
           continue;
         }
 
-        counter++
         datesArr.push(this.dates[i]);
       }
 
-      return datesArr;
+      return datesArr
     }
   },
   watch: {
     displayDates () {
-      document.getElementById(this.timeframe).addEventListener('scroll', this.loadTasks);
+      const timeframeDiv = this.$refs[this.timeframe];
+      timeframeDiv.addEventListener('scroll', this.loadTasks);
+    },
+    dateSelected (val) {
+      this.$nextTick(() => this.scrollToDate(val));
     }
   },
   methods: {
     taskDate,
     displayTask,
-    /*
-    scrollToDate() {
-      if(this.dates.length > 0 && this.dateSelected.length > 0) {
-        const timeframe = this.timeframeobj.timeframe;
-        const dateIndex = getDateIndex(timeframe, this.dates[0].date, new Date(this.dateSelected));
-        const timeframeDiv = this.$refs[timeframe];
-        const taskDivs = timeframeDiv.querySelectorAll('.tasksDiv');
+    scrollToDate (newDate) {
+      const scrollTo = setDateToTimeframe(this.timeframe, new Date(newDate)),
+            timeframeDiv = this.$refs[this.timeframe],
+            dateHeader = timeframeDiv.querySelectorAll('.dateHeader');
 
-        if(dateIndex <= 0) {
-          //Go to start
-          timeframeDiv.scrollTo(0, 0);
-        } else if(dateIndex >= this.dates.length) {
-          //Go to end
-          timeframeDiv.scrollTo(0, taskDivs[taskDivs.length - 1].offsetTop - 41);
-        } else {
-          //Go to date
-          timeframeDiv.scrollTo(0, taskDivs[dateIndex].offsetTop - 41);
+      if (dateHeader.length === 0) {
+        return;
+      }
+
+      const startDate = convertDateHeaderToDate(this.timeframe, dateHeader[0].innerHTML),
+            endDate = convertDateHeaderToDate(this.timeframe, dateHeader[dateHeader.length - 1].innerHTML);
+      let date;
+
+      // Scroll to top
+      if (startDate >= scrollTo) {
+        timeframeDiv.scrollTop = 0
+        return;
+      }
+
+      // Scroll to bottom
+      if (endDate <= scrollTo) {
+        timeframeDiv.scrollTop = timeframeDiv.scrollHeight - timeframeDiv.offsetHeight;
+        return;
+      }
+
+      // Scroll to date
+      for (let i = 0; i < dateHeader.length; i++) {
+        date = convertDateHeaderToDate(this.timeframe, dateHeader[i].innerHTML);
+
+        if (scrollTo < date) {
+          timeframeDiv.scroll(0, dateHeader[i-1].offsetTop - 41);
+          break;
         }
       }
     },
-    */
-    loadTasks() {
-      const timeframeDiv = document.getElementById(this.timeframe),
-            tasksDiv = timeframeDiv.getElementsByClassName('tasksDiv'),
-            bottom = timeframeDiv.scrollHeight - timeframeDiv.offsetHeight,
-            scrollPosition = timeframeDiv.scrollTop;
+    loadTasks () {
+      const timeframeDiv = this.$refs[this.timeframe],
+        tasksDiv = timeframeDiv.querySelectorAll('.tasksDiv'),
+        bottom = timeframeDiv.scrollHeight - timeframeDiv.offsetHeight,
+        scrollPosition = timeframeDiv.scrollTop;
 
-      let index = this.datesRange[this.timeframe].index,
-          max = this.datesRange[this.timeframe].max,
-          n = this.datesRange[this.timeframe].n,
-          newIndex;
+      let start = this.datesRange[this.timeframe].start,
+          end = this.datesRange[this.timeframe].end;
 
       if (scrollPosition === bottom) {
-        newIndex = index + n > max ? max : index + n;
+        console.log('Bottom');
+        const datesLen = this.dates.length;
 
-        if (index !== max) {
-          tasksDiv[15].scrollIntoView(false);
-
-          this.setIndex(newIndex);
+        if (end !== datesLen - 1) {
+          tasksDiv[10].scrollIntoView(false);
+          this.setDatesRange(this.timeframe, end);
         }
       } else if (scrollPosition === 0) {
-        newIndex = index - n < 0 ? 0 : index - n;
+        console.log('top');
 
-        if (index !== 0) {
-          tasksDiv[10].scrollIntoView(true);
-
-          this.setIndex(newIndex);
+        if (start !== 0) {
+          timeframeDiv.scroll(0, tasksDiv[10].offsetTop - 41);
+          this.setDatesRange(this.timeframe, start);
         }
       }
     },
-    setIndex(newIndex) {
-      this.$store.commit('dates/SET_DATES_RANGE_INDEX', {
-        timeframe: this.timeframe,
-        index: newIndex
+    setDatesRange(timeframe, index) {
+      this.$store.dispatch('dates/setDatesRange', {
+        timeframe: timeframe,
+        index: index
       }, { root: true });
     }
   },
   components: {
     TasksDate
+  },
+  mounted: function () {
+    const timeframeDiv = this.$refs[this.timeframe];
+    const allTasksDiv = timeframeDiv.querySelectorAll('.allTasksDiv')[0];
+
+    const config = { childList: true, subtree: true };
+    const callback = (mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.removedNodes.length > 0) {
+          this.scrollToDate(this.dateSelected);
+          observer.disconnect();
+        }
+      }
+    };
+    const observer = new MutationObserver(callback);
+    observer.observe(allTasksDiv, config);
   }
 }
 </script>

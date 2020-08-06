@@ -35,4 +35,34 @@ function getTaskDates(taskIds, tasks, timeframe) {
   return taskDates;
 }
 
-export { getTaskDates };
+function convertDateHeaderToDate (timeframe, dateHeader) {
+  let date;
+
+  if (dateHeader.includes('-')) {
+    dateHeader = dateHeader.split('-')[0];
+  }
+
+  if (dateHeader.includes('.')) {
+    dateHeader = dateHeader.split('.').join('');
+  }
+
+  if (timeframe !== 'yearly') {
+    dateHeader = dateHeader.split('/');
+  }
+
+  switch (timeframe) {
+    case 'yearly':
+      date = new Date(dateHeader, 0);
+      break;
+    case 'monthly':
+      date = new Date(dateHeader[1], +dateHeader[0] - 1);
+      break;
+    default:
+      date = new Date(dateHeader[2], +dateHeader[1] - 1, dateHeader[0]);
+      break;
+  }
+
+  return date;
+}
+
+export { getTaskDates, convertDateHeaderToDate };

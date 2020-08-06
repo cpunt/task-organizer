@@ -61,4 +61,14 @@ function convertToDate(seconds) {
   return new Date(seconds * 1000);
 }
 
-export { capitalizeFirstLetter, currentDate, addZero, setDateToTimeframe, formatDate, convertToDate };
+function setWeeklyDate (date) {
+  if(date.getDay() == 0) {
+    date.setDate(date.getDate() - 6) ;
+  } else if(date.getDay() > 1){
+    date.setDate((date.getDate() - date.getDay()) + 1) ;
+  }
+
+  return date;
+}
+
+export { capitalizeFirstLetter, currentDate, addZero, setDateToTimeframe, formatDate, convertToDate, setWeeklyDate };

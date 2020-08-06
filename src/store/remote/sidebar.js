@@ -1,4 +1,5 @@
 import { currentDate } from '../../js/sharedFunctions.js';
+import { getDateIndex } from '../../js/app/appFunctions.js';
 
 export default {
   namespaced: true,
@@ -36,9 +37,23 @@ export default {
           taskSelected: taskSelected
         });
     },
-    updateDateSelected({ commit }, event) {
+    updateDateSelected({ rootState, state, commit, dispatch }, event) {
       const dateSelected = event ? event.target.value : currentDate();
       commit('SET_DATE_SELECTED', dateSelected);
+
+      const timeframes = ['yearly', 'monthly', 'weekly', 'daily'];
+      timeframes.forEach(timeframe => {
+        const dates = rootState.dates.dates[timeframe];
+
+        if (dates.length > 0) {
+          const dateIndex = getDateIndex(timeframe, dates[0].date, new Date(state.dateSelected));
+
+          dispatch('dates/setDatesRange', {
+            timeframe: timeframe,
+            index: dateIndex
+          }, { root: true });
+        }
+      });
     }
   }
 }

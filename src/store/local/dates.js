@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { getDateIndex } from '../../js/app/appFunctions.js';
 import { getTaskDates } from '../../js/timeframe/timeframeFunctions.js';
+import { setWeeklyDate } from '../../js/sharedFunctions.js';
 
 export default {
   namespaced: true,
@@ -12,120 +13,119 @@ export default {
       daily: []
     },
     datesRange: {
-      yearly: {
-        index: 0,
-        range: 0,
-        n: 0,
-        max: 0,
-        scroll: false
-      },
-      monthly: {
-        index: 0,
-        range: 0,
-        n: 0,
-        max: 0,
-        scroll: false
-      },
-      weekly: {
-        index: 0,
-        range: 0,
-        n: 0,
-        max: 0,
-        scroll: false
-      },
-      daily: {
-        index: 0,
-        range: 0,
-        n: 0,
-        max: 0,
-        scroll: false
-      }
+      yearly: {},
+      monthly: {},
+      weekly: {},
+      daily: {}
     }
   },
   mutations: {
-    SET_DATES(state, { dates, timeframe }) {
+    SET_DATES (state, { dates, timeframe }) {
       Vue.set(state.dates, timeframe, dates);
     },
-    UNSET_DATES(state, timeframe) {
+    UNSET_DATES (state, timeframe) {
+      // Maybe get rid of
       Vue.set(state.dates, timeframe, []);
       Vue.set(state.datesRange, timeframe, {
-        index: 0,
         range: 0,
         n: 0,
-        max: 0,
-        scroll: false
+        start: 0,
+        end: 0
       });
     },
-    SET_DATES_RANGE(state, { timeframe, index, range, n, max, scroll }) {
-      Vue.set(state.datesRange, timeframe, {
-        index: index,
-        range: range,
-        n: n,
-        max: max,
-        scroll: scroll
-      });
-    },
-    SET_DATES_RANGE_INDEX(state, { timeframe, index }) {
-      Vue.set(state.datesRange[timeframe], 'index', index);
+    SET_DATES_RANGE (state, { timeframe, datesRange }) {
+      Vue.set(state.datesRange, timeframe, datesRange);
     }
   },
   actions: {
-    setDates({ commit, dispatch }, { taskIds, tasks, timeframe }) {
+    setDates ({ rootState, commit, dispatch }, { taskIds, tasks, timeframe }) {
       console.log('I reset the dates');
-      if(taskIds.length == 0) {
+      if (taskIds.length == 0) {
         return [];
       }
       const datesArr = getTaskDates(taskIds, tasks, timeframe);
-      let task, startDateIndex, endDateIndex;
+      let task, startDate, endDate, startDateIndex, endDateIndex;
 
       taskIds.forEach(taskId => {
         task = tasks[taskId];
-        startDateIndex = getDateIndex(timeframe, datesArr[0].date, new Date(task.time.startDate));
-        endDateIndex = getDateIndex(timeframe, datesArr[0].date, new Date(task.time.endDate));
+        startDate = new Date(task.time.startDate);
+        endDate = new Date(task.time.endDate);
 
-        for(let j = startDateIndex; j <= endDateIndex; j++) {
-          if(datesArr[j]) {
+        if(task.time.timeframe == 'weekly') {
+          startDate = setWeeklyDate(startDate);
+          endDate = setWeeklyDate(endDate);
+        }
+
+        startDateIndex = getDateIndex(timeframe, datesArr[0].date, startDate);
+        endDateIndex = getDateIndex(timeframe, datesArr[0].date, endDate);
+
+        for (let j = startDateIndex; j <= endDateIndex; j++) {
+          if (datesArr[j]) {
             datesArr[j].tasks.push(taskId);
           }
         }
       });
 
       commit('SET_DATES', { dates: datesArr, timeframe: timeframe });
-      dispatch('setDatesRange', timeframe);
+
+      const index = getDateIndex(timeframe, datesArr[0].date, new Date(rootState.sidebar.dateSelected));
+      dispatch('setDatesRange', {
+        timeframe: timeframe,
+        index: index
+      });
     },
-    setDatesRange ({ state, commit }, timeframe) {
+    setDatesRange ({ state, commit }, { timeframe, index }) {
       const dates = state.dates[timeframe];
-      let max = 0,
-          scroll = false,
-          n = 10,
-          index = 0,
-          range = 25,
-          counter = 0;
+      index = index < 0 ? 0 : index > dates.length - 1 ? dates.length - 1 : index;
 
+      let datesRange = {
+        start: index,
+        end: index,
+        scroll: false
+      };
+      let leftCounter = 10,
+          rightCounter = 10;
 
-      for (let i = dates.length - 1; i >= 0; i--) {
-        if (dates[i].tasks.length > 0) {
-          counter++;
-        }
-
-        if (counter === range) {
-          max = i;
-          counter = 0;
-
-          if (i > 0) {
-            scroll = true;
+      const decrement = () => {
+        for (let i = datesRange.start; i >= 0; i--) {
+          if (dates[i].tasks.length > 0) {
+            leftCounter--;
           }
-          break;
+
+          if (leftCounter === 0 || i === 0) {
+            datesRange.start = i;
+            break;
+          }
         }
+      }
+
+      const increment = () => {
+        for (let i = datesRange.end; i < dates.length; i++) {
+          if (dates[i].tasks.length > 0) {
+            rightCounter--;
+          }
+
+          if (rightCounter === 0 || i === dates.length - 1) {
+            datesRange.end = i;
+            break;
+          }
+        }
+      };
+
+      increment();
+      decrement();
+
+      if (leftCounter > 0 && rightCounter === 0) {
+        rightCounter = leftCounter;
+        increment();
+      } else if (rightCounter > 0 && leftCounter === 0) {
+        leftCounter = rightCounter;
+        decrement();
       }
 
       commit('SET_DATES_RANGE', {
         timeframe: timeframe,
-        index: index,
-        range: range,
-        n: n,
-        max: max,
-        scroll: scroll
+        datesRange: datesRange
       });
     }
   }
