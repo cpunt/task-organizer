@@ -2,22 +2,22 @@
 <div class='viewTaskDiv card card-body shadow'>
   <div v-if='!edit' class='viewDiv'>
     <div class='optionsBar'>
-      <img class='icon mb-4' src='../assets/close-cross.svg' alt='close' title='close' @click='cancel'>
-      <img class='icon mb-4' src='../assets/edit.svg' alt='edit' title='edit' @click='toggleEdit'>
-      <img class='icon mb-4' src='../assets/add.svg' alt='add' title='add' @click='addTask(taskId)'>
-      <img class='icon mb-4' src='../assets/delete.svg' alt='close' title='close' @click='confirmDeleteTask(taskId)'>
+      <img class='icon mb-4' src='../assets/close-cross.svg' alt='Close' title='Close' @click='cancel'>
+      <img class='icon mb-4' src='../assets/edit.svg' alt='Edit' title='Edit' @click='toggleEdit'>
+      <img class='icon mb-4' src='../assets/delete.svg' alt='Delete' title='Delete' @click='confirmDeleteTask(taskId)'>
+      <img class='icon mb-4' src='../assets/add.svg' alt='Add' title='Add' @click='addTask(taskId)'>
     </div>
 
     <h3><u>{{ task.task }}</u></h3>
     <div class='infoDiv text-left'>
-      <p class='my-2 text-capitalize'><u>Timeframe</u><br> {{ task.time.timeframe }}</p>
-      <p class='my-2'><u>Start Date</u><br> {{ formatDate(task.time.startDate) }}</p>
-      <p class='my-2'><u>End Date</u><br> {{ formatDate(task.time.endDate) }}</p>
-      <p class='my-2' v-if='task.description.length > 0'><u>Description</u><br> {{ task.description }}</p>
-      <p class='my-2' v-if='task.parent'><u>Task Parent</u><br> {{ tasks[task.parent].task }}</p>
+      <p class='my-2 text-capitalize'><b><u>Timeframe</u></b><br> {{ task.time.timeframe }}</p>
+      <p class='my-2'><b><u>Start Date</u></b><br> {{ formatDate(task.time.startDate) }}</p>
+      <p class='my-2'><b><u>End Date</u></b><br> {{ formatDate(task.time.endDate) }}</p>
+      <p class='my-2' v-if='task.description.length > 0'><b><u>Description</u></b><br> {{ task.description }}</p>
+      <p class='my-2' v-if='task.parent'><b><u>Task Parent</u></b><br> {{ tasks[task.parent].task }}</p>
 
       <div class='my-2' v-if='task.children.length > 0'>
-        <p class='my-1'><u>Sub Tasks</u></p>
+        <p class='my-1'><b><u>Sub Tasks</u></b></p>
         <ul>
           <li v-for='(subTaskObj, index) in getSubTasks' :key='index' class='my-1'>{{ subTaskObj.task }}</li>
         </ul>
@@ -121,7 +121,6 @@ export default {
   width: 24px;
   position: relative;
   display: block;
-  /* position: absolute; */
 }
 
 .optionsBar {
@@ -164,38 +163,4 @@ export default {
 .progressBarPercent {
   background-color: #66bb6a;
 }
-
-
-/*
-.taskDiv {
-  width: 92%;
-  margin-left: auto;
-  margin-right: auto;
-  min-height: 168px;
-  position: relative;
-}
-
-.btnDiv {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-}
-
-.taskOpBar {
-  position: absolute;
-}
-
-.opBarIcons {
-  display: block;
-  cursor: pointer;
-  height: 24px;
-}
-
-.desDiv, .subTaskDiv {
-  overflow: scroll;
-  border: 2px solid gray;
-  margin-left: auto;
-  margin-right: auto;
-  max-height: 150px;
-} */
 </style>

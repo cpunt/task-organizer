@@ -1,10 +1,10 @@
 <template>
 <div class='deleteTaskDiv card card-body shadow'>
-  <img class='float-left icon' src='../assets/close-cross.svg' alt='Close' title='Close' @click='cancel'>
+  <img class='icon' src='../assets/close-cross.svg' alt='Close' title='Close' @click='cancel'>
   <div class='deleteDiv'>
-    <h3>Are you sure you want to delete: <h3>{{ tasks[taskId].task }}?</h3></h3>
+    <h3 class='ml-3'>Are you sure you want to delete task:<br>{{ tasks[taskId].task }}?</h3>
 
-    <div class='text-center btnDiv'>
+    <div class='text-center mt-5'>
       <button type='button' class='btn btn-primary d-inline mx-3' @click='cancel'>Cancel</button>
       <button type='button' class='btn btn-primary d-inline mx-3' @click='deleteTask'>Delete</button>
     </div>
@@ -49,26 +49,20 @@ export default {
   z-index:100;
   top: 4%;
   left: 20%;
-  height: 210px;
 }
 
 .deleteDiv {
   width: 92%;
   margin-left: auto;
   margin-right: auto;
-  height: 168px;
   position: relative;
-}
-
-.btnDiv {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
+  color: #37474F;
 }
 
 .icon {
   cursor: pointer;
   height: 24px;
+  width: 24px;
   position: absolute;
 }
 </style>
