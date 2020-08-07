@@ -65,4 +65,16 @@ function convertDateHeaderToDate (timeframe, dateHeader) {
   return date;
 }
 
-export { getTaskDates, convertDateHeaderToDate };
+function displayTask(taskSelectedId, tasks, taskId) {
+  let node = tasks[taskId],
+      parentId = taskId;
+
+  while(node.parent) {
+    parentId = node.parent;
+    node = tasks[parentId];
+  }
+
+  return taskSelectedId == parentId;
+}
+
+export { getTaskDates, convertDateHeaderToDate, displayTask };

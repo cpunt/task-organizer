@@ -23,23 +23,8 @@ function taskDate(date) {
   }
 }
 
-function displayTask(taskid) {
-  if(this.taskSelected.length == 0) {
-    return true;
-  }
-  let node = this.tasks[taskid],
-      parentid = taskid;
-
-  while(node.parent) {
-    parentid = node.parent;
-    node = this.tasks[parentid];
-  }
-
-  return this.taskSelected == parentid;
-}
-
 function toggleShowChildren() {
   this.showChildren = !this.showChildren;
 }
 
-export { taskDate, displayTask, toggleShowChildren };
+export { taskDate, toggleShowChildren };

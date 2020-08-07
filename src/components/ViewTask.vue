@@ -157,7 +157,7 @@ export default {
 }
 
 .progressBar {
-  background-color: #b4ecb4;
+  background-color: #A8E9A8;
 }
 
 .progressBarPercent {
