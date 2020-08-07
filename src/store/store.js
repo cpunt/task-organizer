@@ -41,8 +41,8 @@ const store = new Vuex.Store({
         commit('display/SET_BGSCREEN', false);
         if(user) {
           commit('SET_USER', { email: user.email, username: user.displayName });
-          dispatch('tasks/trackTasks');
           dispatch('sidebar/trackSidebar');
+          dispatch('tasks/trackTasks');
         } else {
           commit('SET_USER', { email: null, username: null });
         }

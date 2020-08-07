@@ -17,8 +17,7 @@
         <h5 class='dateHeader text-center mb-0 font-weight-normal' :class='timeframe'>{{ taskDate(datesObj.date) }}</h5>
 
         <div v-for='(task, taskIndex) in datesObj.tasks' :key='taskIndex'>
-          <TasksDate v-if='displayTask(task)'
-                     class='list-group my-2'
+          <TasksDate class='list-group my-2'
                      :tasksids='[task]'
                      :date='datesObj.date'
                      :timeframe='timeframe'
@@ -33,7 +32,7 @@
 <script>
 import TasksDate from './TasksDate.vue';
 import { convertDateHeaderToDate } from '../js/timeframe/timeframeFunctions.js';
-import { taskDate, displayTask } from '../js/timeframe/timeframeMethods.js';
+import { taskDate } from '../js/timeframe/timeframeMethods.js';
 import { setDateToTimeframe } from '../js/sharedFunctions.js';
 import { mapState } from 'vuex'
 
@@ -97,7 +96,6 @@ export default {
   },
   methods: {
     taskDate,
-    displayTask,
     scrollToDate (newDate) {
       const scrollTo = setDateToTimeframe(this.timeframe, new Date(newDate)),
             timeframeDiv = this.$refs[this.timeframe],

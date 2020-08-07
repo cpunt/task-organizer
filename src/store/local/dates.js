@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { getDateIndex } from '../../js/app/appFunctions.js';
-import { getTaskDates } from '../../js/timeframe/timeframeFunctions.js';
+import { getTaskDates, displayTask } from '../../js/timeframe/timeframeFunctions.js';
 import { setWeeklyDate } from '../../js/sharedFunctions.js';
 
 export default {
@@ -43,6 +43,13 @@ export default {
       if (taskIds.length == 0) {
         return [];
       }
+
+      const taskSelectedId = rootState.sidebar.taskSelected;
+
+      if (taskSelectedId.length > 0) {
+        taskIds = taskIds.filter(taskId => displayTask(taskSelectedId, tasks, taskId));
+      }
+
       const datesArr = getTaskDates(taskIds, tasks, timeframe);
       let task, startDate, endDate, startDateIndex, endDateIndex;
 

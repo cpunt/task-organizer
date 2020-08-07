@@ -28,14 +28,25 @@ export default {
           commit('SET_TASK_SELECTED', taskSelected);
         });
     },
-    updateTaskSelected({ rootState }, event) {
-      const taskSelected = event.target.value;
+    updateTaskSelected({ rootState, dispatch }, event) {
+      const taskSelectedId = event.target.value;
 
-      rootState.db.collection('users')
+      const taskSelectedRef = rootState.db.collection('users')
         .doc(rootState.user.email)
         .update({
-          taskSelected: taskSelected
+          taskSelected: taskSelectedId
         });
+
+      taskSelectedRef.then(() => {
+        const timeframes = ['yearly', 'monthly', 'weekly', 'daily'];
+        timeframes.forEach(timeframe => {
+          dispatch('dates/setDates', {
+            taskIds: rootState.timeframes.timeframes[timeframe],
+            tasks: rootState.tasks.tasks,
+            timeframe: timeframe
+          }, { root: true });
+        });
+      });
     },
     updateDateSelected({ rootState, state, commit, dispatch }, event) {
       const dateSelected = event ? event.target.value : currentDate();
