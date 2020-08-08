@@ -75,9 +75,9 @@
 <script>
 import { startDateMin, startDateMax, endDateMin, endDateMax } from '../js/newTask/newTaskComputed.js';
 import { parentId, task, description, timeframe, startDate, endDate } from '../js/newTask/newTaskWatchers.js';
-import { createTask, validateTasks, setStartDate } from '../js/newTask/newTaskMethods.js';
+import { convertDateToInputString } from '../js/newTask/newTaskFunctions.js';
 import { formatDate } from '../js/sharedFunctions.js';
-import { cancelByEsc } from '../js/sharedMethods.js';
+import { cancelByEsc, validateTasks } from '../js/sharedMethods.js';
 import { mapState, mapActions } from 'vuex'
 
 export default {
@@ -98,34 +98,6 @@ export default {
         endDate: false
       }
     }
-  },
-  watch: {
-    parentId,
-    task,
-    description,
-    timeframe,
-    startDate,
-    endDate,
-    startDateMin () {
-      //Update start date
-      this.setStartDate();
-    },
-    taskId: {
-      immediate: true,
-      handler (val) {
-        this.parentId = val;
-      }
-    }
-  },
-  methods: {
-    ...mapActions('display', [
-      'cancel'
-    ]),
-    createTask,
-    validateTasks,
-    setStartDate,
-    formatDate,
-    cancelByEsc
   },
   computed: {
     startDateMin,
@@ -188,6 +160,69 @@ export default {
     ...mapState('display', [
       'taskId',
     ])
+  },
+  watch: {
+    parentId,
+    task,
+    description,
+    timeframe,
+    startDate,
+    endDate,
+    startDateMin () {
+      //Update start date
+      this.setStartDate();
+    },
+    taskId: {
+      immediate: true,
+      handler (val) {
+        this.parentId = val;
+      }
+    }
+  },
+  methods: {
+    ...mapActions('display', [
+      'cancel'
+    ]),
+    createTask () {
+      if (this.validateTasks()) {
+        const taskData = {
+          children: [],
+          dateTaskCompleted: {},
+          description: this.description,
+          parent: this.parentId,
+          task: this.task,
+          taskCompleted: false,
+          time: {
+            timeframe: this.timeframe,
+            startDate: this.startDate,
+            endDate: this.endDate
+          }
+        }
+
+        let parentChildren = null;
+
+        if (this.parentId) {
+          parentChildren = this.tasks[this.parentId].children;
+        }
+
+        this.$store.dispatch('tasks/addTask', {
+          task: taskData,
+          parentChildren: parentChildren
+        });
+
+        this.cancel();
+      }
+    },
+    setStartDate () {
+      if (this.taskParent == null) {
+        this.startDate = convertDateToInputString(new Date());
+      } else {
+        this.startDate = this.taskParent.time.startDate;
+      }
+    },
+    validateTasks,
+    formatDate,
+    cancelByEsc
   },
   mounted () {
     this.setStartDate();

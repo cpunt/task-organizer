@@ -32,8 +32,7 @@
 <script>
 import TasksDate from './TasksDate.vue';
 import { convertDateHeaderToDate } from '../js/timeframe/timeframeFunctions.js';
-import { taskDate } from '../js/timeframe/timeframeMethods.js';
-import { setDateToTimeframe } from '../js/sharedFunctions.js';
+import { addZero, setDateToTimeframe } from '../js/sharedFunctions.js';
 import { mapState } from 'vuex'
 
 export default {
@@ -95,7 +94,28 @@ export default {
     }
   },
   methods: {
-    taskDate,
+    taskDate (date) {
+      const d = new Date(date);
+      let day = addZero(d.getDate());
+      let month = addZero(d.getMonth() + 1);
+      let year = d.getFullYear();
+      let week, dayWeek, monthWeek, yearWeek;
+
+      switch (this.timeframe) {
+        case 'yearly':
+          return year;
+        case 'monthly':
+          return `${month}/${year}`;
+        case 'weekly':
+          week = new Date(year, month - 1, Number(day) + 6);
+          dayWeek = addZero(week.getDate());
+          monthWeek = addZero(week.getMonth() + 1);
+          yearWeek = week.getFullYear();
+          return `${day}/${month}/${year} - ${dayWeek}/${monthWeek}/${yearWeek}`;
+        case 'daily':
+          return `${day}/${month}/${year}`;
+      }
+    },
     scrollToDate (newDate) {
       const scrollTo = setDateToTimeframe(this.timeframe, new Date(newDate)),
             timeframeDiv = this.$refs[this.timeframe],
@@ -141,7 +161,6 @@ export default {
           end = this.datesRange[this.timeframe].end;
 
       if (scrollPosition === bottom) {
-        console.log('Bottom');
         const datesLen = this.dates.length;
 
         if (end !== datesLen - 1) {
@@ -149,8 +168,6 @@ export default {
           this.setDatesRange(this.timeframe, end);
         }
       } else if (scrollPosition === 0) {
-        console.log('top');
-
         if (start !== 0) {
           timeframeDiv.scroll(0, tasksDiv[10].offsetTop - 41);
           this.setDatesRange(this.timeframe, start);

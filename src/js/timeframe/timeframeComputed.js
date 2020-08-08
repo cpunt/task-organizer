@@ -1,5 +1,4 @@
-import { getDateIndex, setDateToTimeframe } from '../sharedFunctions.js';
-import { nodeDFS } from '../nodeFunctions.js';
+import { getDateIndex, setDateToTimeframe, nodeDFS } from '../sharedFunctions.js';
 
 function validTasks () {
   let startDate,

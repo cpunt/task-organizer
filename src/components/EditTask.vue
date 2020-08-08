@@ -77,9 +77,8 @@
 <script>
 import { startDateMin, startDateMax, endDateMin, endDateMax } from '../js/newTask/newTaskComputed.js';
 import { task, description, timeframe, startDate, endDate } from '../js/newTask/newTaskWatchers.js';
-import { validateTasks } from '../js/newTask/newTaskMethods.js';
-import { validateChildrenDates, updateTask, cancelEdit } from '../js/editTask/editTaskMethods.js';
 import { formatDate } from '../js/sharedFunctions.js';
+import { validateTasks } from '../js/sharedMethods.js';
 import { mapState, mapActions } from 'vuex'
 
 export default {
@@ -106,24 +105,6 @@ export default {
       }
     }
   },
-  watch: {
-    task,
-    description,
-    timeframe,
-    startDate,
-    endDate
-  },
-  methods: {
-    ...mapActions('display', [
-      'cancel',
-      'confirmDeleteTask'
-    ]),
-    validateTasks,
-    validateChildrenDates,
-    updateTask,
-    cancelEdit,
-    formatDate
-  },
   computed: {
     startDateMin,
     startDateMax,
@@ -138,6 +119,71 @@ export default {
     ...mapState('display', [
       'taskId',
     ])
+  },
+  watch: {
+    task,
+    description,
+    timeframe,
+    startDate,
+    endDate
+  },
+  methods: {
+    ...mapActions('display', [
+      'cancel',
+      'confirmDeleteTask'
+    ]),
+    validateChildrenDates () {
+      if (this.taskobj.children.length === 0) {
+        return true;
+      }
+
+      if (this.taskobj.time.startDate !== this.startDate || this.taskobj.time.endDate !== this.endDate) {
+        const startDate = new Date(this.startDate),
+              endDate = new Date(this.endDate),
+              children = this.taskobj.children;
+
+        let childStartDate, childEndDate;
+
+        children.forEach(child => {
+          childStartDate = new Date(child.time.startDate);
+          childEndDate = new Date(child.time.endDate);
+
+          if (startDate > childStartDate || endDate < childEndDate) {
+            alert("Subtask dates greater than parent dates. Unable to change dates.");
+            this.startDate = this.taskobj.time.startDate;
+            this.endDate = this.taskobj.time.endDate;
+
+            return false;
+          }
+        });
+      }
+
+      return true;
+    },
+    updateTask () {
+      const validTasks = this.validateTasks(),
+            validChildrenDates = this.validateChildrenDates();
+
+      if (validTasks && validChildrenDates) {
+        const task = {
+          task: this.task,
+          description: this.description,
+          time: {
+            timeframe: this.timeframe,
+            startDate: this.startDate,
+            endDate: this.endDate
+          }
+        }
+
+        this.$store.dispatch('tasks/updateTask', { task: task, taskId: this.taskId});
+        this.cancel();
+      }
+    },
+    cancelEdit () {
+      this.$parent.toggleEdit();
+    },
+    validateTasks,
+    formatDate
   }
 }
 </script>

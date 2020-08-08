@@ -18,6 +18,14 @@ import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'DeleteTask',
+  computed: {
+    ...mapState('tasks', [
+      'tasks'
+    ]),
+    ...mapState('display', [
+      'taskId'
+    ])
+  },
   methods: {
     ...mapActions('display', [
       'cancel'
@@ -27,14 +35,6 @@ export default {
       this.$store.dispatch('tasks/deleteTask', this.taskId);
       this.cancel();
     }
-  },
-  computed: {
-    ...mapState('tasks', [
-      'tasks'
-    ]),
-    ...mapState('display', [
-      'taskId'
-    ])
   },
   mounted () {
     document.addEventListener('keyup', this.cancelByEsc);

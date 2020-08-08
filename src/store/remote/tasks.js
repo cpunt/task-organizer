@@ -37,7 +37,7 @@ export default {
         .doc(rootState.user.email)
         .collection('tasks')
         .onSnapshot(querySnapshot => {
-          console.log('Im doing something');
+          console.log('Tasks modified');
           const timeframes = [];
           let oldStartDate, oldEndDate, newStartDate, newEndDate;
 

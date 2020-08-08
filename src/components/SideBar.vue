@@ -121,9 +121,6 @@ export default {
   name: 'Sidebar',
   data: function() {
     return {
-      // TaskStatus and childrenDisplayed will be added to database
-      taskstatus: '',
-      childrendisplayed: 0,
       sidebarDisplay: {
         fromDate: false,
         selectTask: false,
@@ -131,6 +128,20 @@ export default {
         childrenDisplayed: false
       }
     };
+  },
+  computed: {
+    ...mapState([
+      'user'
+    ]),
+    ...mapState('tasks', [
+      'roots',
+      'tasks'
+    ]),
+    ...mapState('sidebar', [
+      'dateSelected',
+      'taskSelected',
+      'sidebarActive'
+    ])
   },
   methods: {
     ...mapMutations('sidebar', {
@@ -151,20 +162,6 @@ export default {
     stopTheEvent (event) {
       event.stopPropagation();
     }
-  },
-  computed: {
-    ...mapState([
-      'user'
-    ]),
-    ...mapState('tasks', [
-      'roots',
-      'tasks'
-    ]),
-    ...mapState('sidebar', [
-      'dateSelected',
-      'taskSelected',
-      'sidebarActive'
-    ])
   },
   mounted: function() {
     this.$store.dispatch('sidebar/updateDateSelected', null);

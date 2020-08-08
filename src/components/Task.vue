@@ -39,7 +39,6 @@
 
 <script>
 import { completedIndex, taskHasValidChild, leaves, leavesCompleted, percent, expired } from '../js/timeframe/timeframeComputed.js';
-import { toggleShowChildren, } from '../js/timeframe/timeframeMethods.js';
 import { mapState, mapActions } from 'vuex'
 
 export default {
@@ -67,6 +66,17 @@ export default {
       showChildren: false
     }
   },
+  computed: {
+    completedIndex,
+    taskHasValidChild,
+    leaves,
+    leavesCompleted,
+    percent,
+    expired,
+    ...mapState('tasks', [
+      'tasks'
+    ])
+  },
   watch: {
     percent (val) {
       this.task.taskCompleted = val == 100;
@@ -85,7 +95,9 @@ export default {
         completedIndex: this.completedIndex
       });
     },
-    toggleShowChildren,
+    toggleShowChildren () {
+      this.showChildren = !this.showChildren;
+    },
     highlightTasks (type) {
       const taskIds = this.getTaskIds();
 
@@ -129,17 +141,6 @@ export default {
 
       return taskIds;
     }
-   },
-  computed: {
-    completedIndex,
-    taskHasValidChild,
-    leaves,
-    leavesCompleted,
-    percent,
-    expired,
-    ...mapState('tasks', [
-      'tasks'
-    ])
   },
   components: {
     TasksDate: () => import('./TasksDate.vue')

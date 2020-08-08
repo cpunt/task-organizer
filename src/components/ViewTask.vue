@@ -45,9 +45,8 @@
 
 <script>
 import EditTask from './EditTask.vue';
-import { getDateIndex, formatDate } from '../js/sharedFunctions.js';
+import { getDateIndex, formatDate, nodeDFS } from '../js/sharedFunctions.js';
 import { cancelByEsc } from '../js/sharedMethods.js';
-import { nodeDFS } from '../js/nodeFunctions.js';
 import { mapState, mapActions } from 'vuex'
 
 export default {
@@ -90,9 +89,6 @@ export default {
       return this.tasksCompleted / this.totalTasks * 100;
     }
   },
-  components: {
-    EditTask
-  },
   methods: {
     formatDate,
     cancelByEsc,
@@ -107,6 +103,9 @@ export default {
     updateTaskCompleted () {
       this.$store.dispatch('tasks/updateTaskCompleted', this.taskId);
     }
+  },
+  components: {
+    EditTask
   },
   mounted () {
     document.addEventListener('keyup', this.cancelByEsc);

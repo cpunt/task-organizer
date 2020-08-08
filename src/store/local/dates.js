@@ -38,7 +38,6 @@ export default {
   },
   actions: {
     setDates ({ rootState, commit, dispatch }, { taskIds, tasks, timeframe }) {
-      console.log('I reset the dates');
       if (taskIds.length == 0) {
         return [];
       }

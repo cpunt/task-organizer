@@ -53,14 +53,16 @@ const store = new Vuex.Store({
 
       firebase.auth().signInWithPopup(provider).then(() => {
         dispatch('display/cancel');
-      }).catch(function(error) {
+      }).catch(error => {
+        // Address error
         console.log(error);
       });
     },
     logout () {
       firebase.auth().signOut().then(() => {
         location.reload();
-      }).catch(function(error) {
+      }).catch(error => {
+        // Address error
         console.log(error);
       });
     }

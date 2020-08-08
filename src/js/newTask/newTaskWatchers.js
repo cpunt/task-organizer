@@ -41,7 +41,6 @@ function startDate (val) {
       this.errors.startDate = false;
     }
   }
-  //Maybe only change if startDate + timeframe is more than endDate
   //Update end date
   this.endDate = convertDateToInputString(dateOperatorTimeframe(this.timeframe, new Date(val), '+'));
 }
