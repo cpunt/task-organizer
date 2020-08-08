@@ -1,6 +1,5 @@
 <template>
 <div id='app'>
-
   <BackgroundScreen v-if='bgScreen' />
 
   <Sidebar class='sideBar' :class='{ sideBarOpen: sidebarActive, sideBarClosed: !sidebarActive }' />
@@ -18,6 +17,8 @@
 
   <DeleteTask v-if='dtask' />
 
+  <Login v-if='login' />
+
 </div>
 </template>
 
@@ -28,6 +29,7 @@ import ViewTask from './components/ViewTask.vue';
 import NewTask from './components/NewTask.vue';
 import DeleteTask from './components/DeleteTask.vue';
 import BackgroundScreen from './components/BackgroundScreen.vue';
+import Login from './components/Login.vue';
 
 import { store } from './store/store.js';
 import { mapState, mapActions } from 'vuex'
@@ -55,6 +57,7 @@ export default {
       'vtask',
       'ntask',
       'dtask',
+      'login',
       'bgScreen'
     ]),
     ...mapState('timeframes', [
@@ -67,7 +70,8 @@ export default {
     ViewTask,
     NewTask,
     DeleteTask,
-    BackgroundScreen
+    BackgroundScreen,
+    Login
   },
   mounted: function() {
     this.$store.dispatch('userStatus');

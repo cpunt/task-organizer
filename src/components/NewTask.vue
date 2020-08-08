@@ -30,9 +30,9 @@
 
     <div class='taskInputDiv'>
       <label class='w-100 mb-0 header'>Timeframe:
-        <select v-model='timeframe' class='form-control' :class='{ invalidInput: errors.timeframe }'>
+        <select v-model='timeframe' class='form-control text-capitalize' :class='{ invalidInput: errors.timeframe }'>
           <option selected hidden disabled value=''></option>
-          <option v-for='val in timeframes' :key='val' :value='val' class='text-capitalize'>{{ val }}</option>
+          <option v-for='val in timeframes' :key='val' :value='val'>{{ val }}</option>
         </select>
       </label>
       <p v-if='errors.timeframe' class='invalidFeedback'>*Timeframe needs to be selected</p>

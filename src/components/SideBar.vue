@@ -18,18 +18,20 @@
       <div v-if='user'>
         <p class='my-0 ml-3 py-1 font-weight-bold'>Profile</p>
         <p class='my-0 ml-3 py-2'>{{ user.username }}</p>
-        <div class='hoverDiv py-2' @click='signOut'>
+        <div class='hoverDiv py-2' @click='logout'>
           <img class='textIcon d-inline ml-3' src='../assets/sidebar/sign.svg' alt='Sign out' title='Sign out'>
-          <p class='my-0 text-primary d-inline ml-2 text'>Sign out</p>
+          <p class='my-0 text-primary d-inline ml-2 text'>Logout</p>
         </div>
       </div>
-      <div v-else class='hoverDiv py-2' @click='signIn'>
-        <img class='textIcon d-inline ml-3' src='../assets/sidebar/sign.svg' alt='Sign In' title='Sign In'>
-        <p class='my-0 text-primary d-inline ml-2 text'>Sign in</p>
+      <div v-else>
+        <div class='hoverDiv py-2' @click='login'>
+          <img class='textIcon d-inline ml-3' src='../assets/sidebar/sign.svg' alt='Sign out' title='Sign out'>
+          <p class='my-0 text-primary d-inline ml-2 text'>Login</p>
+        </div>
       </div>
     </div>
 
-    <div>
+    <div v-if='user'>
       <p class='my-0 ml-3 py-2 font-weight-bold'>Features</p>
 
       <div class='hoverDiv py-2' @click="addTask('')">
@@ -113,12 +115,10 @@
 
 <script>
 import { currentDate } from '../js/sharedFunctions.js';
-import { store } from '../store/store.js';
 import { mapState, mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'Sidebar',
-  store,
   data: function() {
     return {
       // TaskStatus and childrenDisplayed will be added to database
@@ -141,11 +141,11 @@ export default {
       'updateDateSelected'
     ]),
     ...mapActions('display', [
-      'addTask'
+      'addTask',
+      'login'
     ]),
     ...mapActions([
-      'signIn',
-      'signOut'
+      'logout'
     ]),
     currentDate,
     stopTheEvent(event) {

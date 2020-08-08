@@ -38,7 +38,7 @@ const store = new Vuex.Store({
   actions: {
     userStatus({ commit, dispatch }) {
       firebase.auth().onAuthStateChanged(user => {
-        commit('display/SET_BGSCREEN', false);
+
         if(user) {
           commit('SET_USER', { email: user.email, username: user.displayName });
           dispatch('sidebar/trackSidebar');
@@ -48,20 +48,18 @@ const store = new Vuex.Store({
         }
       });
     },
-    signIn({ commit }) {
+    login({ dispatch }) {
       const provider = new firebase.auth.GoogleAuthProvider();
-      commit('display/SET_BGSCREEN', true);
 
-      firebase.auth().signInWithPopup(provider).then(result => {
-        console.log(result);
+      firebase.auth().signInWithPopup(provider).then(() => {
+        dispatch('display/cancel');
       }).catch(function(error) {
         console.log(error);
       });
     },
-    signOut() {
+    logout() {
       firebase.auth().signOut().then(() => {
         location.reload();
-        console.log('User signed out');
       }).catch(function(error) {
         console.log(error);
       });

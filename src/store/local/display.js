@@ -6,6 +6,7 @@ export default {
     vtask: false,
     ntask: false,
     dtask: false,
+    login: false,
     bgScreen: false
   },
   mutations: {
@@ -21,6 +22,9 @@ export default {
     SET_DTASK(state, dtask) {
       state.dtask = dtask;
     },
+    SET_LOGIN(state, login) {
+      state.login = login;
+    },
     SET_BGSCREEN(state, bgScreen) {
       state.bgScreen = bgScreen;
     }
@@ -31,6 +35,7 @@ export default {
       commit('SET_VTASK', false);
       commit('SET_NTASK', false);
       commit('SET_DTASK', false);
+      commit('SET_LOGIN', false);
       commit('SET_BGSCREEN', false);
     },
     addTask({ commit }, taskId) {
@@ -49,6 +54,10 @@ export default {
     viewTask({ commit }, taskId) {
       commit('SET_TASKID', taskId);
       commit('SET_VTASK', true);
+      commit('SET_BGSCREEN', true);
+    },
+    login({ commit }) {
+      commit('SET_LOGIN', true);
       commit('SET_BGSCREEN', true);
     }
   }
