@@ -191,6 +191,7 @@ export default {
   display: inline-block;
   vertical-align: top;
   width: 25%;
+  min-width: 190px;
   height: 100%;
   border-right: 1px solid black;
   overflow: scroll;

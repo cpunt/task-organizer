@@ -91,8 +91,6 @@ body {
 
    /* background-color: #f3f4f7;
    background-image: linear-gradient(315deg, #f3f4f7 0%, #caccd1 74%); */
-
-   height: 100%;
    background-color: #f5f5f5;
 }
 
@@ -115,7 +113,7 @@ body {
 }
 
 .sideBarClosed {
-  width: 3%;
+  width: 35px;
   border-bottom: 1px solid #333;
   height: 42px;
   cursor: pointer;
@@ -126,13 +124,14 @@ body {
 }
 
 .sideBarOpen {
-  width: 20%;
+  width: 190px;
   height: 100%;
 }
 
 .tfDSidebar {
-  width: 80%;
-  left: 20%;
+  left: 190px;
+  flex-grow: 1;
+  width: calc(100% - 190px);
 }
 
 .tfDNoSidebar {
@@ -146,5 +145,6 @@ body {
 
 #timeframesDiv {
   height: 100%;
+  min-width: 760px;
 }
 </style>

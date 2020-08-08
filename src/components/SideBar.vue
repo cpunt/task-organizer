@@ -1,7 +1,7 @@
 <template>
 <div class='text-center'>
   <div v-if='!sidebarActive' class='h-100 pt-2' @click='toggleSideBar(!sidebarActive)'>
-    <img class='icon' src='../assets/right-arrow.svg' alt='Right Arrow' title='Open SideBar' >
+    <img class='icon' src='../assets/right-arrow.svg' alt='Right Arrow' title='Open Sidebar' >
     <!-- <img class='icon my-4' src='../assets/add.svg' alt='Cross' title='Add Task' @click='addTask'> -->
   </div>
 
@@ -10,7 +10,7 @@
     <div class='divTop borderBtm'>
       <div class='ml-3 pt-2'>
         <h5 class='d-inline'>Task Organizer</h5>
-        <img class='icon mr-3 float-right' src='../assets/left-arrow.svg' alt='left-arrow' title='Close SideBar' @click='toggleSideBar(!sidebarActive)'>
+        <img class='icon mr-3 float-right' src='../assets/left-arrow.svg' alt='left-arrow' title='Close Sidebar' @click='toggleSideBar(!sidebarActive)'>
       </div>
     </div>
 
@@ -70,7 +70,7 @@
           </select>
         </div>
       </div>
-
+      <!--
       <div class='hoverDiv py-2' :class="{ dropdown: sidebarDisplay.taskStatus }" @click='sidebarDisplay.taskStatus = !sidebarDisplay.taskStatus'>
         <img class='textIcon d-inline ml-3' src='../assets/sidebar/status.svg' alt='Status' title='Status'>
         <p class='my-0 text-primary d-inline ml-2 text'>Task Status</p>
@@ -106,7 +106,7 @@
           </select>
         </div>
       </div>
-
+      -->
     </div>
   </div>
 </div>
