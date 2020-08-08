@@ -1,8 +1,7 @@
-import { getDateIndex } from '../app/appFunctions.js';
-import { setDateToTimeframe } from '../sharedFunctions.js';
+import { getDateIndex, setDateToTimeframe } from '../sharedFunctions.js';
 import { nodeDFS } from '../nodeFunctions.js';
 
-function validTasks() {
+function validTasks () {
   let startDate,
       endDate;
 
@@ -15,11 +14,11 @@ function validTasks() {
       return false;
     }
 
-    if(task.time.timeframe == this.timeframe) {
+    if (task.time.timeframe == this.timeframe) {
       startDate = setDateToTimeframe(this.timeframe , new Date(task.time.startDate));
       endDate = setDateToTimeframe(this.timeframe , new Date(task.time.endDate));
 
-      if(startDate <= this.date && endDate >= this.date) {
+      if (startDate <= this.date && endDate >= this.date) {
         return true;
       }
     }
@@ -28,24 +27,24 @@ function validTasks() {
   });
 }
 
-function completedIndex() {
+function completedIndex () {
   return getDateIndex(this.timeframe, new Date(this.task.time.startDate), this.date);
 }
 
-function taskHasValidChild() {
+function taskHasValidChild () {
   let childrenLen = this.task.children.length
-  if(childrenLen > 0) {
+  if (childrenLen > 0) {
     let child,
         startDate,
         endDate;
 
-    for(let i = 0; i < childrenLen; i++) {
+    for (let i = 0; i < childrenLen; i++) {
       child = this.tasks[this.task.children[i]];
-      if(this.timeframe == child.time.timeframe) {
+      if (this.timeframe == child.time.timeframe) {
         startDate = setDateToTimeframe(this.timeframe, new Date(child.time.startDate));
         endDate = setDateToTimeframe(this.timeframe, new Date(child.time.endDate));
 
-        if(startDate <= this.date && endDate >= this.date) {
+        if (startDate <= this.date && endDate >= this.date) {
           return true;
         }
       }
@@ -55,11 +54,11 @@ function taskHasValidChild() {
   return false;
 }
 
-function leaves() {
+function leaves () {
   let counter = 0;
 
   nodeDFS(function(node) {
-    if(node.children.length == 0) {
+    if (node.children.length == 0) {
       counter++;
     }
   }, this.task, this.tasks);
@@ -67,11 +66,11 @@ function leaves() {
   return counter;
 }
 
-function leavesCompleted() {
+function leavesCompleted () {
   let counter = 0;
 
   nodeDFS(function(node) {
-    if(node.children.length == 0 && node.taskCompleted) {
+    if (node.children.length == 0 && node.taskCompleted) {
       counter++;
     }
   }, this.task, this.tasks);
@@ -90,7 +89,7 @@ function expired() {
   let date,
       currentDate;
 
-  if(endDate.getTime() == this.date.getTime()) {
+  if (endDate.getTime() == this.date.getTime()) {
     date = new Date(this.task.time.endDate);
     currentDate = new Date();
   } else {
@@ -101,7 +100,7 @@ function expired() {
   date.setHours(0,0,0,0);
   currentDate.setHours(0,0,0,0);
 
-  if(currentDate > date) {
+  if (currentDate > date) {
     return true;
   }
 

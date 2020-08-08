@@ -10,27 +10,27 @@ export default {
     bgScreen: false
   },
   mutations: {
-    SET_TASKID(state, taskId) {
+    SET_TASKID (state, taskId) {
       state.taskId = taskId;
     },
-    SET_VTASK(state, vtask ) {
+    SET_VTASK (state, vtask ) {
       state.vtask = vtask;
     },
-    SET_NTASK(state, ntask) {
+    SET_NTASK (state, ntask) {
       state.ntask = ntask;
     },
-    SET_DTASK(state, dtask) {
+    SET_DTASK (state, dtask) {
       state.dtask = dtask;
     },
-    SET_LOGIN(state, login) {
+    SET_LOGIN (state, login) {
       state.login = login;
     },
-    SET_BGSCREEN(state, bgScreen) {
+    SET_BGSCREEN (state, bgScreen) {
       state.bgScreen = bgScreen;
     }
   },
   actions: {
-    cancel({ commit }) {
+    cancel ({ commit }) {
       commit('SET_TASKID', '');
       commit('SET_VTASK', false);
       commit('SET_NTASK', false);
@@ -38,25 +38,25 @@ export default {
       commit('SET_LOGIN', false);
       commit('SET_BGSCREEN', false);
     },
-    addTask({ commit }, taskId) {
+    addTask ({ commit }, taskId) {
       commit('SET_TASKID', taskId);
       commit('SET_VTASK', false);
       commit('SET_NTASK', true);
       commit('SET_DTASK', false);
       commit('SET_BGSCREEN', true);
     },
-    confirmDeleteTask({ commit }, taskId) {
+    confirmDeleteTask ({ commit }, taskId) {
       commit('SET_TASKID', taskId);
       commit('SET_VTASK', false);
       commit('SET_DTASK', true);
       commit('SET_BGSCREEN', true);
     },
-    viewTask({ commit }, taskId) {
+    viewTask ({ commit }, taskId) {
       commit('SET_TASKID', taskId);
       commit('SET_VTASK', true);
       commit('SET_BGSCREEN', true);
     },
-    login({ commit }) {
+    login ({ commit }) {
       commit('SET_LOGIN', true);
       commit('SET_BGSCREEN', true);
     }

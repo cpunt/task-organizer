@@ -1,13 +1,13 @@
 import { addZero } from '../sharedFunctions.js';
 
-function taskDate(date) {
+function taskDate (date) {
   const d = new Date(date);
   let day = addZero(d.getDate());
   let month = addZero(d.getMonth() + 1);
   let year = d.getFullYear();
   let week, dayWeek, monthWeek, yearWeek;
 
-  switch(this.timeframe) {
+  switch (this.timeframe) {
     case 'yearly':
       return year;
     case 'monthly':
@@ -23,7 +23,7 @@ function taskDate(date) {
   }
 }
 
-function toggleShowChildren() {
+function toggleShowChildren () {
   this.showChildren = !this.showChildren;
 }
 

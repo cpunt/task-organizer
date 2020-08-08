@@ -59,7 +59,7 @@ export default {
     ...mapState('dates', [
       'datesRange'
     ]),
-    dates() {
+    dates () {
       return this.$store.state.dates.dates[this.timeframe];
     },
     displayDates () {
@@ -157,7 +157,7 @@ export default {
         }
       }
     },
-    setDatesRange(timeframe, index) {
+    setDatesRange (timeframe, index) {
       this.$store.dispatch('dates/setDatesRange', {
         timeframe: timeframe,
         index: index

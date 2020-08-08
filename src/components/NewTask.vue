@@ -106,13 +106,13 @@ export default {
     timeframe,
     startDate,
     endDate,
-    startDateMin() {
+    startDateMin () {
       //Update start date
       this.setStartDate();
     },
     taskId: {
       immediate: true,
-      handler(val) {
+      handler (val) {
         this.parentId = val;
       }
     }
@@ -132,17 +132,17 @@ export default {
     startDateMax,
     endDateMin,
     endDateMax,
-    taskPaths() {
+    taskPaths () {
       let paths = [];
       let map = {};
       let node, parentId;
 
-      for(const key in this.tasks) {
+      for (const key in this.tasks) {
         node = this.tasks[key];
         map['id'] = key;
         map['path'] = node.task;
 
-        while(node != null) {
+        while (node != null) {
           parentId = node.parent;
           if(parentId) {
             node = this.tasks[parentId];
@@ -159,11 +159,11 @@ export default {
         return a.path == b.path ? 0 : a.path > b.path || -1
       });
     },
-    timeframes() {
+    timeframes () {
       const node = this.parentId ? this.tasks[this.parentId] : null;
       let timeframesArr = ['yearly', 'monthly', 'weekly', 'daily'];
 
-      if(node) {
+      if (node) {
         switch(node.time.timeframe) {
           case 'monthly':
             timeframesArr = timeframesArr.slice(1);
@@ -179,7 +179,7 @@ export default {
 
       return timeframesArr;
     },
-    taskParent() {
+    taskParent () {
       return this.tasks[this.taskId] ? this.tasks[this.taskId] : null;
     },
     ...mapState('tasks', [
@@ -189,7 +189,7 @@ export default {
       'taskId',
     ])
   },
-  mounted() {
+  mounted () {
     this.setStartDate();
     document.addEventListener('keyup', this.cancelByEsc);
   }

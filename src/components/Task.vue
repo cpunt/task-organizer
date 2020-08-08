@@ -68,7 +68,7 @@ export default {
     }
   },
   watch: {
-    percent(val) {
+    percent (val) {
       this.task.taskCompleted = val == 100;
     }
   },
@@ -78,7 +78,7 @@ export default {
       'addTask',
       'confirmDeleteTask'
     ]),
-    updateDateTaskCompleted() {
+    updateDateTaskCompleted () {
       this.$store.dispatch('tasks/updateDateTaskCompleted', {
         task: this.task,
         taskId: this.taskid,
@@ -86,10 +86,10 @@ export default {
       });
     },
     toggleShowChildren,
-    highlightTasks(type) {
+    highlightTasks (type) {
       const taskIds = this.getTaskIds();
 
-      switch(type) {
+      switch (type) {
         case 'highlight':
           this.$store.dispatch('tasks/highlightTasks', taskIds);
           break;
@@ -98,12 +98,12 @@ export default {
           break;
       }
     },
-    getTaskIds() {
+    getTaskIds () {
       const taskIds = [];
       let id = this.taskid,
           node;
       // Get current task to root task
-      while(id) {
+      while (id) {
         node = this.tasks[id];
         taskIds.push(id);
 
@@ -116,7 +116,7 @@ export default {
       let currentNode = queue.pop(),
           currentId;
 
-      while(currentNode) {
+      while (currentNode) {
         let length = currentNode.children.length;
 
         for(let i = 0; i < length; i++) {

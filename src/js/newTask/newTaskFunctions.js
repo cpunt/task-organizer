@@ -1,12 +1,12 @@
 import { addZero } from '../sharedFunctions.js';
 
-function dateOperatorTimeframe(timeframe, date, operator) {
+function dateOperatorTimeframe (timeframe, date, operator) {
   let year = date.getFullYear(),
       month = date.getMonth(),
       day = date.getDate(),
       newDate;
 
-  switch(timeframe) {
+  switch (timeframe) {
     case 'yearly':
       year = updateDate(year, operator, 1);
       break;
@@ -23,9 +23,9 @@ function dateOperatorTimeframe(timeframe, date, operator) {
   return newDate;
 }
 
-function updateDate(num1, operator, num2) {
+function updateDate (num1, operator, num2) {
   let result;
-  switch(operator) {
+  switch (operator) {
     case '+':
       result = num1 + num2;
       break;
@@ -37,7 +37,7 @@ function updateDate(num1, operator, num2) {
   return result;
 }
 
-function convertDateToInputString(date) {
+function convertDateToInputString (date) {
   let year = date.getFullYear(),
       month = addZero(date.getMonth() + 1),
       day = addZero(date.getDate());
@@ -45,8 +45,8 @@ function convertDateToInputString(date) {
   return `${year}-${month}-${day}`;
 }
 
-function validDate(date, minDate, maxDate) {
-  if(date.length == 0 || minDate.length == 0 || maxDate.length == 0) {
+function validDate (date, minDate, maxDate) {
+  if (date.length == 0 || minDate.length == 0 || maxDate.length == 0) {
     return false;
   }
 
@@ -54,7 +54,7 @@ function validDate(date, minDate, maxDate) {
   minDate = new Date(minDate);
   maxDate = new Date(maxDate);
 
-  if(date >= minDate && date <= maxDate) {
+  if (date >= minDate && date <= maxDate) {
     return true;
   }
 

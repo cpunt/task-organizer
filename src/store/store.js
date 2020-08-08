@@ -24,9 +24,9 @@ const store = new Vuex.Store({
     user: null
   },
   mutations: {
-    SET_USER(state, { email, username }) {
+    SET_USER (state, { email, username }) {
       // Maybe change to set
-      if(email && username) {
+      if (email && username) {
         state['user'] = {};
         state['user']['email'] = email;
         state['user']['username'] = username;
@@ -36,10 +36,10 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    userStatus({ commit, dispatch }) {
+    userStatus ({ commit, dispatch }) {
       firebase.auth().onAuthStateChanged(user => {
 
-        if(user) {
+        if (user) {
           commit('SET_USER', { email: user.email, username: user.displayName });
           dispatch('sidebar/trackSidebar');
           dispatch('tasks/trackTasks');
@@ -48,7 +48,7 @@ const store = new Vuex.Store({
         }
       });
     },
-    login({ dispatch }) {
+    login ({ dispatch }) {
       const provider = new firebase.auth.GoogleAuthProvider();
 
       firebase.auth().signInWithPopup(provider).then(() => {
@@ -57,7 +57,7 @@ const store = new Vuex.Store({
         console.log(error);
       });
     },
-    logout() {
+    logout () {
       firebase.auth().signOut().then(() => {
         location.reload();
       }).catch(function(error) {

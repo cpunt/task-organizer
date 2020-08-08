@@ -1,5 +1,4 @@
-import { currentDate } from '../../js/sharedFunctions.js';
-import { getDateIndex } from '../../js/app/appFunctions.js';
+import { getDateIndex, currentDate } from '../../js/sharedFunctions.js';
 
 export default {
   namespaced: true,
@@ -9,18 +8,18 @@ export default {
     sidebarActive: false
   },
   mutations: {
-    SET_TASK_SELECTED(state, taskSelected) {
+    SET_TASK_SELECTED (state, taskSelected) {
       state.taskSelected = taskSelected;
     },
-    SET_DATE_SELECTED(state, dateSelected) {
+    SET_DATE_SELECTED (state, dateSelected) {
       state.dateSelected = dateSelected;
     },
-    SET_SIDEBAR_ACTIVE(state, sidebarActive) {
+    SET_SIDEBAR_ACTIVE (state, sidebarActive) {
       state.sidebarActive = sidebarActive;
     }
   },
   actions: {
-    trackSidebar({ rootState, commit }) {
+    trackSidebar ({ rootState, commit }) {
       rootState.db.collection('users')
         .doc(rootState.user.email)
         .onSnapshot(querySnapshot => {
@@ -28,7 +27,7 @@ export default {
           commit('SET_TASK_SELECTED', taskSelected);
         });
     },
-    updateTaskSelected({ rootState, dispatch }, event) {
+    updateTaskSelected ({ rootState, dispatch }, event) {
       const taskSelectedId = event.target.value;
 
       const taskSelectedRef = rootState.db.collection('users')
@@ -48,7 +47,7 @@ export default {
         });
       });
     },
-    updateDateSelected({ rootState, state, commit, dispatch }, event) {
+    updateDateSelected ({ rootState, state, commit, dispatch }, event) {
       const dateSelected = event ? event.target.value : currentDate();
       commit('SET_DATE_SELECTED', dateSelected);
 

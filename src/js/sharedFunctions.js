@@ -1,4 +1,27 @@
-function currentDate() {
+import { daysDiff, weeksDiff, monthsDiff, yearsDiff } from './dateDiff.js';
+
+function getDateIndex (timeframe, startDate, date) {
+  let index;
+
+  switch (timeframe) {
+    case 'yearly':
+      index = yearsDiff(startDate, date);
+      break;
+    case 'monthly':
+      index = monthsDiff(startDate, date);
+      break;
+    case 'weekly':
+      index = weeksDiff(startDate, date);
+      break;
+    case 'daily':
+      index = daysDiff(startDate, date);
+      break;
+  }
+
+  return index;
+}
+
+function currentDate () {
   let date = new Date(),
       day = addZero(date.getDate()),
       month = addZero(date.getMonth() + 1),
@@ -7,7 +30,7 @@ function currentDate() {
   return `${year}-${month}-${day}`;
 }
 
-function addZero(num) {
+function addZero (num) {
   if(num < 10) {
     num = `0${num}`;
   }
@@ -15,11 +38,11 @@ function addZero(num) {
   return num;
 }
 
-function setDateToTimeframe(timeframe, date) {
-  if(timeframe == 'weekly') {
-    if(date.getDay() == 0) {
+function setDateToTimeframe (timeframe, date) {
+  if (timeframe == 'weekly') {
+    if (date.getDay() == 0) {
       date.setDate(date.getDate() - 6) ;
-    } else if(date.getDay() > 1){
+    } else if (date.getDay() > 1){
       date.setDate((date.getDate() - date.getDay()) + 1) ;
     }
   }
@@ -29,7 +52,7 @@ function setDateToTimeframe(timeframe, date) {
       day = date.getDate(),
       timeframeDate;
 
-  switch(timeframe) {
+  switch (timeframe) {
     case 'yearly':
       timeframeDate = new Date(year, 0);
       break;
@@ -44,7 +67,7 @@ function setDateToTimeframe(timeframe, date) {
   return timeframeDate;
 }
 
-function formatDate(dateString) {
+function formatDate (dateString) {
   let date = new Date(dateString),
       day = addZero(date.getDate()),
       month = addZero(date.getMonth() + 1),
@@ -53,18 +76,18 @@ function formatDate(dateString) {
   return `${day}/${month}/${year}`;
 }
 
-function convertToDate(seconds) {
+function convertToDate (seconds) {
   return new Date(seconds * 1000);
 }
 
 function setWeeklyDate (date) {
-  if(date.getDay() == 0) {
+  if (date.getDay() == 0) {
     date.setDate(date.getDate() - 6) ;
-  } else if(date.getDay() > 1){
+  } else if (date.getDay() > 1){
     date.setDate((date.getDate() - date.getDay()) + 1) ;
   }
 
   return date;
 }
 
-export { currentDate, addZero, setDateToTimeframe, formatDate, convertToDate, setWeeklyDate };
+export { getDateIndex, currentDate, addZero, setDateToTimeframe, formatDate, convertToDate, setWeeklyDate };

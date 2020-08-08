@@ -11,29 +11,29 @@ export default {
     }
   },
   mutations: {
-    ADD_TASK(state, { taskId, timeframe }) {
+    ADD_TASK (state, { taskId, timeframe }) {
       state.timeframes[timeframe].push(taskId);
     },
-    DELETE_TASK(state, { taskId, timeframe }) {
+    DELETE_TASK (state, { taskId, timeframe }) {
       const index = state.timeframes[timeframe].indexOf(taskId);
       state.timeframes[timeframe].splice(index, 1);
     }
   },
   actions: {
-    setTimeframes({ rootState, state, commit, dispatch }, timeframe) {
+    setTimeframes ({ rootState, state, commit, dispatch }, timeframe) {
       const oldTasks = state.timeframes[timeframe];
       const newTasks = [];
       const tasks = rootState.tasks.tasks;
       let parentTimeframe, task;
 
-      for(const taskId in tasks) {
+      for (const taskId in tasks) {
         task = tasks[taskId];
         if (task.time.timeframe !== timeframe) {
           continue;
         }
 
         parentTimeframe = task.parent ? tasks[task.parent].time.timeframe : '';
-        if(parentTimeframe !== task.time.timeframe) {
+        if (parentTimeframe !== task.time.timeframe) {
           newTasks.push(taskId);
         }
       }

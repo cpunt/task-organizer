@@ -45,35 +45,31 @@
 
 <script>
 import EditTask from './EditTask.vue';
-import { formatDate } from '../js/sharedFunctions.js';
+import { getDateIndex, formatDate } from '../js/sharedFunctions.js';
 import { cancelByEsc } from '../js/sharedMethods.js';
-import { toggleEdit } from '../js/viewTask/viewTaskMethods.js';
-import { getSubTasks } from '../js/viewTask/viewTaskComputed.js';
-import { getDateIndex } from '../js/app/appFunctions.js';
+import { nodeDFS } from '../js/nodeFunctions.js';
 import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'ViewTask',
-  data() {
+  data () {
     return {
       edit: false
     }
   },
-  methods: {
-    ...mapActions('display', [
-      'cancel',
-      'addTask',
-      'confirmDeleteTask'
-    ]),
-    formatDate,
-    toggleEdit,
-    cancelByEsc,
-    updateTaskCompleted() {
-      this.$store.dispatch('tasks/updateTaskCompleted', this.taskId);
-    }
-  },
   computed: {
-    getSubTasks,
+    getSubTasks () {
+      const tasks = [],
+            currentTask = this.task.task;
+
+      nodeDFS(function(node) {
+        if (node.task != currentTask && node.children.length == 0) {
+          tasks.push(node);
+        }
+      }, this.task, this.tasks);
+
+      return tasks;
+    },
     task () {
       return this.tasks[this.taskId];
     },
@@ -96,6 +92,21 @@ export default {
   },
   components: {
     EditTask
+  },
+  methods: {
+    formatDate,
+    cancelByEsc,
+    ...mapActions('display', [
+      'cancel',
+      'addTask',
+      'confirmDeleteTask'
+    ]),
+    toggleEdit () {
+      this.edit = !this.edit;
+    },
+    updateTaskCompleted () {
+      this.$store.dispatch('tasks/updateTaskCompleted', this.taskId);
+    }
   },
   mounted () {
     document.addEventListener('keyup', this.cancelByEsc);

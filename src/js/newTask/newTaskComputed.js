@@ -1,9 +1,9 @@
 import { convertDateToInputString, dateOperatorTimeframe } from './newTaskFunctions.js';
 
-function startDateMin() {
+function startDateMin () {
   let startDateMin;
 
-  if(this.taskParent == null) {
+  if (this.taskParent == null) {
     startDateMin = convertDateToInputString(new Date(2010, 0));
   } else {
     startDateMin = this.taskParent.time.startDate;
@@ -12,11 +12,11 @@ function startDateMin() {
   return startDateMin;
 }
 
-function startDateMax() {
+function startDateMax () {
   let startDateMax,
       date;
 
-  if(this.taskParent == null) {
+  if (this.taskParent == null) {
     const today = new Date();
     date = new Date(today.getFullYear() + 25, today.getMonth(), today.getDate());
   } else {
@@ -28,12 +28,12 @@ function startDateMax() {
   return startDateMax;
 }
 
-function endDateMin() {
+function endDateMin () {
   let endDateMin,
       startDate = new Date(this.startDate),
       startDateMin = new Date(this.startDateMin);
 
-  if(startDate > startDateMin) {
+  if (startDate > startDateMin) {
     endDateMin = dateOperatorTimeframe(this.timeframe, new Date(this.startDate), '+');
   } else {
     endDateMin = dateOperatorTimeframe(this.timeframe, new Date(this.startDateMin), '+');
@@ -42,10 +42,10 @@ function endDateMin() {
   return convertDateToInputString(endDateMin);
 }
 
-function endDateMax() {
+function endDateMax () {
   let endDateMax;
 
-  if(this.taskParent == null) {
+  if (this.taskParent == null) {
     let today = new Date();
     endDateMax = convertDateToInputString(new Date(today.getFullYear() + 25, today.getMonth(), today.getDate()));
   } else {

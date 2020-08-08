@@ -90,7 +90,7 @@ export default {
       required: true
     }
   },
-  data() {
+  data () {
     return {
       task: this.taskobj.task,
       description: this.taskobj.description,
@@ -129,7 +129,7 @@ export default {
     startDateMax,
     endDateMin,
     endDateMax,
-    taskParent() {
+    taskParent () {
       return this.tasks[this.taskobj.parent] ? this.tasks[this.taskobj.parent] : null;
     },
     ...mapState('tasks', [

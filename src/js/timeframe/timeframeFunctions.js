@@ -1,6 +1,6 @@
 import { setDateToTimeframe } from '../sharedFunctions.js';
 
-function getTaskDates(taskIds, tasks, timeframe) {
+function getTaskDates (taskIds, tasks, timeframe) {
   const taskDates = [];
   let minDate = new Date(Math.min.apply(null, taskIds.map(taskId => new Date(tasks[taskId].time.startDate))));
   let maxDate = new Date(Math.max.apply(null, taskIds.map(taskId => new Date(tasks[taskId].time.endDate))));
@@ -16,7 +16,7 @@ function getTaskDates(taskIds, tasks, timeframe) {
     month = currentDate.getMonth();
     day = currentDate.getDate();
 
-    switch(timeframe) {
+    switch (timeframe) {
       case 'yearly':
         currentDate = new Date(year + 1, 0);
         break;
@@ -65,11 +65,11 @@ function convertDateHeaderToDate (timeframe, dateHeader) {
   return date;
 }
 
-function displayTask(taskSelectedId, tasks, taskId) {
+function displayTask (taskSelectedId, tasks, taskId) {
   let node = tasks[taskId],
       parentId = taskId;
 
-  while(node.parent) {
+  while (node.parent) {
     parentId = node.parent;
     node = tasks[parentId];
   }

@@ -23,7 +23,7 @@ export default {
       'cancel'
     ]),
     cancelByEsc,
-    deleteTask() {
+    deleteTask () {
       this.$store.dispatch('tasks/deleteTask', this.taskId);
       this.cancel();
     }
@@ -36,7 +36,7 @@ export default {
       'taskId'
     ])
   },
-  mounted() {
+  mounted () {
     document.addEventListener('keyup', this.cancelByEsc);
   }
 }

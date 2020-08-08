@@ -1,7 +1,6 @@
 import Vue from 'vue';
-import { getDateIndex } from '../../js/app/appFunctions.js';
 import { getTaskDates, displayTask } from '../../js/timeframe/timeframeFunctions.js';
-import { setWeeklyDate } from '../../js/sharedFunctions.js';
+import { getDateIndex, setWeeklyDate } from '../../js/sharedFunctions.js';
 
 export default {
   namespaced: true,

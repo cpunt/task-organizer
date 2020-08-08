@@ -148,7 +148,7 @@ export default {
       'logout'
     ]),
     currentDate,
-    stopTheEvent(event) {
+    stopTheEvent (event) {
       event.stopPropagation();
     }
   },

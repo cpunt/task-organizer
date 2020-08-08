@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { getDateIndex } from '../../js/app/appFunctions.js';
+import { getDateIndex } from '../../js/sharedFunctions.js';
 
 export default {
   namespaced: true,
@@ -8,31 +8,31 @@ export default {
     tasks: {}
   },
   mutations: {
-    SET_ROOT(state, id) {
-      if(!state.roots.includes(id)) {
+    SET_ROOT (state, id) {
+      if (!state.roots.includes(id)) {
         state.roots.push(id);
       }
     },
-    SET_TASK(state, { id, task }) {
+    SET_TASK (state, { id, task }) {
       Vue.set(state.tasks, id, task);
     },
-    DELETE_TASK(state, id) {
+    DELETE_TASK (state, id) {
       Vue.delete(state.tasks, id);
     },
-    DELETE_ROOT(state, id) {
+    DELETE_ROOT (state, id) {
       const index = state.roots.indexOf(id);
 
       state.roots.splice(index, 1);
     },
-    SET_TASK_HIGHLIGHT(state, id) {
+    SET_TASK_HIGHLIGHT (state, id) {
       Vue.set(state.tasks[id], 'highlight', true);
     },
-    UNSET_TASK_HIGHLIGHT(state, id) {
+    UNSET_TASK_HIGHLIGHT (state, id) {
       Vue.set(state.tasks[id], 'highlight', false);
     }
   },
   actions: {
-    trackTasks({ rootState, state, commit, dispatch }) {
+    trackTasks ({ rootState, state, commit, dispatch }) {
       rootState.db.collection('users')
         .doc(rootState.user.email)
         .collection('tasks')
@@ -52,7 +52,7 @@ export default {
                 if (oldStartDate !== newStartDate || oldEndDate !== newEndDate) {
                   timeframes.push(change.doc.data().time.timeframe);
                 }
-    
+
                 commit('SET_TASK', {
                   id: change.doc.id,
                   task: change.doc.data()
@@ -87,14 +87,14 @@ export default {
           });
         });
     },
-    addTask({ rootState }, taskData) {
+    addTask ({ rootState }, taskData) {
       const taskParent = taskData.task.parent;
       const addTaskRef = rootState.db.collection('users')
         .doc(rootState.user.email)
         .collection('tasks')
         .add(taskData.task);
 
-      if(taskParent) {
+      if (taskParent) {
         addTaskRef.then(doc => {
           taskData.parentChildren.push(doc.id);
           rootState.db.collection('users')
@@ -107,14 +107,14 @@ export default {
         });
       }
     },
-    updateTask({ rootState }, body) {
+    updateTask ({ rootState }, body) {
       rootState.db.collection('users')
         .doc(rootState.user.email)
         .collection('tasks')
         .doc(body.taskId)
         .update(body.task);
     },
-    deleteTask({ rootState, state, getters }, taskId) {
+    deleteTask ({ rootState, state, getters }, taskId) {
       const parentId = state.tasks[taskId].parent,
             toDelete = getters.getToDelete(taskId),
             tasksRef = rootState.db.collection('users')
@@ -126,7 +126,7 @@ export default {
           .delete();
       });
 
-      if(parentId) {
+      if (parentId) {
         let parentChildren = state.tasks[parentId].children,
             index = parentChildren.indexOf(taskId);
 
@@ -138,7 +138,7 @@ export default {
           });
       }
     },
-    updateDateTaskCompleted({ rootState, dispatch }, taskData) {
+    updateDateTaskCompleted ({ rootState, dispatch }, taskData) {
       const dates = taskData.task.dateTaskCompleted;
 
       if (taskData.completedIndex in dates) {
@@ -159,11 +159,11 @@ export default {
       const datesTotal = getDateIndex(time.timeframe, new Date(time.startDate), new Date(time.endDate)) + 1;
       const taskComplete = Object.keys(dates).length === datesTotal;
 
-      if(taskComplete != taskData.task.taskCompleted) {
+      if (taskComplete != taskData.task.taskCompleted) {
         dispatch('updateTaskCompleted', taskData.taskId);
       }
     },
-    updateTaskCompleted({ rootState, getters }, taskId) {
+    updateTaskCompleted ({ rootState, getters }, taskId) {
       const taskCompleted = !getters.getTaskCompleted(taskId);
 
       rootState.db.collection('users')
@@ -174,14 +174,14 @@ export default {
           taskCompleted: taskCompleted
         });
     },
-    highlightTasks({ state, commit } , taskIds) {
+    highlightTasks ({ state, commit } , taskIds) {
       taskIds.forEach(id => {
         if (!('hightlight' in state.tasks[id]) || !state.tasks[id].highlight) {
           commit('SET_TASK_HIGHLIGHT', id);
         }
       });
     },
-    unhighlightTasks({ state, commit } , taskIds) {
+    unhighlightTasks ({ state, commit } , taskIds) {
       taskIds.forEach(id => {
         if (!('hightlight' in state.tasks[id]) || state.tasks[id].highlight) {
           commit('UNSET_TASK_HIGHLIGHT', id);
@@ -198,7 +198,7 @@ export default {
       queue.push(taskId);
       currentId = queue.pop();
 
-      while(currentId) {
+      while (currentId) {
         let children = state.tasks[currentId].children;
 
         children.forEach(child => {
