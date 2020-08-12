@@ -40,11 +40,7 @@ function addZero (num) {
 
 function setDateToTimeframe (timeframe, date) {
   if (timeframe == 'weekly') {
-    if (date.getDay() == 0) {
-      date.setDate(date.getDate() - 6) ;
-    } else if (date.getDay() > 1){
-      date.setDate((date.getDate() - date.getDay()) + 1) ;
-    }
+    date = setWeeklyDate(date);
   }
 
   let year = date.getFullYear(),
@@ -76,10 +72,6 @@ function formatDate (dateString) {
   return `${day}/${month}/${year}`;
 }
 
-function convertToDate (seconds) {
-  return new Date(seconds * 1000);
-}
-
 function setWeeklyDate (date) {
   if (date.getDay() == 0) {
     date.setDate(date.getDate() - 6) ;
@@ -101,4 +93,4 @@ function nodeDFS (callback, currentNode, tasks) {
   }
 }
 
-export { nodeDFS, getDateIndex, currentDate, addZero, setDateToTimeframe, formatDate, convertToDate, setWeeklyDate };
+export { nodeDFS, getDateIndex, currentDate, addZero, setDateToTimeframe, formatDate, setWeeklyDate };
