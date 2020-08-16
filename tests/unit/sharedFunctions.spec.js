@@ -1,4 +1,4 @@
-import { getDateIndex, addZero, setDateToTimeframe, formatDate, setWeeklyDate } from '../js/sharedFunctions.js';
+import { getDateIndex, addZero, setDateToTimeframe, formatDate, setWeeklyDate } from '@/js/sharedFunctions.js';
 
 test('Get Index of date', () => {
   expect(getDateIndex('yearly', new Date('2020-06-03'), new Date('2025-01-10')))

@@ -1,4 +1,4 @@
-import { dateOperatorTimeframe, convertDateToInputString, validDate } from '../js/newTask/newTaskFunctions.js';
+import { dateOperatorTimeframe, convertDateToInputString, validDate } from '@/js/newTask/newTaskFunctions.js';
 
 test('Add or subtract one timeframe unit from date', () => {
   const date = new Date(2022, 5, 7)

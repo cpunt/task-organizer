@@ -1,4 +1,4 @@
-import { getTaskDates, convertDateHeaderToDate, displayTask } from '../js/timeframe/timeframeFunctions.js';
+import { getTaskDates, convertDateHeaderToDate, displayTask } from '@/js/timeframe/timeframeFunctions.js';
 
 test('Get dates from lowest start date to highest end date.', () => {
   const yearly = {
