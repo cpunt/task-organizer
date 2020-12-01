@@ -1,6 +1,13 @@
-# to-do-app
+# Task Organizer 
+A web application where tasks can be organized into yearly, monthly, weekly, and daily goals.
 
-## Project setup
+# Technologies Used
+* JavaScript
+* Vue
+* VueX
+* Cloud Firestore Database
+
+# Project setup
 ```
 npm install
 ```
